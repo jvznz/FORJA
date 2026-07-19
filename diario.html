@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#071019">
+<title>O FAROL · Diário</title>
+<link href="https://fonts.googleapis.com/css2?family=Italiana&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cutive+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ceu1:#071019; --ceu2:#0B1B2C; --mar:#081420; --panel:#0C1A28; --line:#1B2E42; --line2:#2C445C;
+    --text:#E6EDF2; --muted:#8CA0B0; --dim:#54687A;
+    --luz:#F5E6B8; --luz2:#E8CE7A; --luz-soft:#F5E6B826;
+    --papel:#F2ECD9; --papel2:#EAE2CB; --tinta:#2A2620; --tinta2:#6E6552; --pauta:#D8CFB4;
+    --rubi:#B85C4A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:linear-gradient(180deg,var(--ceu1) 0%,var(--ceu2) 55%,var(--mar) 100%);
+    color:var(--text);font-family:'Lora',serif;
+    max-width:680px;margin:0 auto;min-height:100vh;
+    padding:max(14px,env(safe-area-inset-top)) 15px 60px;
+  }
+  .wrap{position:relative;z-index:2}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .back{color:var(--muted);text-decoration:none;font-family:'Cutive Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+  .back:active{color:var(--text)}
+  .chip{font-family:'Cutive Mono',monospace;font-size:10px;color:var(--luz2);border:1px solid var(--line2);border-radius:999px;padding:6px 13px;letter-spacing:.06em}
+
+  /* ===== a cena: mar, farol e feixe ===== */
+  .cena{
+    position:relative;height:230px;border-radius:16px;overflow:hidden;margin-bottom:18px;
+    background:linear-gradient(180deg,#050D15 0%,#0A1B2C 62%,#0A1826 62%,#061019 100%);
+    border:1px solid var(--line);box-shadow:0 10px 34px rgba(0,0,0,.5);
+  }
+  .stars{position:absolute;inset:0 0 38% 0;pointer-events:none}
+  .stars span{position:absolute;width:2px;height:2px;border-radius:50%;background:#DCE6EC;animation:tw 3.6s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.15}50%{opacity:.85}}
+
+  .ondas{position:absolute;left:0;right:0;bottom:0;height:40%}
+  .onda{position:absolute;left:-60%;right:-60%;bottom:0;height:100%;opacity:.55}
+  .onda svg{width:100%;height:100%;display:block}
+  .o1{animation:vaga 9s linear infinite}
+  .o2{animation:vaga 14s linear infinite reverse;opacity:.4;bottom:6px}
+  .o3{animation:vaga 20s linear infinite;opacity:.28;bottom:14px}
+  @keyframes vaga{0%{transform:translateX(0)}100%{transform:translateX(18%)}}
+  .cena.mar2 .o1{animation-duration:5.5s}
+  .cena.mar2 .o2{animation-duration:8s}
+  .cena.mar3 .o1{animation-duration:3.2s}
+  .cena.mar3 .o2{animation-duration:4.6s}
+  .cena.mar3 .o3{animation-duration:7s}
+  .cena.mar3{background:linear-gradient(180deg,#040A11 0%,#081625 62%,#081422 62%,#04090F 100%)}
+
+  .farol{position:absolute;bottom:24%;left:50%;transform:translateX(-50%);width:74px;z-index:3}
+  .farol svg{width:100%;display:block}
+  .feixe-pivo{
+    position:absolute;bottom:calc(24% + 118px);left:50%;width:0;height:0;z-index:2;
+    animation:girar 12s linear infinite;
+  }
+  @keyframes girar{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+  .feixe{
+    position:absolute;left:0;top:-14px;width:min(340px,60vw);height:28px;transform-origin:0 50%;
+    background:linear-gradient(90deg, rgba(245,230,184,.5), rgba(245,230,184,.12) 60%, transparent);
+    clip-path:polygon(0 42%, 100% 0, 100% 100%, 0 58%);
+    filter:blur(1px);
+  }
+  .feixe.tras{transform:rotate(180deg)}
+  .lanterna{
+    position:absolute;bottom:calc(24% + 112px);left:50%;transform:translateX(-50%);
+    width:12px;height:12px;border-radius:50%;background:var(--luz);z-index:4;
+    box-shadow:0 0 18px 7px rgba(245,230,184,.65);
+    animation:pulso 12s linear infinite;
+  }
+  @keyframes pulso{0%,100%{box-shadow:0 0 18px 7px rgba(245,230,184,.65)}50%{box-shadow:0 0 26px 11px rgba(245,230,184,.85)}}
+  .cena-info{position:absolute;left:16px;top:14px;z-index:5}
+  .cena-saud{font-family:'Italiana',serif;font-size:17px;letter-spacing:.06em;color:var(--luz)}
+  .cena-noites{font-family:'Cutive Mono',monospace;font-size:9.5px;color:var(--muted);margin-top:4px;letter-spacing:.04em}
+
+  .hero{text-align:center;margin-bottom:18px}
+  .hero .eyebrow{font-family:'Cutive Mono',monospace;font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--luz2);margin-bottom:6px}
+  .hero h1{font-family:'Italiana',serif;font-size:clamp(38px,10vw,54px);letter-spacing:.12em;line-height:1}
+  .hero p{font-size:13.5px;font-style:italic;color:var(--muted);margin-top:8px;line-height:1.65}
+
+  /* ===== o livro de bordo ===== */
+  .bordo{
+    background:var(--papel);color:var(--tinta);border-radius:4px;position:relative;
+    box-shadow:0 3px 0 #CFC5A6, 0 14px 40px rgba(0,0,0,.45);
+    padding:24px 22px 22px;
+  }
+  .bordo::before{
+    content:"";position:absolute;left:11px;top:14px;bottom:14px;width:1px;
+    background:repeating-linear-gradient(180deg, var(--rubi) 0 7px, transparent 7px 16px);opacity:.5;
+  }
+  .bordo-head{text-align:center;border-bottom:2px solid var(--tinta);padding-bottom:12px;margin-bottom:16px}
+  .bordo-head .bh1{font-family:'Cutive Mono',monospace;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--tinta2)}
+  .bordo-head .bh2{font-family:'Italiana',serif;font-size:clamp(20px,5.6vw,26px);letter-spacing:.08em;margin-top:4px;text-transform:uppercase}
+  .bordo-head .bh3{font-family:'Cutive Mono',monospace;font-size:9.5px;color:var(--tinta2);margin-top:4px;letter-spacing:.1em}
+
+  .registro{margin-bottom:18px;border-left:3px solid var(--pauta);padding-left:13px;transition:border-color .4s}
+  .registro.agora{border-left-color:var(--luz2)}
+  .reg-l{display:flex;align-items:baseline;gap:9px;margin-bottom:7px}
+  .reg-l b{font-family:'Cutive Mono',monospace;font-size:10.5px;letter-spacing:.24em;text-transform:uppercase}
+  .reg-l .agora-tag{font-family:'Cutive Mono',monospace;font-size:8.5px;color:#8C6D1F;background:#EAD9A0;border-radius:3px;padding:2px 7px;letter-spacing:.14em}
+  .reg-l small{font-family:'Cutive Mono',monospace;font-size:9px;color:var(--tinta2);letter-spacing:.04em}
+  textarea,input[type=text]{
+    width:100%;background:transparent;border:none;border-bottom:1px solid var(--pauta);
+    padding:6px 2px 8px;color:var(--tinta);font-family:'Lora',serif;font-size:15px;line-height:1.7;
+  }
+  textarea{resize:vertical;min-height:64px;background-image:repeating-linear-gradient(180deg, transparent 0 27px, var(--pauta) 27px 28px);line-height:28px;padding-top:2px}
+  textarea:focus,input:focus{outline:none;border-bottom-color:var(--tinta)}
+  textarea::placeholder,input::placeholder{color:#A89D82;font-style:italic}
+
+  .mar-sel{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:6px 0 16px}
+  .mar-btn{
+    background:var(--papel2);border:1px solid var(--pauta);border-radius:6px;padding:9px 4px;
+    cursor:pointer;text-align:center;transition:.2s;font-family:'Cutive Mono',monospace;
+  }
+  .mar-btn svg{width:30px;height:14px;stroke:var(--tinta2);fill:none;stroke-width:2;stroke-linecap:round;display:block;margin:0 auto 5px}
+  .mar-btn span{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta2)}
+  .mar-btn.sel{background:var(--tinta);border-color:var(--tinta)}
+  .mar-btn.sel svg{stroke:var(--luz)}
+  .mar-btn.sel span{color:var(--papel)}
+
+  .assinar{
+    display:block;width:100%;font-family:'Italiana',serif;font-size:17px;letter-spacing:.2em;text-transform:uppercase;
+    background:var(--tinta);color:var(--papel);border:none;border-radius:4px;padding:14px;cursor:pointer;margin-top:4px;
+  }
+  .assinar:active{transform:scale(.98)}
+  .assinado{font-family:'Cutive Mono',monospace;font-size:9.5px;color:#5C7A4E;text-align:center;margin-top:9px;letter-spacing:.08em}
+
+  .divisor{display:flex;align-items:center;gap:12px;margin:26px 0 14px}
+  .divisor i{flex:1;height:1px;background:var(--line2)}
+  .divisor span{font-family:'Italiana',serif;font-size:clamp(17px,4.6vw,21px);letter-spacing:.2em;text-transform:uppercase;white-space:nowrap;color:var(--text)}
+  .divisor span b{color:var(--luz2);font-weight:400}
+
+  .pagina{
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin-bottom:10px;
+  }
+  .pg-head{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+  .pg-data{font-family:'Cutive Mono',monospace;font-size:10px;color:var(--luz2);letter-spacing:.08em}
+  .pg-mar{display:flex;align-items:center;gap:5px;font-family:'Cutive Mono',monospace;font-size:8.5px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+  .pg-mar svg{width:22px;height:11px;stroke:var(--muted);fill:none;stroke-width:2;stroke-linecap:round}
+  .pg-vit{font-size:12.5px;color:var(--luz);font-style:italic;margin-bottom:5px}
+  .pg-vit::before{content:"★ ";color:var(--luz2);font-style:normal}
+  .pg-txt{font-size:13px;color:var(--muted);line-height:1.65;font-style:italic}
+  .vazio{font-size:13px;color:var(--dim);font-style:italic;text-align:center;padding:10px}
+
+  footer{text-align:center;margin-top:28px;font-family:'Cutive Mono',monospace;font-size:9px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);line-height:2}
+  footer b{color:var(--luz2)}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--luz);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--luz)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip" id="dataChip">·</div>
+  </div>
+
+  <div class="cena" id="cena">
+    <div class="stars" id="stars"></div>
+    <div class="cena-info">
+      <div class="cena-saud" id="saud">Boa vigília, faroleiro.</div>
+      <div class="cena-noites" id="noites">0 noites vigiadas</div>
+    </div>
+    <div class="feixe-pivo"><div class="feixe"></div><div class="feixe tras"></div></div>
+    <div class="lanterna"></div>
+    <div class="farol">
+      <svg viewBox="0 0 74 150">
+        <path d="M20 148 L26 60 L48 60 L54 148 Z" fill="#12222F" stroke="#2C445C" stroke-width="1.5"/>
+        <path d="M26 74 L49 74 M25 92 L50 92 M24 110 L51 110 M23 128 L52 128" stroke="#F2ECD9" stroke-width="7" opacity=".16"/>
+        <rect x="22" y="52" width="30" height="8" rx="2" fill="#0C1A28" stroke="#2C445C" stroke-width="1.5"/>
+        <rect x="27" y="34" width="20" height="18" fill="#0A1622" stroke="#F5E6B8" stroke-width="1.5"/>
+        <rect x="30" y="37" width="14" height="12" fill="#F5E6B8" opacity=".9"/>
+        <path d="M24 34 L37 22 L50 34 Z" fill="#12222F" stroke="#2C445C" stroke-width="1.5"/>
+        <line x1="37" y1="22" x2="37" y2="14" stroke="#2C445C" stroke-width="2"/>
+        <path d="M6 148 C18 142 30 144 37 148 C46 143 60 142 70 148 Z" fill="#0A1520"/>
+      </svg>
+    </div>
+    <div class="ondas">
+      <div class="onda o1"><svg viewBox="0 0 900 80" preserveAspectRatio="none"><path d="M0 40 Q56 18 112 40 T224 40 T336 40 T448 40 T560 40 T672 40 T784 40 T896 40 L900 80 L0 80 Z" fill="#0D2233"/></svg></div>
+      <div class="onda o2"><svg viewBox="0 0 900 80" preserveAspectRatio="none"><path d="M0 46 Q70 26 140 46 T280 46 T420 46 T560 46 T700 46 T840 46 T980 46 L900 80 L0 80 Z" fill="#10293D"/></svg></div>
+      <div class="onda o3"><svg viewBox="0 0 900 80" preserveAspectRatio="none"><path d="M0 52 Q90 34 180 52 T360 52 T540 52 T720 52 T900 52 L900 80 L0 80 Z" fill="#143049"/></svg></div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Diário de Bordo</div>
+    <h1>O FAROL</h1>
+    <p>Quem vigia um farol registra o mar de cada dia.<br>Não pra decorar o passado: pra navegar o amanhã.</p>
+  </div>
+
+  <div class="bordo">
+    <div class="bordo-head">
+      <div class="bh1">Livro de Bordo · Ciclo 01</div>
+      <div class="bh2" id="bordoData">17 de Julho</div>
+      <div class="bh3" id="bordoDia">DIA 1 DA TRAVESSIA</div>
+    </div>
+
+    <div class="registro" id="regAurora">
+      <div class="reg-l"><b>Registro da Aurora</b><span class="agora-tag" id="tagAurora" style="display:none">AGORA</span><small>ao acordar</small></div>
+      <input type="text" id="aurora" placeholder="A intenção de hoje, numa linha: o que precisa acontecer pra valer o dia?">
+    </div>
+
+    <div class="registro" id="regNoite">
+      <div class="reg-l"><b>Registro da Noite</b><span class="agora-tag" id="tagNoite" style="display:none">AGORA</span><small>antes de dormir</small></div>
+
+      <div class="reg-l" style="margin-top:10px"><small>COMO ESTEVE O MAR HOJE?</small></div>
+      <div class="mar-sel" id="marSel"></div>
+
+      <textarea id="noite" placeholder="O que aconteceu de verdade hoje? Onde eu fui bem, onde falhei, e o que isso prova sobre quem eu estou virando..."></textarea>
+
+      <div class="reg-l" style="margin-top:14px"><small>A VITÓRIA DO DIA · por menor que seja</small></div>
+      <input type="text" id="vitoria" placeholder="Uma coisa que eu fiz e o eu de ontem não fez...">
+    </div>
+
+    <button class="assinar" onclick="assinar()">Assinar o registro</button>
+    <div class="assinado" id="assinado" style="display:none"></div>
+  </div>
+
+  <div class="divisor"><i></i><span>PÁGINAS DA <b>TRAVESSIA</b></span><i></i></div>
+  <div id="paginas"></div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>
+    o mar muda todo dia · o farol permanece<br>
+    <b>escreve a verdade e apaga a lanterna</b>
+  </footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+const MARES=[
+  {k:0, n:'Mar calmo',   p:'M2 8 Q10 6 18 8 T34 8'},
+  {k:1, n:'Marola',      p:'M2 9 Q8 4 14 9 T26 9 T38 9'},
+  {k:2, n:'Mar agitado', p:'M2 10 Q7 2 12 10 T22 10 T32 10 T42 10'},
+  {k:3, n:'Tempestade',  p:'M2 11 Q6 1 10 11 T18 11 T26 11 T34 11 M6 4 L9 1 M8 5 L11 2'},
+];
+
+let log = gs('diario-log',{})||{};
+let marHoje = (log[TODAY] && typeof log[TODAY].mar==='number') ? log[TODAY].mar : null;
+
+(function(){
+  const st=$('stars');
+  for(let i=0;i<34;i++){
+    const s=document.createElement('span');
+    s.style.left=Math.random()*100+'%';
+    s.style.top=Math.random()*80+'%';
+    s.style.animationDelay=(Math.random()*3.4)+'s';
+    st.appendChild(s);
+  }
+})();
+function renderCena(){
+  const c=$('cena');
+  c.classList.remove('mar2','mar3');
+  if(marHoje===2) c.classList.add('mar2');
+  if(marHoje===3) c.classList.add('mar3');
+  const h=new Date().getHours();
+  $('saud').textContent = h<5 ? 'A lanterna nunca dorme, faroleiro.' : h<12 ? 'A aurora chegou, faroleiro.' : h<18 ? 'O mar segue, faroleiro.' : 'Boa vigília, faroleiro.';
+  const n = Object.keys(log).filter(d=>log[d] && (log[d].noite||'').trim()).length;
+  $('noites').textContent = n===0 ? 'Nenhuma noite vigiada ainda' : n+' noite'+(n===1?'':'s')+' vigiada'+(n===1?'':'s');
+}
+
+(function(){
+  const d=new Date();
+  const meses=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  $('bordoData').textContent = d.getDate()+' de '+meses[d.getMonth()];
+  $('dataChip').textContent = String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0')+'.'+d.getFullYear();
+  const START=new Date('2026-07-19T00:00:00');
+  const dia=Math.max(1,Math.floor((new Date(TODAY)-START)/86400000)+1);
+  $('bordoDia').textContent = 'DIA '+dia+' DA TRAVESSIA';
+  const h=d.getHours();
+  const manha = h>=4 && h<15;
+  $('tagAurora').style.display = manha?'inline':'none';
+  $('tagNoite').style.display = manha?'none':'inline';
+  $('regAurora').classList.toggle('agora', manha);
+  $('regNoite').classList.toggle('agora', !manha);
+})();
+
+function renderMar(){
+  $('marSel').innerHTML = MARES.map(m=>
+    '<button class="mar-btn'+(marHoje===m.k?' sel':'')+'" onclick="setMar('+m.k+')">'+
+    '<svg viewBox="0 0 44 14"><path d="'+m.p+'"/></svg><span>'+m.n+'</span></button>'
+  ).join('');
+}
+function setMar(k){ marHoje = (marHoje===k)?null:k; renderMar(); renderCena(); }
+
+function carregarHoje(){
+  const e=log[TODAY]||{};
+  $('aurora').value=e.aurora||'';
+  $('noite').value=e.noite||'';
+  $('vitoria').value=e.vitoria||'';
+}
+
+function assinar(){
+  const aurora=$('aurora').value.trim();
+  const noite=$('noite').value.trim();
+  const vitoria=$('vitoria').value.trim();
+  log[TODAY]={aurora, noite, vitoria, mar:marHoje};
+  ss('diario-log',log);
+  logar('Página assinada'+(vitoria?' · vitória do dia: '+vitoria.slice(0,60):''));
+  let ferro=false;
+  if(noite){
+    const daily=gs('daily-'+TODAY,{})||{};
+    if(!daily.diario){ daily.diario=true; ss('daily-'+TODAY,daily); }
+    ferro=true;
+  }
+  const a=$('assinado');
+  a.style.display='block';
+  a.textContent = ferro
+    ? '✓ REGISTRO ASSINADO · FERRO DO DIÁRIO BATIDO NA FORJA'
+    : '✓ REGISTRO ASSINADO · A NOITE AINDA ESPERA SUA PÁGINA';
+  renderCena(); renderPaginas();
+}
+
+function renderPaginas(){
+  const dates=Object.keys(log).filter(d=>d!==TODAY && log[d] && ((log[d].noite||'').trim()||(log[d].vitoria||'').trim())).sort().reverse().slice(0,10);
+  const box=$('paginas');
+  if(!dates.length){ box.innerHTML='<div class="vazio">O livro ainda está no começo. Toda travessia começa na página um.</div>'; return; }
+  box.innerHTML=dates.map(d=>{
+    const e=log[d];
+    const m=(typeof e.mar==='number')?MARES[e.mar]:null;
+    return '<div class="pagina">'+
+      '<div class="pg-head"><span class="pg-data">'+d.split('-').reverse().join('.')+'</span>'+
+      (m?'<span class="pg-mar"><svg viewBox="0 0 44 14"><path d="'+m.p+'"/></svg>'+m.n+'</span>':'')+
+      '</div>'+
+      (e.vitoria?'<div class="pg-vit">'+esc(e.vitoria)+'</div>':'')+
+      (e.noite?'<div class="pg-txt">'+esc(e.noite).substring(0,240)+(e.noite.length>240?'…':'')+'</div>':'')+
+      '</div>';
+  }).join('');
+}
+
+renderCena(); renderMar(); carregarHoje(); renderPaginas();
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'farol';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>

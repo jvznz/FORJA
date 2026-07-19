@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#050D08">
+<title>O GRAMADO · Campo</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:ital,wght@0,400;0,600;0,700;1,500&family=Chivo+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#050D08; --panel:#0A150E; --panel2:#0E1C13; --line:#1A2E20; --line2:#28422F;
+    --text:#EDF5EE; --muted:#7E9486; --dim:#4A5F50;
+    --grama:#3DDC7A; --grama-hi:#8FF5B5; --grama-soft:#3DDC7A1F;
+    --giz:#F2F7F0; --noite:#0B1B2E; --dourado:#E8C25C; --verm:#E06666;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Archivo',sans-serif;
+    max-width:660px;margin:0 auto;
+    padding:max(14px,env(safe-area-inset-top)) 15px 60px;
+  }
+  /* refletores do estádio */
+  body::before,body::after{
+    content:"";position:fixed;top:-8vh;width:60vw;height:70vh;pointer-events:none;z-index:0;
+    background:radial-gradient(50% 60% at 50% 0%, rgba(237,245,238,.07) 0%, transparent 70%);
+  }
+  body::before{left:-14vw;transform:rotate(14deg)}
+  body::after{right:-14vw;transform:rotate(-14deg)}
+  .wrap{position:relative;z-index:1}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .back{color:var(--muted);text-decoration:none;font-family:'Chivo Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .back:active{color:var(--text)}
+  .chip-dia{font-family:'Chivo Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--grama);background:var(--grama-soft);border:1px solid #1E4630;border-radius:999px;padding:6px 13px}
+
+  /* ===== hero: o placar do estádio ===== */
+  .hero{text-align:center;margin-bottom:6px}
+  .hero .eyebrow{
+    font-family:'Chivo Mono',monospace;font-weight:700;font-size:10px;letter-spacing:.5em;
+    text-transform:uppercase;color:var(--grama);margin-bottom:10px;
+  }
+  .hero h1{
+    font-family:'Archivo Black';font-size:clamp(34px,9vw,50px);line-height:.96;
+    text-transform:uppercase;letter-spacing:.01em;transform:skewX(-6deg);
+  }
+  .hero h1 em{font-style:normal;color:var(--grama);text-shadow:0 0 22px rgba(61,220,122,.45)}
+  .lema{font-family:'Archivo';font-style:italic;font-weight:500;font-size:12.5px;color:var(--muted);margin-top:9px;line-height:1.6}
+
+  .placar{
+    display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:18px 0 6px;
+    background:#060B08;border:2px solid var(--line);border-radius:14px;padding:13px 10px;
+    box-shadow:inset 0 0 24px rgba(0,0,0,.6), 0 4px 20px rgba(0,0,0,.4);
+  }
+  .pl-cel{text-align:center;position:relative}
+  .pl-cel + .pl-cel::before{content:"";position:absolute;left:-4px;top:12%;bottom:12%;width:1px;background:var(--line)}
+  .pl-num{font-family:'Chivo Mono',monospace;font-weight:700;font-size:clamp(26px,7vw,34px);color:var(--grama);text-shadow:0 0 14px rgba(61,220,122,.5);line-height:1}
+  .pl-lbl{font-family:'Chivo Mono',monospace;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+  .placar-sub{font-family:'Chivo Mono',monospace;font-size:9px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;text-align:center;margin-bottom:16px}
+
+  /* ===== linha de giz de seção ===== */
+  .giz{display:flex;align-items:center;gap:12px;margin:22px 0 12px}
+  .giz i{flex:1;height:2px;background:repeating-linear-gradient(90deg,var(--line2) 0 14px, transparent 14px 22px);border-radius:2px}
+  .giz span{
+    font-family:'Archivo Black';font-size:clamp(17px,4.6vw,21px);text-transform:uppercase;
+    letter-spacing:.1em;transform:skewX(-6deg);white-space:nowrap;
+  }
+  .giz span b{color:var(--grama)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:12px;position:relative;overflow:hidden}
+  .card::before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--grama),transparent 60%)}
+  .hint{color:var(--muted);font-size:12px;line-height:1.65;margin-bottom:13px}
+  .hint b{color:var(--text)}
+
+  /* ===== a régua ===== */
+  .regua{
+    background:linear-gradient(135deg,#0C2416,#081710);border:1px solid #1E4630;border-radius:14px;
+    padding:18px;margin-bottom:12px;position:relative;overflow:hidden;
+  }
+  .regua::after{content:"10";position:absolute;right:-6px;bottom:-26px;font-family:'Archivo Black';font-size:110px;color:rgba(61,220,122,.08);transform:skewX(-6deg)}
+  .regua .rl{font-family:'Chivo Mono',monospace;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--grama);margin-bottom:8px}
+  .regua p{font-size:13.5px;line-height:1.7}
+  .regua p b{color:var(--grama-hi)}
+
+  /* ===== método japão ===== */
+  .principio{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.6;align-items:baseline}
+  .principio:last-child{border:none}
+  .principio i{font-family:'Chivo Mono',monospace;font-weight:700;font-style:normal;color:var(--grama);font-size:12px;min-width:26px}
+  .principio b{display:block;font-size:13px}
+  .principio small{color:var(--muted);font-size:11.5px}
+
+  /* ===== semana de treino ===== */
+  .treino{border:1px solid var(--line);border-radius:12px;margin-bottom:9px;overflow:hidden;background:var(--panel2)}
+  .tr-head{display:flex;align-items:center;gap:11px;padding:12px 13px;cursor:pointer}
+  .tr-tag{
+    font-family:'Chivo Mono',monospace;font-weight:700;font-size:8.5px;letter-spacing:.12em;
+    text-transform:uppercase;padding:4px 9px;border-radius:5px;white-space:nowrap;
+  }
+  .tg-d{background:var(--grama);color:#04170B}
+  .tg-t{background:var(--dourado);color:#1F1604}
+  .tg-f{background:var(--verm);color:#1F0808}
+  .tg-j{background:var(--giz);color:#0A1A10}
+  .tr-title{flex:1;font-size:13.5px;font-weight:700}
+  .tr-freq{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--dim);white-space:nowrap}
+  .tr-body{display:none;padding:0 14px 14px;font-size:12.5px;color:var(--muted);line-height:1.7}
+  .tr-body.open{display:block}
+  .drill{display:flex;gap:10px;padding:6px 0;color:var(--text);align-items:baseline}
+  .drill i{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--grama);min-width:44px;font-style:normal}
+  .drill small{display:block;color:var(--muted);font-size:11px;margin-top:1px}
+  .chave{background:var(--panel);border-left:2px solid var(--grama);padding:9px 12px;border-radius:0 8px 8px 0;margin-top:10px;font-size:12px}
+  .chave .cl{font-family:'Chivo Mono',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;color:var(--grama);margin-bottom:4px}
+
+  /* grade da semana */
+  .grade{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px}
+  .gd{
+    aspect-ratio:1/1.15;border:1px solid var(--line);border-radius:9px;background:var(--panel2);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;transition:.2s;
+  }
+  .gd:active{transform:scale(.94)}
+  .gd .wd{font-family:'Chivo Mono',monospace;font-size:8px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+  .gd .mark{width:16px;height:16px;border-radius:5px;border:1.6px solid var(--line2);display:flex;align-items:center;justify-content:center}
+  .gd.on{border-color:var(--grama);background:var(--grama-soft)}
+  .gd.on .mark{background:var(--grama);border-color:var(--grama)}
+  .gd.on .wd{color:var(--grama)}
+  .gd .mark svg{width:9px;height:9px;stroke:#04170B;stroke-width:3.6;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .gd.on .mark svg{opacity:1}
+  .gd.hoje{box-shadow:0 0 0 1.5px var(--grama-hi)}
+  .grade-cap{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--dim);letter-spacing:.08em;margin-top:9px;text-align:center;text-transform:uppercase}
+
+  /* ===== registrar jogo ===== */
+  input[type=text],input[type=number],select{
+    width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 12px;color:var(--text);font-family:'Archivo';font-size:13.5px;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--grama)}
+  .jogo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}
+  .jg-cel{text-align:center}
+  .jg-cel label{display:block;font-family:'Chivo Mono',monospace;font-size:8px;letter-spacing:.14em;color:var(--dim);text-transform:uppercase;margin-bottom:5px}
+  .jg-cel input{text-align:center;font-family:'Chivo Mono',monospace;font-weight:700;padding:9px 4px}
+  .btn{
+    font-family:'Archivo Black';font-size:13px;letter-spacing:.1em;text-transform:uppercase;
+    background:var(--grama);color:#04170B;border:none;border-radius:10px;padding:12px 22px;cursor:pointer;width:100%;
+    transform:skewX(-4deg);
+  }
+  .btn:active{transform:skewX(-4deg) scale(.97)}
+
+  .jogo{display:flex;align-items:center;gap:11px;padding:11px 2px;border-bottom:1px solid var(--line)}
+  .jogo:last-child{border:none}
+  .jg-data{font-family:'Chivo Mono',monospace;font-size:9px;color:var(--dim);min-width:44px}
+  .jg-info{flex:1;min-width:0}
+  .jg-nome{font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .jg-stats{font-family:'Chivo Mono',monospace;font-size:9.5px;color:var(--muted);margin-top:2px}
+  .jg-stats b{color:var(--grama)}
+  .jg-nota{
+    font-family:'Chivo Mono',monospace;font-weight:700;font-size:13px;color:#04170B;
+    background:var(--grama);border-radius:7px;padding:5px 8px;min-width:34px;text-align:center;
+  }
+  .jg-nota.baixa{background:var(--line2);color:var(--muted)}
+  .jogo .del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px}
+
+  /* ===== degraus do sonho ===== */
+  .degrau{display:flex;gap:12px;padding:12px 2px;border-bottom:1px solid var(--line);align-items:flex-start}
+  .degrau:last-child{border:none}
+  .dg-n{
+    font-family:'Archivo Black';font-size:15px;color:var(--grama);min-width:26px;
+    transform:skewX(-6deg);padding-top:1px;
+  }
+  .dg-check{width:23px;height:23px;border-radius:7px;border:2px solid var(--line2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .dg-check.done{background:var(--grama);border-color:var(--grama)}
+  .dg-check svg{width:11px;height:11px;stroke:#04170B;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .degrau .t{font-size:13px;font-weight:700;line-height:1.45}
+  .degrau .m{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.55}
+  .degrau.done .t{color:var(--dim);text-decoration:line-through}
+
+  footer{text-align:center;margin-top:26px;font-family:'Chivo Mono',monospace;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);line-height:1.9}
+  footer b{color:var(--grama)}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--grama);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--grama)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip-dia" id="diaChip">SEMANA 1</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Protocolo do 10</div>
+    <h1>O <em>GRAMADO</em></h1>
+    <p class="lema">Meia-atacante. Faz o gol, dá a assistência, volta pra marcar.<br>A régua é sua: lutar de verdade, até a resposta existir.</p>
+  </div>
+
+  <div class="placar" id="placar">
+    <div class="pl-cel"><div class="pl-num" id="pJogos">0</div><div class="pl-lbl">Jogos</div></div>
+    <div class="pl-cel"><div class="pl-num" id="pGols">0</div><div class="pl-lbl">Gols</div></div>
+    <div class="pl-cel"><div class="pl-num" id="pAssist">0</div><div class="pl-lbl">Assist.</div></div>
+    <div class="pl-cel"><div class="pl-num" id="pNota">–</div><div class="pl-lbl">Nota média</div></div>
+  </div>
+  <div class="placar-sub">O placar não mente · ele é a resposta que o menino de 13 nunca teve</div>
+
+  <div class="regua">
+    <div class="rl">O trato deste protocolo</div>
+    <p>Aqui ninguém discute se vai dar certo. Aqui se treina como quem <b>decidiu</b>. O método é o do Japão: onde falta talento, sobra <b>repetição contada</b>. Toque tem número, chute tem número, sprint tem número. O que não é contado é enrolação. E o teste supremo é semanal: <b>bola rolando com gente de verdade</b>, porque jogador se forja em jogo, não em vídeo de treino.</p>
+  </div>
+
+  <div class="giz"><i></i><span>O <b>MÉTODO</b></span><i></i></div>
+  <div class="card">
+    <div class="principio"><i>01</i><div><b>Fundamento antes de firula</b><small>Primeiro toque, passe e finalização com as duas pernas. O 10 que perde a bola no primeiro toque não é 10.</small></div></div>
+    <div class="principio"><i>02</i><div><b>Repetição contada</b><small>100 toques na parede não é "mais ou menos 100". É 100. O caderno do treino é tão sagrado quanto o placar.</small></div></div>
+    <div class="principio"><i>03</i><div><b>Escaneia antes de receber</b><small>O hábito que separa meia de resenha de meia de verdade: olhar por cima do ombro ANTES da bola chegar. Treina em todo jogo, em todo toque.</small></div></div>
+    <div class="principio"><i>04</i><div><b>Perna ruim até virar perna boa</b><small>Metade de tudo (toques, passes, chutes) na perna não dominante. Sem exceção, sem choro.</small></div></div>
+    <div class="principio"><i>05</i><div><b>Jogo real é inegociável</b><small>1 por semana, mínimo. Pelada, society, amador: onde tiver bola disputada e gente querendo ganhar.</small></div></div>
+  </div>
+
+  <div class="giz"><i></i><span>A <b>SEMANA</b></span><i></i></div>
+  <div class="card">
+    <p class="hint">Quatro tipos de treino. Toca no cabeçalho pra abrir o drill completo. O treino de campo se soma ao Freak, não substitui: lá é o corpo, aqui é o jogador.</p>
+
+    <div class="treino">
+      <div class="tr-head" onclick="tg('tb1')">
+        <span class="tr-tag tg-d">Diário</span>
+        <span class="tr-title">Domínio de bola</span>
+        <span class="tr-freq">7x · 20-25 MIN</span>
+      </div>
+      <div class="tr-body" id="tb1">
+        <div class="drill"><i>100x</i><div>Parede: passe e primeiro toque orientado, 50 cada perna, 2 toques no máximo<small>Variar distância: 3m firme, 6m batido. Errou o domínio? Não conta.</small></div></div>
+        <div class="drill"><i>50x</i><div>Recepção com escaneio: joga a bola pra cima ou na parede, olha por cima do ombro ANTES de dominar<small>O olho primeiro, a bola depois. É aqui que nasce o meia que já sabe o que fazer.</small></div></div>
+        <div class="drill"><i>5 MIN</i><div>Condução em oito entre 2 marcadores, sola, chapa e fora do pé<small>Cabeça erguida no mínimo metade do tempo.</small></div></div>
+        <div class="chave"><div class="cl">Por que todo dia</div>Toque diário é escovar os dentes do jogador. 20 minutos por dia vencem 3 horas no sábado: o pé aprende por frequência, não por volume.</div>
+      </div>
+    </div>
+
+    <div class="treino">
+      <div class="tr-head" onclick="tg('tb2')">
+        <span class="tr-tag tg-t">Técnico</span>
+        <span class="tr-title">Finalização e último passe</span>
+        <span class="tr-freq">3x · 40-50 MIN</span>
+      </div>
+      <div class="tr-body" id="tb2">
+        <div class="drill"><i>40x</i><div>Finalização com placar: 20 de perna boa, 20 de perna ruim, alvo definido (canto baixo)<small>Anota quantas no alvo. Semana que vem, bate o recorde.</small></div></div>
+        <div class="drill"><i>20x</i><div>Domínio + giro + chute em 3 toques máximo, recebendo de costas pro alvo<small>O lance da vida do meia-atacante: receber, girar, decidir.</small></div></div>
+        <div class="drill"><i>20x</i><div>Passe longo/lançamento em alvo de 2m (10 cada perna)<small>Assistência nasce aqui: o passe que atravessa a defesa.</small></div></div>
+        <div class="drill"><i>10 MIN</i><div>1v1 sombra: pedalada, corte seco, saída explosiva nos dois lados<small>Três dribles dominados valem mais que trinta decorados.</small></div></div>
+      </div>
+    </div>
+
+    <div class="treino">
+      <div class="tr-head" onclick="tg('tb3')">
+        <span class="tr-tag tg-f">Físico</span>
+        <span class="tr-title">Motor de meio-campo</span>
+        <span class="tr-freq">2x · 25-30 MIN</span>
+      </div>
+      <div class="tr-body" id="tb3">
+        <div class="drill"><i>10x</i><div>Sprint 30m com volta trotando (descanso 45s)<small>Meia moderno faz 40+ sprints por jogo. O motor se constrói aqui.</small></div></div>
+        <div class="drill"><i>6x</i><div>Agilidade: ida-e-volta 5-10-5 entre cones, mudança de direção máxima<small>Cronometra. O número tem que cair semana a semana.</small></div></div>
+        <div class="drill"><i>3x</i><div>Core: prancha 45s + prancha lateral 30s cada lado<small>Proteção de bola e chute forte moram no tronco.</small></div></div>
+        <div class="chave"><div class="cl">Integração com o Freak</div>A base aeróbica é o cardio da academia. Nos dias de físico de campo, o cardio do Freak pode ser ESTE treino: um conta pro outro.</div>
+      </div>
+    </div>
+
+    <div class="treino">
+      <div class="tr-head" onclick="tg('tb4')">
+        <span class="tr-tag tg-j">Jogo</span>
+        <span class="tr-title">Bola rolando de verdade</span>
+        <span class="tr-freq">1x+ · Inegociável</span>
+      </div>
+      <div class="tr-body" id="tb4">
+        <div class="drill"><i>90'</i><div>Pelada, society ou amador, tanto faz: bola disputada, gente querendo ganhar<small>Missões do jogo: escanear antes de todo recebimento; buscar o gol E a assistência; voltar a marcar sempre.</small></div></div>
+        <div class="drill"><i>PÓS</i><div>Registrar o jogo aqui embaixo em 30 segundos: gols, assistências, nota honesta<small>Sem registro o jogo não existiu. O placar lá de cima é feito disso.</small></div></div>
+        <div class="chave"><div class="cl">A verdade do protocolo</div>Treino solo te dá ferramenta. Jogo te dá jogador. Se a semana só teve treino e nenhum jogo, a semana ficou devendo.</div>
+      </div>
+    </div>
+
+    <div class="grade-cap" style="margin:16px 0 8px">Semana atual · toca no dia que treinou</div>
+    <div class="grade" id="grade"></div>
+    <div class="grade-cap" id="gradeCap"></div>
+  </div>
+
+  <div class="giz"><i></i><span>O <b>PLACAR</b></span><i></i></div>
+  <div class="card">
+    <p class="hint">Todo jogo vira registro. É este histórico que uma avaliação externa vai querer ver, e é ele que mata a dúvida nos dias ruins.</p>
+    <input type="text" id="jNome" placeholder="Onde foi? (society do bairro, pelada de domingo...)">
+    <div class="jogo-grid">
+      <div class="jg-cel"><label>Gols</label><input type="number" id="jGols" min="0" placeholder="0"></div>
+      <div class="jg-cel"><label>Assist.</label><input type="number" id="jAssist" min="0" placeholder="0"></div>
+      <div class="jg-cel"><label>Desarmes</label><input type="number" id="jDesarmes" min="0" placeholder="0"></div>
+      <div class="jg-cel"><label>Nota 1-10</label><input type="number" id="jNota" min="1" max="10" placeholder="7"></div>
+    </div>
+    <button class="btn" onclick="addJogo()">Registrar jogo</button>
+    <div id="jogosList" style="margin-top:14px"></div>
+  </div>
+
+  <div class="giz"><i></i><span>OS <b>DEGRAUS</b></span><i></i></div>
+  <div class="card">
+    <p class="hint">Quem luta de verdade se coloca onde é visto e cobrado. Estes degraus tiram o sonho do quarto e colocam ele no mundo, um de cada vez.</p>
+    <div id="degrausList"></div>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>
+    dedicação · dedicação · dedicação<br>
+    <b>o talento se constrói. o japão provou. agora é você.</b>
+  </footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+const chk = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+function tg(id){ $(id).classList.toggle('open'); }
+
+/* semana atual (segunda como início) */
+function weekKey(){
+  const d = new Date();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - ((d.getDay()+6)%7));
+  return localISO(monday);
+}
+(function(){
+  const START = new Date('2026-07-19T00:00:00');
+  const dias = Math.floor((new Date(TODAY)-START)/86400000);
+  $('diaChip').textContent = 'SEMANA '+Math.max(1, Math.floor(dias/7)+1);
+})();
+
+/* ===== grade da semana ===== */
+function renderGrade(){
+  const wk = weekKey();
+  const treinos = gs('campo-semana',{})||{};
+  if(!treinos[wk]) treinos[wk]={};
+  const box = $('grade'); box.innerHTML='';
+  const labels=['SEG','TER','QUA','QUI','SEX','SÁB','DOM'];
+  const monday = new Date(wk+'T12:00:00');
+  let feitos=0;
+  for(let i=0;i<7;i++){
+    const d=new Date(monday); d.setDate(d.getDate()+i);
+    const iso=localISO(d);
+    const on=!!treinos[wk][iso];
+    if(on) feitos++;
+    const el=document.createElement('div');
+    el.className='gd'+(on?' on':'')+(iso===TODAY?' hoje':'');
+    el.innerHTML='<span class="wd">'+labels[i]+'</span><span class="mark">'+chk+'</span>';
+    el.onclick=()=>{
+      const t=gs('campo-semana',{})||{}; if(!t[wk])t[wk]={};
+      t[wk][iso]=!t[wk][iso]; ss('campo-semana',t); renderGrade();
+      if(t[wk][iso]) logar('Treino do dia cumprido no gramado');
+    };
+    box.appendChild(el);
+  }
+  $('gradeCap').textContent = feitos+'/7 dias com bola no pé · o diário pede 7';
+}
+
+/* ===== jogos ===== */
+let jogos = gs('campo-jogos',[])||[];
+function renderJogos(){
+  const totG=jogos.reduce((a,j)=>a+(j.g||0),0);
+  const totA=jogos.reduce((a,j)=>a+(j.a||0),0);
+  const notas=jogos.filter(j=>j.n);
+  $('pJogos').textContent=jogos.length;
+  $('pGols').textContent=totG;
+  $('pAssist').textContent=totA;
+  $('pNota').textContent=notas.length?(notas.reduce((a,j)=>a+j.n,0)/notas.length).toFixed(1):'–';
+
+  const box=$('jogosList');
+  if(!jogos.length){ box.innerHTML='<p style="font-size:12px;color:var(--dim)">O placar espera o primeiro jogo. A bola não vai até você: você vai até ela.</p>'; return; }
+  box.innerHTML=[...jogos].reverse().map((j,ri)=>{
+    const i=jogos.length-1-ri;
+    return '<div class="jogo">'+
+      '<span class="jg-data">'+j.d.slice(8,10)+'.'+j.d.slice(5,7)+'</span>'+
+      '<div class="jg-info"><div class="jg-nome">'+esc(j.local||'Jogo')+'</div>'+
+      '<div class="jg-stats"><b>'+(j.g||0)+'</b> gol'+((j.g||0)===1?'':'s')+' · <b>'+(j.a||0)+'</b> assist · '+(j.de||0)+' desarmes</div></div>'+
+      '<span class="jg-nota'+((j.n||0)<6?' baixa':'')+'">'+(j.n||'–')+'</span>'+
+      '<button class="del" onclick="delJogo('+i+')">✕</button></div>';
+  }).join('');
+}
+function addJogo(){
+  const local=$('jNome').value.trim();
+  const g=parseInt($('jGols').value)||0;
+  const a=parseInt($('jAssist').value)||0;
+  const de=parseInt($('jDesarmes').value)||0;
+  const n=Math.min(10,Math.max(0,parseInt($('jNota').value)||0))||null;
+  if(!local && !g && !a && !n) return;
+  jogos.push({d:TODAY, local, g, a, de, n});
+  ss('campo-jogos',jogos);
+  $('jNome').value='';$('jGols').value='';$('jAssist').value='';$('jDesarmes').value='';$('jNota').value='';
+  renderJogos();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function delJogo(i){ jogos.splice(i,1); ss('campo-jogos',jogos); renderJogos(); }
+
+/* ===== degraus do sonho ===== */
+const DEGRAUS=[
+  {id:'d1', t:'4 semanas de protocolo sem furar', m:'Grade da semana batida 4 vezes seguidas (dia mínimo do campo: os 100 toques na parede). Primeiro você prova pra você.'},
+  {id:'d2', t:'Time fixo: entrar num society ou pelada semanal com compromisso', m:'Não é jogo avulso: é grupo onde sentem sua falta quando você não vai. Onde tem cobrança, tem evolução.'},
+  {id:'d3', t:'10 jogos registrados no placar', m:'Com participação direta em gol (gol ou assistência) em pelo menos metade deles. O número que cala a dúvida.'},
+  {id:'d4', t:'Avaliação externa: um treinador ou jogador experiente te assistindo', m:'Pedir feedback técnico honesto de alguém que entende. Dói e destrava: é a experiência vicária do TIJOLO em campo.'},
+  {id:'d5', t:'A peneira no calendário', m:'Time amador, várzea federada ou peneira aberta: data marcada, inscrição feita. A resposta que o menino de 13 não foi buscar, com dia e hora pra existir.'},
+];
+let degraus = gs('campo-degraus',{})||{};
+function renderDegraus(){
+  $('degrausList').innerHTML = DEGRAUS.map((d,i)=>{
+    const done=!!degraus[d.id];
+    return '<div class="degrau'+(done?' done':'')+'">'+
+      '<span class="dg-n">'+(i+1)+'</span>'+
+      '<div style="flex:1"><div class="t">'+d.t+'</div><div class="m">'+d.m+'</div></div>'+
+      '<div class="dg-check'+(done?' done':'')+'" onclick="toggleDegrau(\''+d.id+'\')">'+(done?chk:'')+'</div></div>';
+  }).join('');
+}
+function toggleDegrau(id){
+  degraus[id]=!degraus[id]; ss('campo-degraus',degraus); renderDegraus();
+  if(degraus[id]) logar('Degrau vencido: '+id);
+}
+
+renderGrade(); renderJogos(); renderDegraus();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ renderGrade(); renderJogos(); }});
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'gramado';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Biblioteca</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Spectral:ital,wght@0,300;0,400;0,600;1,400&family=Courier+Prime:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0906; --panel:#14100B; --panel2:#1C1610; --line:#2A2118; --line2:#3D3122;
+    --text:#EDE3D0; --muted:#9A8C74; --dim:#665B49;
+    --latao:#C9973F; --latao-hi:#F0C56A; --latao-soft:#C9973F1C;
+    --abajur:#2F6B52; --abajur-hi:#48A57C;
+    --vinho:#8C3A34; --azul:#3A5F86; --oliva:#6E7449;
+    --papel:#E8DCC0; --papel2:#DCCFAF; --tinta:#2A2118;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Spectral',Georgia,serif;
+    padding:20px 16px 42px;min-height:100vh;position:relative;overflow-x:hidden;
+    background-image:
+      radial-gradient(120% 60% at 50% 0%, rgba(201,151,63,.07) 0%, transparent 60%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.012) 0 2px, transparent 2px 7px);
+  }
+  .wrap{max-width:460px;margin:0 auto;position:relative;z-index:1}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .back{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.06em;color:var(--muted);text-decoration:none;border-bottom:1px solid var(--line2);padding-bottom:2px}
+  .chip{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.1em;color:var(--latao);background:var(--latao-soft);border:1px solid var(--line2);border-radius:2px;padding:5px 11px}
+
+  /* ===== o palco: a estante sob a luminária ===== */
+  .palco{text-align:center;margin-bottom:20px;position:relative}
+  .eyebrow{font-family:'Courier Prime',monospace;font-size:9.5px;letter-spacing:.42em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .estante-wrap{position:relative;width:min(330px,88vw);margin:0 auto}
+  .estante{width:100%;display:block;overflow:visible}
+  .poeira{position:absolute;left:26%;right:26%;top:14%;bottom:16%;pointer-events:none;overflow:hidden}
+  .poeira span{position:absolute;width:2px;height:2px;border-radius:50%;background:#F0DCAE;opacity:0;animation:subirPo linear infinite}
+  @keyframes subirPo{
+    0%{transform:translateY(100%) translateX(0);opacity:0}
+    18%{opacity:.55}
+    82%{opacity:.2}
+    100%{transform:translateY(-10%) translateX(var(--dx,8px));opacity:0}
+  }
+  .titulo-obra{font-family:'Playfair Display';font-weight:900;font-style:italic;font-size:clamp(26px,7.4vw,36px);line-height:1.05;margin-top:14px;color:var(--text)}
+  .subtitulo{font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:9px}
+  .subtitulo b{color:var(--latao-hi);font-weight:400}
+
+  /* ===== estações ===== */
+  .estacoes{display:flex;gap:0;margin:22px 0 18px;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+  .est{
+    flex:1;background:none;border:0;border-right:1px solid var(--line);color:var(--muted);cursor:pointer;
+    font-family:'Courier Prime',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;padding:12px 4px;
+  }
+  .est:last-child{border-right:0}
+  .est.on{color:var(--latao-hi);background:linear-gradient(180deg,var(--latao-soft),transparent)}
+  .view{display:none}
+  .view.on{display:block;animation:entra .45s ease}
+  @keyframes entra{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:none}}
+
+  /* ===== cabeçalho de seção: filete gravado ===== */
+  .filete{display:flex;align-items:center;gap:11px;margin:4px 0 14px}
+  .filete i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line2))}
+  .filete i:last-child{background:linear-gradient(90deg,var(--line2),transparent)}
+  .filete span{font-family:'Playfair Display';font-weight:700;font-style:italic;font-size:19px;color:var(--latao);white-space:nowrap}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:15px;margin-bottom:12px;position:relative}
+  .card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--latao),transparent)}
+  .sec{font-family:'Courier Prime',monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;justify-content:space-between;align-items:baseline}
+  .sec i{font-style:normal;color:var(--latao)}
+
+  /* ===== sessão de leitura ===== */
+  .marcador{display:flex;align-items:flex-end;gap:12px;margin-bottom:13px}
+  .marcador .campo{flex:1}
+  .marcador label{display:block;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+  .marcador input{
+    width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:2px;color:var(--text);
+    font-family:'Playfair Display';font-size:26px;font-weight:700;padding:8px 11px;text-align:center;
+  }
+  .marcador input:focus{outline:none;border-color:var(--latao)}
+  .de{font-family:'Courier Prime',monospace;font-size:11px;color:var(--dim);padding-bottom:13px}
+  .btn{
+    width:100%;background:linear-gradient(180deg,#2A2118,#1A140E);border:1px solid var(--latao);color:var(--latao-hi);
+    font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+    padding:13px;border-radius:2px;cursor:pointer;
+  }
+  .btn:active{background:var(--latao);color:#12100B}
+  .btn.fantasma{border-color:var(--line2);color:var(--muted);background:none}
+
+  .medidas{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:13px}
+  .medida{background:var(--panel2);border:1px solid var(--line);border-radius:2px;padding:10px 5px;text-align:center}
+  .medida b{display:block;font-family:'Playfair Display';font-weight:700;font-size:20px;color:var(--text);line-height:1}
+  .medida small{display:block;font-family:'Courier Prime',monospace;font-size:7.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin-top:5px}
+  .medida.alerta b{color:var(--vinho)}
+  .medida.bom b{color:var(--abajur-hi)}
+
+  .veredicto{font-size:12.5px;line-height:1.65;color:var(--muted);margin-top:12px;border-top:1px solid var(--line);padding-top:11px}
+  .veredicto b{color:var(--latao-hi);font-weight:600}
+
+  /* ===== a ficha: cartão de catálogo ===== */
+  .ficha-form{background:var(--papel);border-radius:2px;padding:16px 15px 15px;position:relative;color:var(--tinta);
+    background-image:repeating-linear-gradient(180deg, transparent 0 27px, rgba(42,33,24,.10) 27px 28px);
+    box-shadow:0 10px 26px rgba(0,0,0,.5)}
+  .ficha-form::after{content:"";position:absolute;left:50%;bottom:8px;transform:translateX(-50%);width:11px;height:11px;border-radius:50%;background:var(--bg);opacity:.55}
+  .ficha-cab{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1.5px solid rgba(42,33,24,.5);padding-bottom:6px;margin-bottom:11px}
+  .ficha-cab b{font-family:'Playfair Display';font-weight:700;font-size:14px;letter-spacing:.02em}
+  .ficha-cab span{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.1em;color:#6B5B44}
+  .ficha-campo{margin-bottom:11px}
+  .ficha-campo label{display:block;font-family:'Courier Prime',monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:#7A6A50;margin-bottom:4px}
+  .ficha-campo textarea,.ficha-campo input{
+    width:100%;background:transparent;border:0;border-bottom:1px solid rgba(42,33,24,.28);
+    font-family:'Courier Prime',monospace;font-size:12.5px;color:var(--tinta);padding:3px 0 5px;resize:vertical;line-height:1.85;
+  }
+  .ficha-campo textarea{min-height:56px}
+  .ficha-campo textarea:focus,.ficha-campo input:focus{outline:none;border-bottom-color:var(--vinho)}
+  .ficha-campo textarea::placeholder,.ficha-campo input::placeholder{color:#A8987B}
+  .ficha-btn{
+    width:100%;background:var(--tinta);border:0;color:var(--papel);font-family:'Courier Prime',monospace;
+    font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;padding:12px;border-radius:2px;cursor:pointer;margin-top:2px;
+  }
+  .ficha-btn:active{background:var(--vinho)}
+  .regra{font-family:'Courier Prime',monospace;font-size:10px;line-height:1.7;color:var(--muted);margin-bottom:12px;border-left:2px solid var(--vinho);padding-left:11px}
+
+  /* ===== estante: os três livros ===== */
+  .obra{background:var(--panel);border:1px solid var(--line);border-radius:3px;margin-bottom:12px;overflow:hidden}
+  .obra-cab{display:flex;gap:12px;padding:14px;cursor:pointer;align-items:flex-start}
+  .lomb{width:16px;flex-shrink:0;border-radius:1px;position:relative;align-self:stretch;min-height:62px;background:var(--panel2);border:1px solid var(--line2)}
+  .lomb i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,var(--latao-hi),var(--latao));transition:height 1.2s cubic-bezier(.2,.8,.2,1)}
+  .obra-txt{flex:1;min-width:0}
+  .obra-txt b{display:block;font-family:'Playfair Display';font-weight:700;font-size:16px;line-height:1.2}
+  .obra-txt small{display:block;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-top:4px}
+  .obra-pct{font-family:'Playfair Display';font-weight:700;font-size:17px;color:var(--latao);flex-shrink:0}
+  .obra-corpo{display:none;padding:0 14px 14px;border-top:1px solid var(--line)}
+  .obra.aberta .obra-corpo{display:block}
+  .obra.lida{border-color:var(--latao)}
+  .obra.atual{border-color:var(--line2);box-shadow:inset 0 0 0 1px var(--latao-soft)}
+  .selo{display:inline-block;font-family:'Courier Prime',monospace;font-size:8px;letter-spacing:.16em;text-transform:uppercase;
+    border:1px solid var(--latao);color:var(--latao-hi);padding:2px 7px;border-radius:2px;margin-top:7px}
+  .selo.agora{border-color:var(--abajur);color:var(--abajur-hi)}
+  .pergunta{font-family:'Playfair Display';font-style:italic;font-size:14.5px;line-height:1.5;color:var(--text);margin:14px 0 4px}
+  .porque{font-size:12.5px;line-height:1.65;color:var(--muted);margin-bottom:12px}
+  .ideias{margin-top:6px}
+  .ideia{display:flex;gap:9px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--line)}
+  .ideia span{font-family:'Courier Prime',monospace;font-size:9px;color:var(--latao);padding-top:3px}
+  .ideia p{flex:1;font-size:13px;line-height:1.55}
+  .ideia button{background:none;border:0;color:var(--dim);font-size:13px;cursor:pointer;padding:0 2px}
+  .add-linha{display:flex;gap:7px;margin-top:9px}
+  .add-linha input{flex:1;background:var(--panel2);border:1px solid var(--line2);border-radius:2px;color:var(--text);font-family:'Spectral';font-size:13px;padding:9px 10px}
+  .add-linha input:focus{outline:none;border-color:var(--latao)}
+  .add-linha button{background:var(--panel2);border:1px solid var(--latao);color:var(--latao-hi);border-radius:2px;padding:0 14px;font-size:16px;cursor:pointer}
+  .trocar{width:100%;background:none;border:1px dashed var(--line2);color:var(--muted);font-family:'Courier Prime',monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;padding:10px;border-radius:2px;cursor:pointer;margin-top:10px}
+
+  /* ===== fichário ===== */
+  .filtro{display:flex;gap:6px;margin-bottom:13px;flex-wrap:wrap}
+  .filtro button{background:var(--panel2);border:1px solid var(--line);color:var(--muted);font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;padding:7px 11px;border-radius:2px;cursor:pointer}
+  .filtro button.on{border-color:var(--latao);color:var(--latao-hi)}
+  .ficha{background:var(--papel2);color:var(--tinta);border-radius:2px;padding:13px 14px;margin-bottom:10px;position:relative;
+    background-image:repeating-linear-gradient(180deg, transparent 0 24px, rgba(42,33,24,.09) 24px 25px);box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  .ficha-top{display:flex;justify-content:space-between;align-items:baseline;border-bottom:1px solid rgba(42,33,24,.35);padding-bottom:5px;margin-bottom:9px}
+  .ficha-top b{font-family:'Playfair Display';font-weight:700;font-size:13px}
+  .ficha-top span{font-family:'Courier Prime',monospace;font-size:9px;color:#6B5B44}
+  .ficha-q{font-family:'Playfair Display';font-style:italic;font-size:13.5px;line-height:1.5;margin-bottom:8px}
+  .ficha-s{font-family:'Courier Prime',monospace;font-size:12px;line-height:1.75;white-space:pre-wrap}
+  .ficha-e{font-family:'Courier Prime',monospace;font-size:11px;line-height:1.6;margin-top:9px;border-top:1px dashed rgba(42,33,24,.4);padding-top:8px;color:#5C4E3A}
+  .ficha-e b{color:var(--vinho)}
+  .ficha-del{position:absolute;top:9px;right:10px;background:none;border:0;color:#8A7A5E;font-size:13px;cursor:pointer}
+  .vazio{font-size:12.5px;line-height:1.7;color:var(--dim);padding:8px 0}
+
+  /* ===== O REGISTRO ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:3px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-family:'Courier Prime',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-family:'Courier Prime',monospace;font-size:9.5px;color:var(--latao);flex-shrink:0;min-width:34px;opacity:.9;padding-top:2px}
+  .rg-m{font-size:12.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-vazio{font-size:11.5px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:2px;padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-family:'Courier Prime',monospace;font-size:9.5px;color:var(--muted)}
+  .rg-dia b{font-family:'Courier Prime',monospace;font-size:11px;letter-spacing:.06em}
+  .rg-dia.aberto{border-color:var(--latao)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+
+  footer{text-align:center;margin-top:24px;font-family:'Courier Prime',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim)}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip" id="chipDia">DIA 1/30</div>
+  </div>
+
+  <div class="palco">
+    <div class="eyebrow">A Biblioteca</div>
+    <div class="estante-wrap">
+      <svg class="estante" id="estante" viewBox="0 0 300 210">
+        <defs>
+          <linearGradient id="luz" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#F0DCAE" stop-opacity=".55"/>
+            <stop offset="1" stop-color="#F0DCAE" stop-opacity="0"/>
+          </linearGradient>
+          <linearGradient id="madeira" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#4A3722"/><stop offset=".5" stop-color="#33261610"/><stop offset="1" stop-color="#241A10"/>
+          </linearGradient>
+          <linearGradient id="latao" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#F0C56A"/><stop offset=".5" stop-color="#C9973F"/><stop offset="1" stop-color="#8A6526"/>
+          </linearGradient>
+          <linearGradient id="cupula" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#48A57C"/><stop offset=".55" stop-color="#2F6B52"/><stop offset="1" stop-color="#1C4735"/>
+          </linearGradient>
+        </defs>
+
+        <!-- cone de luz do abajur -->
+        <polygon id="cone" points="126,34 174,34 232,178 68,178" fill="url(#luz)" opacity=".2" style="transition:opacity 1.6s ease"/>
+
+        <!-- haste e cúpula do abajur de latão -->
+        <rect x="148" y="0" width="4" height="18" fill="url(#latao)"/>
+        <path d="M150 16 L188 34 L112 34 Z" fill="url(#cupula)"/>
+        <ellipse cx="150" cy="34" rx="38" ry="5" fill="#1C4735"/>
+        <ellipse id="bulbo" cx="150" cy="35" rx="9" ry="3.4" fill="#F0DCAE" opacity=".35" style="transition:opacity 1.6s ease"/>
+
+        <!-- os três volumes -->
+        <g id="volumes"></g>
+
+        <!-- a prateleira -->
+        <rect x="52" y="176" width="196" height="9" rx="1.5" fill="url(#madeira)"/>
+        <rect x="52" y="176" width="196" height="1.4" fill="#6B5030" opacity=".75"/>
+        <rect x="58" y="185" width="184" height="4" fill="#1A130C" opacity=".85"/>
+        <!-- gravação na borda da prateleira -->
+        <text x="150" y="201" text-anchor="middle" fill="#5C4A30" font-family="Courier Prime, monospace" font-size="7.5" letter-spacing="3.4">LER E APLICAR</text>
+      </svg>
+      <div class="poeira" id="poeira"></div>
+    </div>
+    <div class="titulo-obra" id="tituloObra">Nenhum volume aberto</div>
+    <div class="subtitulo" id="subObra">escolha o volume na estante</div>
+  </div>
+
+  <div class="estacoes">
+    <button class="est on" data-v="vSessao">Sessão</button>
+    <button class="est" data-v="vEstante">Estante</button>
+    <button class="est" data-v="vFichario">Fichário</button>
+  </div>
+
+  <!-- ============ SESSÃO ============ -->
+  <div class="view on" id="vSessao">
+    <div class="filete"><i></i><span>O marcador</span><i></i></div>
+
+    <div class="card">
+      <div class="sec">Onde parei hoje <i id="secLivro">·</i></div>
+      <div class="marcador">
+        <div class="campo">
+          <label>Página atual</label>
+          <input type="number" id="pagInput" inputmode="numeric" min="0" placeholder="0">
+        </div>
+        <div class="de" id="deTotal">/ 320</div>
+      </div>
+      <button class="btn" onclick="salvarPagina()">Marcar a página</button>
+
+      <div class="medidas">
+        <div class="medida" id="mHoje"><b>0</b><small>páginas hoje</small></div>
+        <div class="medida" id="mRitmo"><b>0</b><small>ritmo necessário</small></div>
+        <div class="medida" id="mCorrente"><b>0</b><small>dias seguidos</small></div>
+      </div>
+
+      <div class="veredicto" id="veredicto"></div>
+    </div>
+
+    <div class="filete"><i></i><span>A ficha da sessão</span><i></i></div>
+    <div class="regra">A regra: antes de abrir o capítulo você escreve a pergunta que leva. Depois de ler, fecha o livro e escreve a síntese sem consultar. O que não vira ficha não vira seu.</div>
+
+    <div class="ficha-form">
+      <div class="ficha-cab"><b id="fichaLivro">Volume</b><span id="fichaData"></span></div>
+      <div class="ficha-campo">
+        <label>Pergunta que levei</label>
+        <input id="fPergunta" placeholder="o que eu quero arrancar deste capítulo?">
+      </div>
+      <div class="ficha-campo">
+        <label>Síntese sem consultar · 3 a 5 linhas</label>
+        <textarea id="fSintese" placeholder="fecha o livro antes de escrever"></textarea>
+      </div>
+      <div class="ficha-campo">
+        <label>Onde isso encosta · LOWEX, Direito, campo, vida</label>
+        <textarea id="fElo" placeholder="a ponte entre a página e o dia de amanhã"></textarea>
+      </div>
+      <button class="ficha-btn" onclick="salvarFicha()">Arquivar a ficha</button>
+    </div>
+  </div>
+
+  <!-- ============ ESTANTE ============ -->
+  <div class="view" id="vEstante">
+    <div class="filete"><i></i><span>Os três volumes</span><i></i></div>
+    <div id="obras"></div>
+  </div>
+
+  <!-- ============ FICHÁRIO ============ -->
+  <div class="view" id="vFichario">
+    <div class="filete"><i></i><span>O fichário</span><i></i></div>
+    <div class="filtro" id="filtro"></div>
+    <div id="fichas"></div>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>Quem lê e não aplica só passou os olhos</footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const START = '2026-07-19';
+const FIM   = '2026-08-17';
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function dias(a,b){ return Math.round((new Date(b)-new Date(a))/86400000); }
+
+/* ===== os volumes ===== */
+const PADRAO = [
+  { id:'l1', titulo:'Como Fazer Amigos e Influenciar Pessoas', curto:'Carnegie', autor:'Dale Carnegie', paginas:320, cor:'#8C3A34',
+    pergunta:'Como o Carnegie me faz mais eficaz na ligação de hoje?',
+    porque:'Cada princípio é uma técnica de prospecção. Você lê de manhã e testa no bloco comercial da tarde, no mesmo dia.' },
+  { id:'l2', titulo:'Ultra Aprendizado', curto:'Ultra Aprendizado', autor:'Scott Young', paginas:304, cor:'#3A5F86',
+    pergunta:'O que muda na forma como eu estudo Direito e Blackcamp?',
+    porque:'Fase de intensificação. Profundidade cirúrgica no ponto fraco, em vez de passar os olhos em tudo.' },
+  { id:'l3', titulo:'Empresas Feitas para Vencer', curto:'Collins', autor:'Jim Collins', paginas:320, cor:'#6E7449',
+    pergunta:'O que as empresas que venceram fizeram que a LOWEX precisa copiar?',
+    porque:'Você lê com resultado na mão, então lê como plano e não como sonho.' },
+];
+let livros = gs('liv-livros', null);
+if(!livros || !Array.isArray(livros) || !livros.length){
+  livros = PADRAO.map(l=>({ ...l, pagina:0, ideias:[] }));
+  ss('liv-livros', livros);
+} else {
+  livros = livros.map((l,i)=>({ ...PADRAO[i], ...l }));
+}
+let atual = gs('liv-atual', 0) || 0;
+let diasLidos = gs('liv-dias', {}) || {};
+let fichas = gs('liv-fichas', []) || [];
+let filtroFicha = 'todos';
+
+function livroAtual(){ return livros[atual] || livros[0]; }
+function pctDe(l){ return Math.min(100, Math.round((l.pagina/l.paginas)*100)); }
+function paginasHoje(){ return diasLidos[TODAY] || 0; }
+function correnteLeitura(){
+  let n=0; const d=new Date();
+  for(let i=0;i<90;i++){
+    const k=localISO(d);
+    if((diasLidos[k]||0) > 0) n++;
+    else if(i===0){ /* hoje em aberto nao quebra */ }
+    else break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function ritmoNecessario(){
+  const l = livroAtual();
+  const falta = Math.max(0, l.paginas - l.pagina);
+  const restam = Math.max(1, dias(TODAY, FIM)+1);
+  return { falta, restam, ritmo: Math.ceil(falta/restam) };
+}
+
+/* ===== a estante desenhada ===== */
+const GEO = [
+  { x:100, w:29, topo:66 },
+  { x:133, w:24, topo:56 },
+  { x:161, w:31, topo:72 },
+];
+const BASE = 176;
+function renderEstante(){
+  const g = $('volumes');
+  let dentro = '';
+  livros.forEach((l,i)=>{
+    const geo = GEO[i]; if(!geo) return;
+    const alt  = BASE - geo.topo;
+    const pct  = pctDe(l)/100;
+    const chao = BASE - alt*pct;
+    const cx   = geo.x + geo.w/2;
+    const lido = l.pagina >= l.paginas;
+    dentro +=
+      '<g'+(lido?' transform="rotate(-4 '+cx+' '+BASE+')"':'')+'>'+
+        '<rect x="'+geo.x+'" y="'+geo.topo+'" width="'+geo.w+'" height="'+alt+'" rx="1.5" fill="#1A140E" stroke="#3D3122" stroke-width="1"/>'+
+        '<rect x="'+geo.x+'" y="'+chao+'" width="'+geo.w+'" height="'+(alt*pct)+'" rx="1.5" fill="'+l.cor+'" opacity=".85"/>'+
+        (pct>.02 ? '<rect x="'+geo.x+'" y="'+chao+'" width="'+geo.w+'" height="1.8" fill="#F0C56A" opacity=".85"/>' : '')+
+        '<rect x="'+(geo.x+3)+'" y="'+(geo.topo+9)+'" width="'+(geo.w-6)+'" height="1.6" fill="#C9973F" opacity="'+(pct>.15?'.8':'.2')+'"/>'+
+        '<rect x="'+(geo.x+3)+'" y="'+(BASE-16)+'" width="'+(geo.w-6)+'" height="1.6" fill="#C9973F" opacity="'+(pct>.85?'.8':'.2')+'"/>'+
+        '<text x="'+(cx+4)+'" y="'+(geo.topo+20)+'" fill="'+(pct>.45?'#F0DCAE':'#6B5B44')+'" font-family="Playfair Display, Georgia, serif" font-size="9" font-weight="700" transform="rotate(90 '+cx+' '+(geo.topo+20)+')">'+esc((l.curto||l.titulo).slice(0,20))+'</text>'+
+        (i===atual ? '<circle cx="'+cx+'" cy="'+(geo.topo-7)+'" r="2.4" fill="#F0C56A"/>' : '')+
+      '</g>';
+  });
+  const doc = new DOMParser().parseFromString('<svg xmlns="http://www.w3.org/2000/svg">'+dentro+'</svg>','image/svg+xml');
+  g.textContent = '';
+  Array.from(doc.documentElement.childNodes).forEach(n=> g.appendChild(document.importNode(n,true)) );
+  const totalPct = livros.reduce((a,l)=>a+pctDe(l),0)/(livros.length*100);
+  $('cone').setAttribute('opacity', (0.14 + totalPct*0.5).toFixed(2));
+  $('bulbo').setAttribute('opacity', (0.3 + totalPct*0.7).toFixed(2));
+}
+
+/* poeira no facho */
+(function(){
+  const box=$('poeira');
+  for(let i=0;i<9;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(6+Math.random()*88)+'%';
+    sp.style.setProperty('--dx',(Math.random()*30-15)+'px');
+    sp.style.animationDuration=(10+Math.random()*11)+'s';
+    sp.style.animationDelay=(Math.random()*9)+'s';
+    box.appendChild(sp);
+  }
+})();
+
+/* ===== sessão ===== */
+function renderSessao(){
+  const l = livroAtual();
+  $('tituloObra').textContent = l.titulo;
+  $('subObra').innerHTML = l.autor + ' · <b>' + l.pagina + '</b> de ' + l.paginas + ' páginas';
+  $('secLivro').textContent = l.titulo.slice(0,26);
+  $('deTotal').textContent = '/ '+l.paginas;
+  $('pagInput').value = l.pagina || '';
+  $('pagInput').max = l.paginas;
+  $('fichaLivro').textContent = l.titulo.slice(0,30);
+  $('fichaData').textContent = TODAY.split('-').reverse().join('.');
+
+  const ph = paginasHoje();
+  const r = ritmoNecessario();
+  const cor = correnteLeitura();
+  $('mHoje').innerHTML = '<b>'+ph+'</b><small>páginas hoje</small>';
+  $('mHoje').className = 'medida'+(ph>=20?' bom':(ph>=5?'':' alerta'));
+  $('mRitmo').innerHTML = '<b>'+r.ritmo+'</b><small>ritmo necessário</small>';
+  $('mRitmo').className = 'medida'+(r.ritmo>25?' alerta':'');
+  $('mCorrente').innerHTML = '<b>'+cor+'</b><small>dias seguidos</small>';
+  $('mCorrente').className = 'medida'+(cor>=3?' bom':'');
+
+  let txt;
+  if(l.pagina>=l.paginas){
+    txt = 'Volume fechado. <b>'+l.titulo+'</b> está lido. Abre o próximo na Estante e o ciclo continua.';
+  } else if(ph===0){
+    txt = 'Hoje ainda não entrou página nenhuma. Faltam <b>'+r.falta+'</b> páginas em '+r.restam+' dias, o que dá <b>'+r.ritmo+' páginas por dia</b> até 17 de agosto.';
+  } else if(ph>=20){
+    txt = 'Mínimo batido com folga: <b>'+ph+' páginas</b> hoje. No ritmo de hoje o volume fecha em '+Math.ceil(r.falta/Math.max(1,ph))+' dias.';
+  } else if(ph>=5){
+    txt = '<b>'+ph+' páginas</b> hoje, o mínimo está de pé mas a meta são 20. Faltam '+(20-ph)+' pra fechar o dia inteiro.';
+  } else {
+    txt = 'Só <b>'+ph+'</b> página'+(ph>1?'s':'')+' hoje. O mínimo da Forja são 5, e a meta cheia são 20.';
+  }
+  $('veredicto').innerHTML = txt;
+
+  const dn = Math.max(1, dias(START, TODAY)+1);
+  $('chipDia').textContent = dn<=30 ? ('DIA '+dn+'/30') : 'CICLO VENCIDO';
+}
+
+function salvarPagina(){
+  const l = livroAtual();
+  const v = Math.max(0, Math.min(l.paginas, parseInt($('pagInput').value)||0));
+  const antes = l.pagina;
+  if(v===antes) return;
+  const lidas = Math.max(0, v-antes);
+  l.pagina = v;
+  livros[atual]=l; ss('liv-livros', livros);
+  if(lidas>0){
+    diasLidos[TODAY] = (diasLidos[TODAY]||0) + lidas;
+    ss('liv-dias', diasLidos);
+    const daily = gs('daily-'+TODAY,{})||{};
+    if((diasLidos[TODAY]||0) >= 5 && !daily.leitura){ daily.leitura = true; ss('daily-'+TODAY, daily); }
+    logar('+'+lidas+' páginas de '+l.titulo+' · página '+v);
+  }
+  if(v>=l.paginas && antes<l.paginas) logar('VOLUME FECHADO · '+l.titulo);
+  renderTudo();
+}
+
+/* ===== fichas ===== */
+function salvarFicha(){
+  const p=$('fPergunta').value.trim(), s=$('fSintese').value.trim(), e=$('fElo').value.trim();
+  if(!s){ $('fSintese').focus(); return; }
+  const l = livroAtual();
+  fichas.push({ d:TODAY, livro:l.id, titulo:l.titulo, pag:l.pagina, pergunta:p, sintese:s, elo:e, h:new Date().toTimeString().slice(0,5) });
+  ss('liv-fichas', fichas);
+  $('fPergunta').value=''; $('fSintese').value=''; $('fElo').value='';
+  logar('Ficha arquivada · '+l.titulo+(p?' · '+p.slice(0,50):''));
+  renderFichas();
+  document.querySelector('[data-v="vFichario"]').click();
+}
+function delFicha(i){ fichas.splice(i,1); ss('liv-fichas',fichas); renderFichas(); }
+function setFiltro(id){ filtroFicha=id; renderFichas(); }
+function renderFichas(){
+  const f=$('filtro');
+  f.innerHTML = '<button class="'+(filtroFicha==='todos'?'on':'')+'" onclick="setFiltro(\'todos\')">Todas · '+fichas.length+'</button>' +
+    livros.map(l=>'<button class="'+(filtroFicha===l.id?'on':'')+'" onclick="setFiltro(\''+l.id+'\')">'+esc(l.curto||l.titulo)+' · '+fichas.filter(x=>x.livro===l.id).length+'</button>').join('');
+  const box=$('fichas'); box.innerHTML='';
+  const lista = fichas.map((x,i)=>({x,i})).filter(o=>filtroFicha==='todos'||o.x.livro===filtroFicha).reverse();
+  if(!lista.length){
+    box.innerHTML='<div class="vazio">O fichário está vazio. Cada sessão de leitura fechada com síntese vira um cartão aqui, e é isso que sobra do livro daqui a seis meses.</div>';
+    return;
+  }
+  lista.forEach(o=>{
+    const x=o.x;
+    const d=document.createElement('div'); d.className='ficha';
+    d.innerHTML =
+      '<button class="ficha-del" onclick="delFicha('+o.i+')">✕</button>'+
+      '<div class="ficha-top"><b>'+esc(x.titulo.slice(0,28))+'</b><span>'+x.d.split('-').reverse().join('.')+' · pág '+x.pag+'</span></div>'+
+      (x.pergunta?'<div class="ficha-q">'+esc(x.pergunta)+'</div>':'')+
+      '<div class="ficha-s">'+esc(x.sintese)+'</div>'+
+      (x.elo?'<div class="ficha-e"><b>Encosta em:</b> '+esc(x.elo)+'</div>':'');
+    box.appendChild(d);
+  });
+}
+
+/* ===== estante: os três volumes ===== */
+function renderObras(){
+  const box=$('obras'); box.innerHTML='';
+  livros.forEach((l,i)=>{
+    const pct=pctDe(l);
+    const el=document.createElement('div');
+    el.className='obra'+(pct>=100?' lida':'')+(i===atual?' atual':'');
+    const ideias = (l.ideias||[]).map((t,j)=>
+      '<div class="ideia"><span>'+String(j+1).padStart(2,'0')+'</span><p>'+esc(t)+'</p><button onclick="delIdeia('+i+','+j+')">✕</button></div>').join('');
+    el.innerHTML =
+      '<div class="obra-cab" onclick="this.parentNode.classList.toggle(\'aberta\')">'+
+        '<div class="lomb" style="background:'+l.cor+'22"><i style="height:'+pct+'%"></i></div>'+
+        '<div class="obra-txt"><b>'+esc(l.titulo)+'</b><small>'+esc(l.autor)+' · '+l.pagina+'/'+l.paginas+'</small>'+
+          (pct>=100?'<span class="selo">Volume lido</span>':(i===atual?'<span class="selo agora">Lendo agora</span>':''))+
+        '</div>'+
+        '<div class="obra-pct">'+pct+'%</div>'+
+      '</div>'+
+      '<div class="obra-corpo">'+
+        '<div class="pergunta">'+esc(l.pergunta)+'</div>'+
+        '<div class="porque">'+esc(l.porque)+'</div>'+
+        '<div class="sec">Ideias aplicadas <i>'+(l.ideias||[]).length+'</i></div>'+
+        '<div class="ideias">'+(ideias||'<div class="vazio">Nenhuma ideia saiu do papel ainda.</div>')+'</div>'+
+        '<div class="add-linha"><input id="ideia'+i+'" placeholder="o que eu vou fazer diferente por causa deste livro"><button onclick="addIdeia('+i+')">+</button></div>'+
+        (i===atual?'':'<button class="trocar" onclick="setAtual('+i+')">Abrir este volume agora</button>')+
+      '</div>';
+    box.appendChild(el);
+  });
+}
+function addIdeia(i){
+  const inp=$('ideia'+i); const v=inp.value.trim(); if(!v) return;
+  livros[i].ideias = livros[i].ideias||[];
+  livros[i].ideias.push(v);
+  ss('liv-livros',livros);
+  logar('Ideia aplicada de '+(livros[i].curto||livros[i].titulo)+': '+v.slice(0,60));
+  renderObras();
+}
+function delIdeia(i,j){ livros[i].ideias.splice(j,1); ss('liv-livros',livros); renderObras(); }
+function setAtual(i){
+  atual=i; ss('liv-atual',i);
+  logar('Volume aberto: '+livros[i].titulo);
+  renderTudo();
+  document.querySelector('[data-v="vSessao"]').click();
+}
+
+/* ===== estações ===== */
+document.querySelectorAll('.est').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.est').forEach(x=>x.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    $(b.dataset.v).classList.add('on');
+    window.scrollTo({top:0,behavior:'smooth'});
+  };
+});
+
+function renderTudo(){ renderEstante(); renderSessao(); renderObras(); renderFichas(); }
+
+/* ===== O REGISTRO: diario de bordo do sistema ===== */
+const SALA = 'biblioteca';
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const ds = Object.keys(L).sort();
+    while(ds.length>90){ delete L[ds.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você marca página ou arquiva ficha.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+      box.appendChild(d);
+    });
+  }
+  const ds = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!ds.length) return;
+  ds.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+
+renderTudo();
+renderRegistro();
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) renderSessao(); });
+</script>
+</body>
+</html>

@@ -1,0 +1,1073 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#07090D">
+<title>A LAPIDAÇÃO · 10K</title>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;600;800&family=Manrope:wght@300;400;600;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#07090D; --panel:#0E1219; --panel2:#131926; --line:#1E2635; --line2:#2C3A52;
+    --text:#EAF0F6; --muted:#7C8797; --dim:#495363;
+    --ice:#8FD0FF; --ice-hi:#DFF2FF; --ice-soft:#8FD0FF1C;
+    --prisma:linear-gradient(120deg,#8FD0FF,#B9A8FF 45%,#FFD9EC 72%,#CFEBFF);
+    --st-contato:#9B9BA6; --st-conversa:#4D8DF0; --st-reuniao:#E6A95C; --st-proposta:#B45CF0; --st-fechado:#3DDC97; --st-perdido:#F0645C;
+    --gold:#E6C36A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;max-width:640px;margin:0 auto;padding:max(14px,env(safe-area-inset-top)) 15px 60px}
+  /* o feixe do lapidário: uma luz desce do topo até a pedra */
+  body::before{content:"";position:fixed;top:0;left:50%;transform:translateX(-50%);width:min(420px,90vw);height:44vh;pointer-events:none;z-index:0;
+    background:radial-gradient(50% 80% at 50% 0%, rgba(207,235,255,.10) 0%, transparent 75%)}
+  .wrap{position:relative;z-index:1}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .back{color:var(--muted);text-decoration:none;font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .back:active{color:var(--text)}
+  .chip-dia{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ice);background:var(--ice-soft);border:1px solid #223A50;border-radius:999px;padding:6px 13px}
+
+  /* ===== o palco: a pedra ===== */
+  .palco{text-align:center;margin-bottom:18px;position:relative}
+  .palco .eyebrow{
+    font-family:'Unbounded';font-weight:600;font-size:10.5px;letter-spacing:.44em;text-transform:uppercase;
+    background:var(--prisma);-webkit-background-clip:text;background-clip:text;color:transparent;margin-bottom:12px;
+  }
+  .gema-wrap{position:relative;width:min(200px,52vw);margin:0 auto}
+  .gema{width:100%;display:block;overflow:visible}
+  .gema polygon{fill:#0F1520;stroke:var(--line2);stroke-width:1.1;transition:fill 1s ease}
+  .gema polygon.lit{fill:url(#gfill);stroke:var(--ice)}
+  .gema.temluz{animation:shimmer 9s linear infinite}
+  @keyframes shimmer{0%{filter:drop-shadow(0 0 8px rgba(143,208,255,.35)) hue-rotate(0deg)}50%{filter:drop-shadow(0 0 14px rgba(185,168,255,.5)) hue-rotate(24deg)}100%{filter:drop-shadow(0 0 8px rgba(143,208,255,.35)) hue-rotate(0deg)}}
+  .gema.full{animation:fullglow 3s ease-in-out infinite}
+  @keyframes fullglow{0%,100%{filter:drop-shadow(0 0 14px rgba(143,208,255,.6)) hue-rotate(0deg)}50%{filter:drop-shadow(0 0 30px rgba(223,242,255,.95)) hue-rotate(40deg)}}
+  /* cáustica: o arco-íris que a pedra projeta na bancada */
+  .caustica{
+    width:70%;height:16px;margin:-4px auto 0;border-radius:50%;
+    background:var(--prisma);filter:blur(12px);opacity:0;transition:opacity 1.2s ease;
+    animation:resp 5s ease-in-out infinite;
+  }
+  @keyframes resp{0%,100%{transform:scaleX(.92)}50%{transform:scaleX(1.06)}}
+  .valor{font-family:'Unbounded';font-weight:800;font-size:clamp(32px,8.5vw,44px);letter-spacing:-.01em;line-height:1;margin-top:10px;
+    background:linear-gradient(180deg,#FFFFFF,#8FD0FF);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .meta-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--muted);margin-top:7px;text-transform:uppercase}
+  .meta-sub b{color:var(--ice)}
+
+  /* ===== atmosfera ===== */
+(function(){
+  const box=$('poeira');
+  for(let i=0;i<10;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(8+Math.random()*84)+'%';
+    sp.style.setProperty('--dx',(Math.random()*46-23)+'px');
+    sp.style.animationDuration=(11+Math.random()*12)+'s';
+    sp.style.animationDelay=(Math.random()*10)+'s';
+    box.appendChild(sp);
+  }
+})();
+
+/* fogo interno da pedra: fagulhas de prisma dentro das facetas acesas */
+const FIRE_COLORS=['#DFF2FF','#8FD0FF','#B9A8FF','#FFD9EC','#9FE8D8'];
+function renderFogo(lit){
+  const box=$('fogoInterno'); box.innerHTML='';
+  const qtd=Math.min(14, Math.round(lit*0.5 + POLV*11));
+  for(let i=0;i<qtd;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(26+Math.random()*48)+'%';
+    sp.style.top=(14+Math.random()*52)+'%';
+    sp.style.background=FIRE_COLORS[i%FIRE_COLORS.length];
+    sp.style.boxShadow='0 0 6px '+FIRE_COLORS[i%FIRE_COLORS.length];
+    sp.style.animationDuration=((2.6-POLV*1.2)+Math.random()*2.4)+'s';
+    sp.style.animationDelay=(Math.random()*2.5)+'s';
+    box.appendChild(sp);
+  }
+}
+
+/* glint sequencial: uma faceta acesa cintila de cada vez, mais rapido quanto mais polida */
+let litFacets=[];
+let glintTimer=null;
+function agendarGlint(){
+  if(glintTimer) clearInterval(glintTimer);
+  glintTimer=setInterval(darGlint, Math.round(2800 - POLV*2050));
+}
+function darGlint(){
+  if(!litFacets.length) return;
+  const id=litFacets[Math.floor(Math.random()*litFacets.length)];
+  const el=$(id); if(!el) return;
+  el.classList.add('glintF');
+  setTimeout(()=>el.classList.remove('glintF'), 480);
+  /* estrela de 4 pontas na superfície da pedra */
+  const wrap=document.querySelector('.gema-wrap');
+  const st=document.createElement('div'); st.className='estrela';
+  st.style.left=(22+Math.random()*56)+'%';
+  st.style.top=(10+Math.random()*55)+'%';
+  wrap.appendChild(st);
+  setTimeout(()=>st.remove(), 1200);
+}
+agendarGlint();
+
+/* ===== estações ===== */
+  .estacoes{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:18px 0 16px;
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;
+  }
+  .est{
+    font-family:'Unbounded';font-weight:600;font-size:10px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--dim);background:none;border:none;border-radius:9px;padding:11px 4px;cursor:pointer;transition:.25s;
+  }
+  .est.on{color:#06131F;background:var(--ice)}
+  .view{display:none;animation:surgir .35s ease}
+  .view.on{display:block}
+  @keyframes surgir{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;margin-bottom:12px}
+  .sec{font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.26em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;justify-content:space-between;align-items:baseline}
+  .sec i{font-style:normal;color:var(--ice);letter-spacing:.08em}
+
+  textarea,input[type=text],input[type=number]{
+    width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:10px;
+    padding:11px 13px;color:var(--text);font-family:'Manrope';font-size:13.5px;
+  }
+  textarea{resize:vertical;min-height:58px}
+  textarea:focus,input:focus{outline:none;border-color:var(--ice)}
+  .btn{
+    font-family:'Unbounded';font-weight:600;font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+    background:var(--ice);color:#06131F;border:none;border-radius:10px;padding:11px 20px;cursor:pointer;
+  }
+  .btn:active{transform:scale(.96)}
+  .btn.ghost{background:transparent;border:1px solid var(--line2);color:var(--muted)}
+
+  /* ===== O CORTE ===== */
+  .ras-atual{
+    font-size:13px;line-height:1.6;color:var(--ice-hi);background:var(--ice-soft);
+    border:1px solid #223A50;border-radius:10px;padding:11px 13px;margin-bottom:10px;
+  }
+  .ras-atual small{display:block;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;color:var(--ice);margin-bottom:4px;text-transform:uppercase}
+  .cortes{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+  .corte{
+    position:relative;background:var(--panel2);border:1px solid var(--line);border-radius:12px;
+    padding:14px;cursor:pointer;user-select:none;overflow:hidden;text-align:center;
+  }
+  .corte:active{border-color:var(--ice)}
+  .corte .flash{position:absolute;inset:0;background:var(--ice);opacity:0;pointer-events:none}
+  .corte.pisca .flash{animation:pisca .35s ease}
+  @keyframes pisca{0%{opacity:.35}100%{opacity:0}}
+  .corte .lbl{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-bottom:7px}
+  .corte-num{font-family:'Unbounded';font-weight:800;font-size:34px;color:var(--ice);line-height:1}
+  .corte .menos{
+    position:absolute;top:7px;right:9px;background:none;border:none;color:var(--dim);
+    font-size:15px;cursor:pointer;padding:3px 7px;z-index:2;
+  }
+  .corte .menos:active{color:var(--st-perdido)}
+  .corte .mais-dica{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--dim);margin-top:6px;letter-spacing:.1em}
+  .reunioes{margin-top:12px;background:var(--panel2);border:1px solid var(--line);border-radius:12px;padding:13px 14px}
+  .reunioes .rr{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--muted);letter-spacing:.08em;margin-bottom:7px}
+  .rbar{height:4px;background:var(--bg);border-radius:2px;overflow:hidden}
+  .rfill{height:100%;background:var(--prisma);transition:width .4s}
+  .ctotal{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);margin-top:9px;letter-spacing:.04em;text-align:center}
+
+  /* ===== A BANCADA ===== */
+  .add-row{display:flex;gap:8px;margin-bottom:12px}
+  .add-row input{flex:1}
+  .add-row input.valor-in{width:92px;flex:none}
+  .fases{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+  .fase-pill{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.06em;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted)}
+  .fase-pill b{font-weight:600}
+  .lead{display:flex;align-items:center;gap:9px;padding:10px 2px;border-bottom:1px solid var(--line)}
+  .lead:last-child{border:none}
+  .lead .nome{flex:1;font-size:13.5px;font-weight:600;cursor:pointer;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .lead .idle{font-family:'IBM Plex Mono',monospace;font-size:8.5px;color:var(--gold);white-space:nowrap}
+  .stchip{border-radius:999px;padding:5px 12px;font-size:10.5px;font-weight:700;cursor:pointer;border:1px solid;background:transparent;white-space:nowrap;font-family:'Manrope'}
+  .lead .del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:14px;padding:2px 5px}
+  .quilates{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+  .quilate{
+    display:flex;align-items:center;gap:8px;background:var(--panel2);border:1px solid #223A50;
+    border-radius:10px;padding:8px 12px;font-size:12px;
+  }
+  .quilate svg{width:13px;height:13px;stroke:var(--ice);fill:none;stroke-width:2;stroke-linejoin:round}
+  .quilate b{color:var(--ice-hi);font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11.5px}
+  .quilate button{background:none;border:none;color:var(--dim);cursor:pointer;font-size:12px}
+  .kresumo{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.06em;margin-bottom:12px}
+  .kresumo b{color:var(--ice)}
+
+  /* ===== O PLANO ===== */
+  .obj{display:flex;gap:12px;align-items:flex-start;padding:12px 2px;border-bottom:1px solid var(--line)}
+  .obj:last-child{border:none}
+  .obj-n{font-family:'Unbounded';font-weight:600;font-size:11px;color:var(--ice);min-width:24px;padding-top:2px}
+  .ocheck{width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;margin-top:1px}
+  .ocheck.done{background:var(--ice);border-color:var(--ice)}
+  .ocheck svg{width:11px;height:11px;stroke:#06131F;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .obj .t{font-size:13px;font-weight:600;line-height:1.45}
+  .obj .m{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--dim);margin-top:3px;line-height:1.5}
+  .obj.done .t{color:var(--dim);text-decoration:line-through}
+
+  .pilar{display:flex;gap:10px;padding:8px 0;font-size:12.5px;line-height:1.55}
+  .pilar i{width:7px;height:7px;border-radius:2px;background:var(--prisma);flex-shrink:0;margin-top:5px;transform:rotate(45deg)}
+  .pilar b{display:block;font-size:12.5px}
+  .pilar small{color:var(--muted);font-size:11px}
+  .pc{display:flex;gap:10px;align-items:flex-start;padding:7px 0;cursor:pointer;font-size:12.5px;line-height:1.5}
+  .pc input{width:16px;height:16px;accent-color:var(--ice);margin-top:2px;flex-shrink:0}
+  .pc.pc-done span{color:var(--dim);text-decoration:line-through}
+
+  /* próximas ações em destaque; resto recolhido */
+  .prox .ac{border-color:#223A50}
+  .bb-prog{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+  .bb-track{flex:1;height:4px;background:var(--panel2);border-radius:99px;overflow:hidden}
+  .bb-fill{height:100%;background:var(--prisma);transition:width .6s}
+  .bb-num{font-family:'IBM Plex Mono',monospace;font-size:9.5px;color:var(--ice);white-space:nowrap}
+  .ac{background:var(--panel2);border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+  .ac.done-card{opacity:.5}
+  .ac-head{display:flex;align-items:center;gap:11px;padding:12px 13px;cursor:pointer}
+  .ac-num{font-family:'Unbounded';font-weight:600;font-size:11px;color:var(--ice);min-width:24px}
+  .ac-info{flex:1;min-width:0}
+  .ac-title{font-size:13px;font-weight:700}
+  .ac-desc{font-size:10.5px;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ac-chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line2);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center}
+  .ac-chk.done{background:var(--ice);border-color:var(--ice)}
+  .ac-chk svg{width:11px;height:11px;stroke:#06131F;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .ac-body{display:none;padding:0 14px 14px;font-size:12.5px;color:var(--muted);line-height:1.65}
+  .ac-body.open{display:block}
+  .task{display:flex;gap:9px;align-items:flex-start;padding:5px 0;color:var(--text)}
+  .task i{width:5px;height:5px;border-radius:50%;background:var(--ice);flex-shrink:0;margin-top:7px}
+  .pratica{background:var(--panel);border-left:2px solid var(--ice);padding:9px 12px;border-radius:0 8px 8px 0;margin-top:10px;font-size:12px}
+  .pratica .pl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ice);margin-bottom:4px}
+  .quote{font-style:italic;color:var(--dim);margin-top:10px;font-size:12px}
+  .desafio-box{background:#0A1826;border:1px solid #1F476B;border-radius:10px;padding:12px;margin-top:12px}
+  .desafio-box .dl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.14em;text-transform:uppercase;color:var(--ice);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+  .desafio-box .dt{font-size:13px;font-weight:700;color:var(--ice-hi);margin-bottom:5px}
+  .dchk{width:16px;height:16px;border-radius:5px;border:1.5px solid var(--ice);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+  .dchk.done{background:var(--ice)}
+  .dchk svg{width:9px;height:9px;stroke:#06131F;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round}
+  .desafio-box .dt.done{text-decoration:line-through;opacity:.5}
+  .ver-todas{width:100%;background:none;border:1px dashed var(--line2);color:var(--dim);border-radius:10px;padding:10px;font-family:'IBM Plex Mono',monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;margin-top:2px}
+  .ver-todas:active{color:var(--ice);border-color:var(--ice)}
+
+  footer{text-align:center;margin-top:24px;font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim)}
+
+  /* ===== atmosfera do cofre ===== */
+  .poeira{position:fixed;top:0;left:50%;transform:translateX(-50%);width:min(380px,86vw);height:46vh;pointer-events:none;z-index:0;overflow:hidden}
+  .poeira span{
+    position:absolute;width:2px;height:2px;border-radius:50%;background:#DFF2FF;opacity:0;
+    animation:flutuarPo linear infinite;
+  }
+  @keyframes flutuarPo{
+    0%{transform:translateY(46vh) translateX(0);opacity:0}
+    15%{opacity:.5}
+    85%{opacity:.15}
+    100%{transform:translateY(-4vh) translateX(var(--dx,10px));opacity:0}
+  }
+
+  /* a pedra viva */
+  .gema-wrap{animation:suspensa 7s ease-in-out infinite}
+  @keyframes suspensa{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+  .gema polygon.glintF{filter:brightness(2) drop-shadow(0 0 9px rgba(255,255,255,.9))}
+  .estrela{position:absolute;width:18px;height:18px;pointer-events:none;opacity:0;animation:brilhar 1.1s ease forwards}
+  .estrela::before,.estrela::after{content:"";position:absolute;left:50%;top:50%;background:linear-gradient(to bottom, rgba(255,255,255,0), #FFFFFF 45%, #FFFFFF 55%, rgba(255,255,255,0))}
+  .estrela::before{width:1.6px;height:18px;transform:translate(-50%,-50%)}
+  .estrela::after{width:18px;height:1.6px;transform:translate(-50%,-50%)}
+  @keyframes brilhar{0%{opacity:0;transform:scale(.2) rotate(0deg)}35%{opacity:1}100%{opacity:0;transform:scale(1.15) rotate(45deg)}}
+  .joia-div{display:flex;align-items:center;gap:10px;max-width:230px;margin:12px auto 0;color:var(--ice)}
+  .joia-div i{flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--line2))}
+  .joia-div i:last-child{background:linear-gradient(90deg,var(--line2),transparent)}
+  .joia-div span{font-size:9px;transform:rotate(45deg);display:inline-block;width:8px;height:8px;background:var(--prisma)}
+  .gema polygon{transition:fill 1s ease, filter .5s ease}
+
+  /* ===== o polimento: quanto mais execução, mais viva fica a pedra ===== */
+  .gema-wrap{
+    filter:saturate(calc(.42 + var(--pol,0)*.95)) brightness(calc(.7 + var(--pol,0)*.6))
+           contrast(calc(.94 + var(--pol,0)*.22));
+    transition:filter 1.8s ease;
+  }
+  .gema polygon.lit{fill-opacity:calc(.45 + var(--pol,0)*.55)}
+  .halo{
+    position:absolute;left:50%;top:32%;transform:translate(-50%,-50%);
+    width:calc(80% + var(--pol,0)*70%);aspect-ratio:1;border-radius:50%;pointer-events:none;z-index:-1;
+    background:radial-gradient(circle, rgba(143,208,255,calc(.05 + var(--pol,0)*.20)) 0%, rgba(185,168,255,calc(.02 + var(--pol,0)*.10)) 42%, transparent 70%);
+    filter:blur(6px);transition:all 1.8s ease;
+  }
+  .polimento{max-width:250px;margin:14px auto 0}
+  .pol-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+  .pol-top b{font-family:'Unbounded';font-weight:600;font-size:9.5px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  .pol-top span{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.1em;color:var(--ice)}
+  .pol-tri{position:relative;height:5px;background:#121A26;border:1px solid var(--line2);overflow:hidden;
+    clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+  .pol-tri i{position:absolute;inset:0 auto 0 0;width:0;background:var(--prisma);transition:width 1.6s cubic-bezier(.2,.8,.2,1);
+    box-shadow:0 0 12px rgba(143,208,255,.6)}
+  .pol-grau{font-family:'IBM Plex Mono',monospace;font-size:8.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--dim);margin-top:7px;text-align:center}
+  .pol-grau b{color:var(--ice-hi,#DFF2FF)}
+  .pol-fontes{display:flex;gap:5px;margin-top:9px}
+  .pol-fonte{flex:1;text-align:center;background:#0D131C;border:1px solid var(--line2);padding:6px 2px;
+    clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)}
+  .pol-fonte b{display:block;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ice)}
+  .pol-fonte small{display:block;font-size:7px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim);margin-top:2px}
+  .pol-fonte.cheia{border-color:var(--ice);box-shadow:0 0 10px rgba(143,208,255,.18)}
+  .pol-fonte.cheia b{color:#FFFFFF}
+  /* subida de grau: a pedra dá um clarão e anuncia */
+  .grito{
+    position:fixed;left:50%;top:18%;transform:translateX(-50%);z-index:60;pointer-events:none;
+    font-family:'Unbounded';font-weight:800;font-size:13px;letter-spacing:.2em;text-transform:uppercase;
+    background:var(--prisma);-webkit-background-clip:text;background-clip:text;color:transparent;
+    opacity:0;animation:gritar 3.2s ease forwards;white-space:nowrap;text-align:center;
+  }
+  @keyframes gritar{0%{opacity:0;transform:translateX(-50%) scale(.86)}18%{opacity:1;transform:translateX(-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translateX(-50%) scale(1.04)}}
+  .gema.burst{animation:burst .8s ease}
+  @keyframes burst{0%{filter:brightness(1)}25%{filter:brightness(2.4) drop-shadow(0 0 26px rgba(223,242,255,1))}100%{filter:brightness(1)}}
+  .fogo-interno{position:absolute;inset:0;pointer-events:none}
+  .fogo-interno span{
+    position:absolute;width:3px;height:3px;border-radius:50%;opacity:0;
+    animation:cintilar ease-in-out infinite;
+  }
+  @keyframes cintilar{0%,100%{opacity:0;transform:scale(.6)}50%{opacity:.95;transform:scale(1.3)}}
+  #raios line{stroke-width:1.4;opacity:0;transition:opacity 1.2s ease;stroke-linecap:round}
+  #raios{transform-origin:100px 140px;animation:leque 9s ease-in-out infinite}
+  @keyframes leque{0%,100%{transform:rotate(-2.4deg)}50%{transform:rotate(2.4deg)}}
+
+  /* cartões com talhe de lapidação */
+  .card{position:relative;clip-path:polygon(16px 0, 100% 0, 100% 100%, 0 100%, 0 16px)}
+  .card::before{content:"";position:absolute;top:0;left:16px;right:0;height:1px;background:var(--prisma);opacity:.4}
+  .card::after{content:"";position:absolute;top:0;left:0;width:23px;height:1px;background:var(--prisma);opacity:.4;transform:rotate(-45deg);transform-origin:0 0;translate:0 16px}
+
+  /* marca gravada de cada estação */
+  .marca{
+    display:flex;align-items:center;gap:14px;margin:4px 0 14px;user-select:none;
+  }
+  .marca i{flex:1;height:1px;position:relative}
+  .marca i:first-child{background:linear-gradient(90deg,transparent,var(--line2))}
+  .marca i:last-child{background:linear-gradient(90deg,var(--line2),transparent)}
+  .marca i::after{content:"";position:absolute;top:-3px;width:6px;height:6px;background:var(--line2);transform:rotate(45deg)}
+  .marca i:first-child::after{right:0}
+  .marca i:last-child::after{left:0}
+  .marca span{
+    font-family:'Unbounded';font-weight:800;font-size:clamp(22px,6vw,30px);letter-spacing:.16em;
+    color:transparent;-webkit-text-stroke:1px var(--line2);text-transform:uppercase;white-space:nowrap;
+  }
+  .marca span b{
+    -webkit-text-stroke:0;font-weight:800;
+    background:var(--prisma);background-size:220% 100%;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    animation:varredura 6s ease-in-out infinite;
+  }
+  @keyframes varredura{0%,100%{background-position:0% 0}50%{background-position:100% 0}}
+
+  /* contadores: gema de toque */
+  .corte{clip-path:polygon(12px 0, calc(100% - 12px) 0, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0 calc(100% - 12px), 0 12px)}
+  .corte::before{content:"";position:absolute;inset:0;background:
+    linear-gradient(135deg, rgba(223,242,255,.05) 0%, transparent 40%),
+    linear-gradient(315deg, rgba(185,168,255,.05) 0%, transparent 40%);pointer-events:none}
+  .corte-num.pop{animation:pop .3s ease}
+  @keyframes pop{0%{transform:scale(1)}45%{transform:scale(1.28)}100%{transform:scale(1)}}
+  .spark{
+    position:absolute;width:7px;height:7px;background:var(--ice-hi);left:50%;top:38%;
+    transform:rotate(45deg);pointer-events:none;
+    animation:voarSpark .65s ease-out forwards;
+  }
+  @keyframes voarSpark{
+    0%{opacity:1;transform:translate(-50%,0) rotate(45deg) scale(1)}
+    100%{opacity:0;transform:translate(calc(-50% + var(--sx,20px)),-46px) rotate(225deg) scale(.4)}
+  }
+
+  /* pipeline: cada lead é uma pedra */
+  .pedra-ic{width:15px;height:15px;flex-shrink:0}
+  .pedra-ic path{stroke:none}
+  .pedra-ic.stale{animation:pulsarPedra 1.8s ease-in-out infinite}
+  @keyframes pulsarPedra{0%,100%{filter:drop-shadow(0 0 0 transparent)}50%{filter:drop-shadow(0 0 6px var(--gold))}}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--ice);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--ice)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="poeira" id="poeira"></div>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip-dia" id="diaChip">DIA 1/30</div>
+  </div>
+
+  <div class="palco">
+    <div class="eyebrow">A Lapidação</div>
+    <div class="gema-wrap">
+      <svg class="gema" id="gema" viewBox="0 0 200 178">
+        <defs>
+          <linearGradient id="gfill" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity=".95"/>
+            <stop offset=".35" stop-color="#DFF2FF" stop-opacity=".7"/>
+            <stop offset=".62" stop-color="#8FD0FF" stop-opacity=".5"/>
+            <stop offset=".85" stop-color="#B9A8FF" stop-opacity=".5"/>
+            <stop offset="1" stop-color="#FFD9EC" stop-opacity=".45"/>
+            <animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="13s" repeatCount="indefinite"/>
+          </linearGradient>
+          <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#F2F7FB"/><stop offset=".5" stop-color="#8FA5BC"/><stop offset="1" stop-color="#5C7188"/>
+          </linearGradient>
+          <clipPath id="pedraClip">
+            <polygon points="72,14 128,14 148,34 180,56 100,160 20,56 52,34"/>
+          </clipPath>
+          <linearGradient id="sweepG" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity="0"/>
+            <stop offset=".45" stop-color="#DFF2FF" stop-opacity=".85"/>
+            <stop offset=".55" stop-color="#FFFFFF" stop-opacity="1"/>
+            <stop offset="1" stop-color="#B9A8FF" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="coracao" cx=".5" cy=".42" r=".55">
+            <stop offset="0" stop-color="#FFFFFF" stop-opacity=".9"/>
+            <stop offset=".55" stop-color="#8FD0FF" stop-opacity=".35"/>
+            <stop offset="1" stop-color="#B9A8FF" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <!-- coroa: mesa no centro, bezéis, asas -->
+        <polygon id="fc5" points="72,14 128,14 148,34 52,34"/>
+        <polygon id="fc1" points="52,34 100,34 100,56 60,56"/>
+        <polygon id="fc2" points="100,34 148,34 140,56 100,56"/>
+        <polygon id="fc3" points="20,56 52,34 60,56"/>
+        <polygon id="fc4" points="148,34 180,56 140,56"/>
+        <!-- pavilhão: cinco facetas descendo pra ponta -->
+        <polygon id="fp1" points="20,56 52,56 100,160"/>
+        <polygon id="fp2" points="52,56 84,56 100,160"/>
+        <polygon id="fp3" points="84,56 116,56 100,160"/>
+        <polygon id="fp4" points="116,56 148,56 100,160"/>
+        <polygon id="fp5" points="148,56 180,56 100,160"/>
+        <ellipse id="coracaoLuz" cx="100" cy="62" rx="52" ry="40" fill="url(#coracao)" opacity="0" style="transition:opacity 1.6s ease"/>
+        <g id="varredura" clip-path="url(#pedraClip)" opacity="0" style="transition:opacity 1.6s ease">
+          <rect id="sweepRect" x="-80" y="-10" width="46" height="200" fill="url(#sweepG)" transform="skewX(-16)">
+            <animate id="sweepAnim" attributeName="x" from="-90" to="230" dur="5s" repeatCount="indefinite"/>
+          </rect>
+        </g>
+        <g id="arestas" stroke="#EAF4FC" stroke-width=".7" opacity=".26">
+          <path d="M20 56 L52 34 L72 14 L128 14 L148 34 L180 56" fill="none"/>
+          <path d="M20 56 L100 160 L180 56" fill="none"/>
+          <line x1="52" y1="34" x2="148" y2="34"/>
+          <line x1="72" y1="14" x2="60" y2="56"/>
+          <line x1="128" y1="14" x2="140" y2="56"/>
+          <line x1="100" y1="34" x2="100" y2="56"/>
+        </g>
+        <!-- estrelas da coroa: fios finos que sobem pra mesa -->
+        <g stroke="#EAF4FC" stroke-width=".5" opacity=".16">
+          <line x1="60" y1="56" x2="86" y2="14"/>
+          <line x1="140" y1="56" x2="114" y2="14"/>
+          <line x1="52" y1="34" x2="100" y2="56"/>
+          <line x1="148" y1="34" x2="100" y2="56"/>
+        </g>
+        <!-- rondista: o anel de metal que separa coroa e pavilhão -->
+        <path d="M18 56 L182 56" stroke="url(#metal)" stroke-width="1.8" opacity=".6"/>
+        <!-- lasca de luz na mesa -->
+        <polygon points="78,17 104,17 96,26 74,26" fill="#FFFFFF" opacity=".07"/>
+        <g id="raios">
+          <line x1="100" y1="160" x2="48"  y2="214" stroke="#8FD0FF"/>
+          <line x1="100" y1="160" x2="76"  y2="222" stroke="#B9A8FF"/>
+          <line x1="100" y1="160" x2="100" y2="226" stroke="#FFD9EC"/>
+          <line x1="100" y1="160" x2="124" y2="222" stroke="#CFEBFF"/>
+          <line x1="100" y1="160" x2="152" y2="214" stroke="#9FE8D8"/>
+        </g>
+      </svg>
+      <div class="halo" id="halo"></div>
+      <div class="fogo-interno" id="fogoInterno"></div>
+      <div class="caustica" id="caustica"></div>
+    </div>
+    <div class="valor" id="receitaBig">R$0</div>
+    <div class="joia-div"><i></i><span></span><i></i></div>
+    <div class="meta-sub">de R$10.000 · <b id="receitaPct">0%</b> lapidado · 1 faceta = R$1.000</div>
+
+    <div class="polimento">
+      <div class="pol-top"><b>Polimento</b><span id="polPct">0%</span></div>
+      <div class="pol-tri"><i id="polBar"></i></div>
+      <div class="pol-grau">pedra <b id="polGrau">bruta</b></div>
+      <div class="pol-fontes">
+        <div class="pol-fonte" id="pfReceita"><b>0%</b><small>receita</small></div>
+        <div class="pol-fonte" id="pfAcoes"><b>0%</b><small>desafio</small></div>
+        <div class="pol-fonte" id="pfMetas"><b>0%</b><small>metas</small></div>
+        <div class="pol-fonte" id="pfReun"><b>0%</b><small>reuniões</small></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="estacoes">
+    <button class="est on" data-v="vCorte">O Corte</button>
+    <button class="est" data-v="vBancada">A Bancada</button>
+    <button class="est" data-v="vPlano">O Plano</button>
+  </div>
+
+  <!-- ===== O CORTE ===== -->
+  <div class="view on" id="vCorte">
+    <div class="marca"><i></i><span>O <b>CORTE</b></span><i></i></div>
+    <div class="card">
+      <div class="sec">Intenção do corte <i id="corteData"></i></div>
+      <div id="rasAtualBox"></div>
+      <textarea id="ras-lowex-1" placeholder="Qual é o resultado concreto que você vai tirar deste bloco?"></textarea>
+      <div style="margin-top:10px"><button class="btn ghost" onclick="salvarRas()">Cravar intenção ↗</button></div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Os 4 números do dia <i>toque no cartão = +1</i></div>
+      <div class="cortes" id="cortes"></div>
+      <div class="reunioes">
+        <div class="rr"><span>REUNIÕES NO CICLO · META 10</span><span id="reunioesNum">0/10</span></div>
+        <div class="rbar"><div class="rfill" id="reunioesBar" style="width:0%"></div></div>
+        <div class="ctotal" id="cicloTotal"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== A BANCADA ===== -->
+  <div class="view" id="vBancada">
+    <div class="marca"><i></i><span>A <b>BANCADA</b></span><i></i></div>
+    <div class="card">
+      <div class="sec">Quilates <i>contratos fechados</i></div>
+      <div class="kresumo"><span>FECHADO <b id="kTotal">R$0</b></span><span id="kCt">0,0 CT</span><span>FALTA <b id="kFalta">R$10.000</b></span></div>
+      <div class="quilates" id="quilates"></div>
+      <div class="add-row">
+        <input type="text" id="contratoNome" placeholder="Cliente / contrato">
+        <input type="number" class="valor-in" id="contratoValor" placeholder="R$">
+        <button class="btn" onclick="addContrato()">+</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Pipeline <i>toque no nome = contato hoje</i></div>
+      <div class="fases" id="fases"></div>
+      <div class="add-row">
+        <input type="text" id="leadNome" placeholder="Empresa / decisor">
+        <button class="btn" onclick="addLead()">+</button>
+      </div>
+      <div id="leadsList"></div>
+    </div>
+  </div>
+
+  <!-- ===== O PLANO ===== -->
+  <div class="view" id="vPlano">
+    <div class="marca"><i></i><span>O <b>PLANO</b></span><i></i></div>
+    <div class="card">
+      <div class="sec">Metas do ciclo <i id="objCount">0/9</i></div>
+      <div id="objList"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Desafio 10K · Blackcamp <i id="bbNum">0/0</i></div>
+      <div class="bb-prog"><div class="bb-track"><div class="bb-fill" id="bbFill" style="width:0%"></div></div></div>
+      <div class="sec" style="margin-bottom:8px">Próximas ações</div>
+      <div class="prox" id="proxList"></div>
+      <button class="ver-todas" id="btnTodas" onclick="toggleTodas()">Ver as 47 ações</button>
+      <div id="acoesList" style="display:none;margin-top:10px"></div>
+    </div>
+
+    <div class="card">
+      <div class="sec">Conteúdo <i>rumo à influência</i></div>
+      <div class="pilar"><i></i><div><b>Direito que o povo entende</b><small>Um conceito jurídico traduzido pra vida real em 60 segundos.</small></div></div>
+      <div class="pilar"><i></i><div><b>Filosofia e estoicismo aplicados</b><small>Anime, livro ou filme conectado a uma ideia e uma atitude prática.</small></div></div>
+      <div class="pilar"><i></i><div><b>Bastidores de construir do zero</b><small>LOWEX, treino, estudo. O processo cru, sem maquiagem.</small></div></div>
+      <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--line)">
+        <div class="sec" style="margin-bottom:6px">Cadência · meta de 8 vídeos</div>
+        <label class="pc"><input type="checkbox" data-pid="ct-1"><span>Definir o nicho em uma frase e fixar bio e identidade visual</span></label>
+        <label class="pc"><input type="checkbox" data-pid="ct-2"><span>Gravar e publicar o vídeo de estreia</span></label>
+        <label class="pc"><input type="checkbox" data-pid="ct-3"><span>Lote semanal · roteirizar e gravar 2 vídeos de uma vez</span></label>
+        <label class="pc"><input type="checkbox" data-pid="ct-4"><span>Bater 8 vídeos publicados até o fim do ciclo · 17 ago</span></label>
+        <label class="pc"><input type="checkbox" data-pid="ct-5"><span>Ler um material sério de criação de conteúdo e aplicar</span></label>
+      </div>
+    </div>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>Pressão e tempo · é assim que se faz um diamante</footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+var POL = 0;  /* polimento real: 0 a 1, o numero honesto */
+var POLV = 0; /* polimento visual: mesma coisa com curva, pra pedra responder cedo */
+const START = '2026-07-19';
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+const chk = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtR(v){ return 'R$'+Number(v||0).toLocaleString('pt-BR'); }
+
+/* ===== DADOS (idênticos ao sistema) ===== */
+const OBJETIVOS = [
+  { id:'obj1', text:'Faturar R$10.000 no ciclo · Desafio Blackcamp', meta:'Medível em Contratos · serviços de caixa rápido · prazo 17 ago' },
+  { id:'obj2', text:'Realizar 10 reuniões comerciais com decisores', meta:'~1 a cada 3 dias · empresários / tomadores de decisão · prazo 17 ago' },
+  { id:'obj3', text:'Entregar a 1ª versão do artigo de Tributário', meta:'Tema + problema + desenvolvimento escrito · ABNT · prazo 17 ago' },
+  { id:'obj4', text:'Executar o plano de estudo de Direito (4 semanas)', meta:'1 bloco por semana · do zero às bases · marcar concluídos' },
+  { id:'obj5', text:'Estruturar a presença de conteúdo (rumo a influencer)', meta:'Posicionamento definido + 8 vídeos publicados no ciclo' },
+  { id:'obj6', text:'Perder 2 a 3 kg de forma sustentável', meta:'Treino + cardio diários · pesagem semanal · sem método extremo' },
+  { id:'obj7', text:'Comprar e montar a mesa de trabalho', meta:'Pesquisar, comprar e montar até o dia 15 do ciclo' },
+  { id:'obj8', text:'Instalar a rotina sem quebrar a sequência', meta:'Mínimo diário batido em todos os dias úteis' },
+  { id:'obj9', text:'Terminar "Como Fazer Amigos e Influenciar Pessoas"', meta:'288 páginas · ~10/dia · registrar insights' },
+];
+
+const ACTIONS = [
+  { id:1, title:'Aprender a aprender', desc:'Antes de tudo, você precisa saber aprender.', tasks:['Assistir aula introdução ao Obsidian','Estudar princípios para aprender mais','Enquanto assiste, anotar o que aplica e o que não aplica ainda'], pratica:'Escreva com suas próprias palavras quais princípios você vai aplicar, os que já faz e os que não faz. Esmiúce os princípios.', quote:'O foco não é o tempo, é o resultado.' },
+  { id:2, title:'Segundo cérebro', desc:'Construindo o seu segundo cérebro com Obsidian.', tasks:['Finalizar o módulo do segundo cérebro com Obsidian','Criar o seu segundo cérebro','Fazer instalação do Obsidian e configurações iniciais','Passar suas anotações das 3 primeiras ações para o Obsidian'], pratica:'Use parágrafo síntese. Clareza > Volume.', quote:'Clareza > Volume.' },
+  { id:3, title:'Consolidar anotações', desc:'Passar suas anotações para o Obsidian com método.', tasks:['Passar anotações das ações 1 e 2 para o Obsidian','Usar parágrafo síntese para cada conceito','Linkar as ideias entre si'], pratica:'Escreva um parágrafo síntese de tudo que aprendeu nas 3 primeiras ações. O que muda na prática?', quote:'', desafio:{id:'local-gravar', title:'Local para gravar definido', desc:'Escolha onde você vai gravar seus conteúdos para o Instagram. Não precisa ser perfeito · precisa existir. Pode ser um canto do quarto, com boa luz natural. Defina agora.', tasks:['Escolher o local físico','Testar a iluminação natural no horário que vai gravar','Tirar uma foto do espaço e guardar como referência']} },
+  { id:4, title:'Ápice cognitivo', desc:'Resultado exige produtividade. Produtividade exige domínio mental. Domínio mental exige preparação corporal.', tasks:['Assistir a masterclass O ápice cognitivo','Priorizar a aula de atividade física','Definir um horário físico para treinar nos próximos 7 dias'], pratica:'Faça seu diagnóstico pós treino por 3 dias: hora do treino + sentimento de 0 a 10.', quote:'Resultado exige produtividade, produtividade exige domínio mental, o que exige preparação corporal.' },
+  { id:5, title:'Alimentação', desc:'Seu corpo é uma Ferrari. De nada adianta ter potencial absurdo e colocar gasolina ruim.', tasks:['Assistir aula de alimentação do ápice cognitivo','Escolher a sua primeira mudança simples para os próximos 7 dias'], pratica:'Preencher por 7 dias: horário do café, almoço, janta e se a refeição foi limpa (sim/não).', quote:'Seu corpo é uma ferrari. Seu corpo é um templo.', desafio:{id:'local-reuniao', title:'Local para reunião definido', desc:'Onde você vai conduzir suas reuniões comerciais? Pode ser Google Meet, Zoom ou presencialmente. Defina agora o formato padrão e o link fixo se for online.', tasks:['Escolher plataforma · Google Meet, Zoom ou presencial','Criar link fixo de reunião se for online','Testar câmera e microfone no ambiente']} },
+  { id:6, title:'Sono e recompensas', desc:'Alinhar o último pilar · sono, rituais e recompensas.', tasks:['Ver aula sobre sono, rituais e recompensas','Ajustar um horário fixo para dormir e acordar','Estabelecer recompensas por seguir o plano · treino, alimentação, sono'], pratica:'Definir: (1) horário de dormir e acordar fixo, (2) recompensa por semana de treino completo, (3) recompensa por alimentação limpa.', quote:'' },
+  { id:7, title:'Dominar a mente', desc:'Defina seu mínimo diário. Utilize o checklist todo dia.', tasks:['Assistir aulas de reflexão, ócio criativo, atalhos, mínimo diário, destaque diário','Definir o mínimo diário para todas as áreas: treino, alimentação, sono, estudo'], pratica:'Criar um momento fixo no dia para: (1) O que fiz certo? (2) O que falhei? (3) O que posso melhorar?', quote:'' },
+  { id:8, title:'Entendimento do Desafio 10K', desc:'Antes de vender, entender o que é o desafio e por que começa com serviços de caixa rápido.', tasks:['Assistir aulas do Desafio 10k · Aquecimento e Estrutura do Desafio','Compreender a lógica central e o conceito de serviços de caixa rápido','Entender por que esse tipo de serviço acelera a geração de caixa'], pratica:'Escrever um parágrafo síntese: O que é o Desafio 10K? Qual o objetivo central? Qual a estratégia? Qual o serviço no centro?', quote:'O foco não é o tempo, o foco é o resultado.' },
+  { id:9, title:'Produtos e ofertas', desc:'Antes de vender, você precisa saber exatamente o que está oferecendo.', tasks:['Fazer a revisão do plano de ação estratégico','Anotar os pontos-chave do serviço principal · o que resolve, como entregar, como gerar valor','Mapear 2 serviços adicionais: 1 cross-sell e 1 down-sell','Usar o framework: Produto / Entrada / Preço / Forma de pagamento / Prazo / Observações'], pratica:'Aplicar o framework para os 3 produtos (principal, cross-sell, down-sell). Detalhar cada campo.', quote:'Fecha mais vendas quem tem mais cartas na manga.', desafio:{id:'produtos-entregaveis', title:'Produtos entregáveis + Precificação definidos', desc:'Antes de prospectar, você precisa saber exatamente o que vende e por quanto. Defina agora · sem isso você improvisa na hora H.', tasks:['Escrever em 1 parágrafo o que é cada produto (principal, cross-sell, down-sell)','Definir o preço de cada um','Definir a forma de pagamento e prazo de entrega']} },
+  { id:10, title:'Abordagem de prospecção', desc:'Não é dominar todas as abordagens. É ficar muito bom em uma antes de avançar.', tasks:['Estudar as 7 abordagens de prospecção','Escolher 1 abordagem para colocar em prática','Dominar essa abordagem antes de testar outra'], pratica:'Qual abordagem você escolheu? Por quê? O que vai praticar nos próximos 7 dias?', quote:'', desafio:{id:'design-documentos', title:'Design de documentos e propostas', desc:'Sua proposta comercial precisa ter identidade visual. Crie agora um template simples no Canva com as cores da LOWEX que você vai usar em todas as propostas.', tasks:['Criar conta no Canva se não tiver','Criar template de proposta com logo LOWEX, cores e tipografia','Salvar como template reutilizável']} },
+  { id:11, title:'Lista de contatos', desc:'Montar sua lista inicial de prospecção de forma organizada.', tasks:['Montar lista com no mínimo 20 contatos','Para cada contato: nome da empresa, telefone, nome do GK (gatekeeper), nome do decisor, observações relevantes'], pratica:'Fazer a lista de forma organizada. Isso facilita follow-ups, análise e evolução do processo.', quote:'', desafio:{id:'dominio-site', title:'Domínio do site definido e registrado', desc:'Registre o domínio da LOWEX agora. Não precisa ter o site pronto · só garante que ninguém vai pegar o nome.', tasks:['Pesquisar disponibilidade no registro.br','Registrar o domínio escolhido','Anotar credenciais de acesso']} },
+  { id:12, title:'Inteligência de setor', desc:'Gerar inteligência sobre o nicho antes de abordar o mercado.', tasks:['Usar Spalla para realizar pesquisa de setor','Responder: qual o nicho escolhido? Como é a jornada de compra? Quais as dores? Quem são os líderes? Quais jargões? Qual sua visão pessoal do setor?'], pratica:'Responder todas as perguntas do setor por escrito. Qual a sua visão pessoal? Quais outras observações podem ser feitas?', quote:'' },
+  { id:13, title:'Planejamento por contato', desc:'Evitar abordagem genérica. Você não quer ficar no mesmo pote que o restante do mercado.', tasks:['Escolher 3 contatos da sua lista','Fazer um planejamento inicial para cada · o que sabe sobre a empresa, o que pode oferecer, como vai abordar'], pratica:'Para cada contato: O que faz sentido destacar em uma apresentação? Quais sugestões são mais fortes? Quais precisam ser adaptadas?', quote:'' },
+  { id:14, title:'Primeira ligação', desc:'Pegar o telefone. Colocar no viva-voz. Ligar usando o roteiro escolhido.', tasks:['Pegar o telefone e colocar no viva-voz','Realizar a ligação usando o roteiro estudado','Gravar pelo WhatsApp Web · não pelo telefone (avisa o outro lado e quebra o rapport)'], pratica:'Grave a ligação. Escute com calma. Avalie: postura, entonação, clareza, capacidade de prender nos primeiros 3 segundos.', quote:'O objetivo NÃO é vender. É gerar resposta · positiva ou negativa · e abrir diálogo.', desafio:{id:'tripe-luminaria', title:'Tripé e luminária de gravação', desc:'Você vai criar conteúdo. Precisa do básico para ter uma imagem profissional. Invista nisso agora · é barato e faz diferença enorme.', tasks:['Pesquisar tripé de celular (R$50-100 no Mercado Livre)','Pesquisar ring light ou luminária de mesa','Comprar e montar antes do dia 16']} },
+  { id:15, title:'Análise da ligação', desc:'Cada ligação é um aprendizado. Cada tentativa deve ser melhor que a anterior.', tasks:['Escutar a gravação com calma','Avaliar: postura, entonação, clareza, capacidade de prender nos primeiros 3 segundos','Anotar o que funcionou e o que não funcionou'], pratica:'Preencher: O que funcionou? O que não funcionou? O que vou mudar na próxima ligação?', quote:'Volume + análise = evolução.' },
+  { id:16, title:'Volume de prospecção', desc:'Você já sabe como fazer, agora é hora de fazer com volume. Quanto mais conversas tiver, mais rápido vai aprender a lidar com situações diversas.', tasks:['Escolher um bloco de tempo no dia e fazer 10 prospecções em sequência, sem interrupções','Criar ritmo e sair da zona de conforto','Repetir pelos próximos 10 dias'], pratica:'Preencher a tabela por dia: ligações feitas / conexões realizadas / decisores alcançados / reuniões agendadas. Fazer isso pelos próximos 10 dias.', quote:'', desafio:{id:'primeiro-video', title:'Primeiro vídeo para o Instagram', desc:'Agora é hora de aparecer. Não precisa ser perfeito · precisa existir. Grave um vídeo de 30 a 60 segundos apresentando a LOWEX ou compartilhando um insight sobre vendas.', tasks:['Escrever roteiro de 30-60 segundos','Gravar no local que você definiu no dia 3','Editar no CapCut (básico)','Publicar no Instagram da LOWEX']} },
+  { id:17, title:'Transformar interesse em reunião', desc:'Quando alguém demonstrar interesse, o próximo passo é transformar a conversa em uma reunião.', tasks:['Confirmar a disponibilidade do cliente e garantir que todos os tomadores de decisão estarão presentes','Enviar convite da reunião por e-mail','Fazer lembrete 1 dia antes por WhatsApp','Fazer lembrete 30 minutos antes por WhatsApp'], pratica:'Meta: marcar pelo menos uma reunião por dia, todos os dias. Esse é o seu destaque diário.', quote:'', desafio:{id:'primeiros-100', title:'Primeiros 100 seguidores', desc:'100 seguidores é o primeiro marco de credibilidade. Estratégia: convide sua rede pessoal, siga perfis do seu nicho e interaja com conteúdo relevante todos os dias.', tasks:['Convidar todos os contatos do celular para seguir','Seguir 20 perfis do seu nicho por dia','Comentar em 5 posts relevantes por dia','Postar pelo menos 3x por semana']} },
+  { id:18, title:'Roteiro da reunião de vendas', desc:'Antes de conduzir sua primeira reunião, você precisa dominar o roteiro da venda.', tasks:['Assistir à aula Roteiro da Reunião de Vendas','Observar a estrutura: perguntas de diagnóstico, escala de 0 a 10 para medir interesse, apresentação de valor ancorado e fechamento com garantia','Criar o seu próprio roteiro, adaptado pro teu serviço principal, serviços adicionais e forma de comunicação'], pratica:'Escrever a visão geral do seu roteiro. Detalhar cada etapa com suas próprias palavras e exemplos do seu serviço.', quote:'' },
+  { id:19, title:'Primeira reunião de vendas', desc:'Conduza a sua primeira reunião seguindo o roteiro. O mais importante não é fechar a qualquer custo · é sentir como os clientes reagem e ganhar experiência.', tasks:['Conduzir a primeira reunião seguindo o roteiro da ação 18','Gravar a chamada com permissão do cliente','Fazer anotações durante a reunião · mapear dores, desejos e gatilhos para direcionar a venda'], pratica:'Essa primeira reunião é um divisor de águas. Independente do resultado, colete o máximo de aprendizados para refinar o processo.', quote:'' },
+  { id:20, title:'Análise da reunião', desc:'Depois da primeira reunião, volte ao modo aprendiz.', tasks:['Assistir à aula de análise de reuniões do desafio','Rever sua própria gravação com esse olhar','Anotar que partes do roteiro você não seguiu','Anotar o que poderia ter feito diferente · pontos positivos e negativos'], pratica:'Preencher: partes do roteiro que não segui / o que poderia ter feito diferente / pontos positivos / pontos negativos.', quote:'' },
+  { id:21, title:'Acelerar o volume', desc:'Até aqui você estava aprendendo e ajustando sua base. Agora é hora de acelerar.', tasks:['Subir o volume de ligações para 30 prospecções por dia','Organizar blocos de tempo na agenda exclusivamente para prospecção','Tratar como compromissos inadiáveis, assim como reuniões'], pratica:'Definir: "A partir de hoje vou prospectar todos os dias das Xh às Yh." Preencher a tabela por 3+ dias: ligações / conexões / decisores / reuniões agendadas.', quote:'' },
+  { id:22, title:'Fechar a primeira venda', desc:'Feche a sua primeira venda. Se ainda não conseguiu, volte e repita as ações anteriores até conquistar o primeiro cliente.', tasks:['Conduzir a reunião seguindo o roteiro','Apresentar o serviço com clareza','Tratar objeções','Finalizar com o recebimento do pagamento'], pratica:'Escrever: (1) Entrega, (2) Valor da venda, (3) Forma de pagamento, (4) Prazo de entrega, (5) Observações. O objetivo é colocar o dinheiro em caixa.', quote:'', desafio:{id:'primeiro-cliente', title:'1 cliente recorrente fechado', desc:'Feche seu primeiro cliente em contrato recorrente · não uma venda única. Isso é o que muda o jogo. Um cliente que paga todo mês é a base de tudo.', tasks:['Identificar qual prospect tem maior probabilidade de fechar recorrente','Fazer a proposta com foco em contrato mensal','Fechar e receber o primeiro pagamento']} },
+  { id:23, title:'Entregar valor real', desc:'Você vendeu, agora foque em entregar valor real para o seu cliente.', tasks:['Usar a Spalla para montar o planejamento do cliente','Caprichar na personalização · incluir termos e dores que apareceram durante a reunião','Agendar a reunião de entrega e reforçar que a entrega é rápida'], pratica:'O cliente deve sentir que o plano foi feito sob medida para ele. A agilidade na entrega aumenta a percepção de valor e gera confiança.', quote:'' },
+  { id:24, title:'Reunião de entrega e feedback', desc:'Na reunião de entrega, apresente o planejamento com calma e explique como cada parte ajuda o cliente a atingir seus objetivos.', tasks:['Apresentar o planejamento explicando cada parte','Pedir feedback honesto ao final · o que mais gostou, o que gerou dúvidas, o que poderia ser melhorado','Registrar o feedback para lapidar a entrega e melhorar o discurso de vendas'], pratica:'Preencher: De 0 a 10 quão positivo foi o feedback? Quais os detalhes do feedback? O que você poderia fazer diferente?', quote:'', desafio:{id:'registro-marca', title:'Registro de marca', desc:'Proteja o nome LOWEX. Registre no INPI agora · o processo leva tempo mas começa com um formulário. Quanto antes, melhor.', tasks:['Acessar inpi.gov.br','Pesquisar disponibilidade do nome LOWEX','Iniciar processo de registro da marca']} },
+  { id:25, title:'Escalar com consciência', desc:'Com as primeiras vendas realizadas, é hora de escalar novamente, respeitando o degrau atual.', tasks:['Aumentar o volume de prospecção para 45 ligações/dia','Testar 2 novas abordagens ao longo de 2 semanas e registrar os resultados','Comparar abordagens pelo número de reuniões geradas, não pela sensação'], pratica:'Registrar por dia para cada abordagem: ligações feitas / conexões / decisores alcançados / reuniões agendadas / nota.', quote:'Respeite o degrau que você está. Escalar é fazer melhor, não apenas fazer mais.', desafio:{id:'10-reunioes', title:'10 reuniões comerciais realizadas', desc:'10 reuniões é o marco de maturidade comercial. Você já sabe conduzir, já tratou objeções, já entende o padrão. Confira seu histórico e chegue nesse número.', tasks:['Contar reuniões já realizadas','Calcular quantas faltam','Agendar o necessário para fechar as 10']} },
+  { id:26, title:'Argumentos que convertem', desc:'Assista à aula "Argumentos que fazem vendedores ruins converterem". Esse argumento entra em conversas difíceis e sustenta autoridade mesmo sem pitch refinado.', tasks:['Assistir à aula de argumentos que convertem','Mapear as principais objeções que você já encontrou','Criar um contorno para cada objeção usando o framework'], pratica:'Framework de objeções: Objeção observada → Como contornar. Exemplo: "Não tenho case" → "Fulano faz sentido…". Se você sabe que a objeção vai surgir, você já tem metade do controle da conversa.', quote:'' },
+  { id:27, title:'Melhoria contínua é rotina', desc:'Defina 1 dia fixo na semana para revisão. Quem revisa vendas, afia o machado toda semana.', tasks:['Definir 1 dia fixo na semana para revisão','Revisar 10 ligações','Revisar 1 reunião','Anotar erros, vícios de linguagem e oportunidades perdidas'], pratica:'Começar hoje: escolha uma reunião gravada e faça a análise completa.', quote:'Quem revisa vendas, afia o machado toda semana.', desafio:{id:'3-clientes', title:'3 clientes recorrentes', desc:'Com 3 clientes recorrentes você tem a base de um negócio real. Cada um pagando R$1.000/mês = R$3.000 recorrente. É o objetivo do mês.', tasks:['Identificar os 3 prospects mais quentes','Fazer proposta de contrato recorrente para cada um','Fechar e documentar os 3 contratos']} },
+  { id:28, title:'Checkpoint dos 10 planejamentos', desc:'Chegue à marca de 10 planejamentos vendidos. Esse número mostra domínio do processo completo e marca um divisor de maturidade comercial.', tasks:['Chegar à marca de 10 planejamentos vendidos','Para cada planejamento vendido registrar: dia da venda, postura no pitch, onde perdeu ou reforçou autoridade'], pratica:'Registro obrigatório para cada venda: dia / postura no pitch (técnico demais? leve demais?) / onde perdeu ou reforçou autoridade.', quote:'Não pule etapas. Passe para a próxima ação somente quando completar a anterior. Não negocie com você.' },
+  { id:29, title:'Anatomia da conversão', desc:'Compare reuniões que venderam vs reuniões que não venderam. Parece magia, mas é padrão: evite o que não vende e repita o que vende.', tasks:['Escolher 3 reuniões com venda e 3 sem venda','Analisar: quais perguntas foram feitas? Como as objeções foram tratadas? Qual foi o tom da conversa?','Preencher: nas reuniões que venderam eu fiz... nas que não venderam eu fiz...'], pratica:'Dica de pitch: não eleve demais a voz. O cliente não pode se sentir com uma faca no pescoço.', quote:'Parece magia, mas é padrão: evite o que não vende e repita o que vende.' },
+  { id:30, title:'Meta final: R$10.000', desc:'A meta do Desafio 10k é clara: vender R$10.000 em serviços de entrada. Esse número valida execução, não motivação.', tasks:['Chegar aos R$10.000 em vendas','Manter disciplina em prospecção','Manter melhoria contínua em reuniões','Manter consistência nas entregas'], pratica:'Esse número é a soma de: disciplina em prospecção + melhoria contínua em reuniões + consistência nas entregas.', quote:'', desafio:{id:'1000-seguidores', title:'1.000 seguidores no Instagram', desc:'1.000 seguidores é o marco de autoridade no Instagram · abre funcionalidades e passa credibilidade para novos clientes. Se não chegou ainda, defina uma estratégia agressiva para os próximos dias.', tasks:['Contar seguidores atuais','Calcular crescimento médio por dia','Definir ações para acelerar se necessário']} },
+  { id:31, title:'Domínio da jornada de compra', desc:'Entenda como a mente do consumidor se move antes de mover o ponteiro de vendas de qualquer empresa.', tasks:['Assistir às aulas sobre Jornada de Compra','Mapear cada etapa: o que acontece? Como posso influenciar?','Etapas: Descoberta → Atração → Consideração → Compra → Recompra → Indicação'], pratica:'Para cada etapa da jornada: o que acontece nessa etapa? Como posso influenciar o cliente nesse momento?', quote:'Quem domina a jornada e comportamento do consumidor, domina o resultado.' },
+  { id:32, title:'Mapear a jornada de um cliente real', desc:'Escolha um cliente já atendido e desenhe a jornada completa. Não usar IA nesta etapa · use raciocínio próprio.', tasks:['Escolher um cliente já atendido','Mapear a jornada completa por etapa: Descoberta / Atração / Consideração / Compra / Recompra / Indicação','Identificar os maiores gargalos e como resolver cada um'], pratica:'Preencher: cliente escolhido / maiores gargalos / como resolver cada gargalo. Onde o cliente perde leads, ele perde dinheiro.', quote:'' },
+  { id:33, title:'Velocidade > Perfeição', desc:'A gestão de jornada é um jogo de velocidade, não de perfeição. O plano é só o ponto de partida · todo plano existe para ser quebrado.', tasks:['Assistir às aulas sobre os princípios da Gestão de Jornada','Implementar pelo menos 1 melhoria na jornada do cliente hoje'], pratica:'Entre os princípios aprendidos: o que mais preciso melhorar? O que posso testar ainda hoje?', quote:'Cada ação gera feedback. Cada erro gera direção. Quem cresce é quem testa mais, não quem planeja mais.' },
+  { id:34, title:'Estrutura de projeto = linha de produção', desc:'Todo projeto tem estrutura. Enxergue o projeto como uma linha de produção de resultados, não como tarefas soltas.', tasks:['Aprender as etapas de um contrato e entender a sequência lógica','Mapear: escolha do cliente → prospecção → venda → integração → planejamento → apresentação → execução inicial → execução recorrente','Para cada etapa definir: o que preciso fazer para ter sucesso?'], pratica:'Preencher a tabela de estrutura do projeto com o que você precisa fazer em cada etapa para ter sucesso.', quote:'Enxergue o projeto como uma linha de produção de resultados, não como tarefas soltas.' },
+];
+
+var LEAD_STATUS=[
+  {k:'contato', l:'Contato',  c:'var(--st-contato)'},
+  {k:'conversa',l:'Conversa', c:'var(--st-conversa)'},
+  {k:'reuniao', l:'Reunião',  c:'var(--st-reuniao)'},
+  {k:'proposta',l:'Proposta', c:'var(--st-proposta)'},
+  {k:'fechado', l:'Fechado',  c:'var(--st-fechado)'},
+  {k:'perdido', l:'Perdido',  c:'var(--st-perdido)'}
+];
+var PROSP_FIELDS=[{k:'l',lbl:'Ligações'},{k:'c',lbl:'Conexões'},{k:'d',lbl:'Decisores'},{k:'r',lbl:'Reuniões'}];
+
+/* ===== atmosfera ===== */
+(function(){
+  const box=$('poeira');
+  for(let i=0;i<10;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(8+Math.random()*84)+'%';
+    sp.style.setProperty('--dx',(Math.random()*46-23)+'px');
+    sp.style.animationDuration=(11+Math.random()*12)+'s';
+    sp.style.animationDelay=(Math.random()*10)+'s';
+    box.appendChild(sp);
+  }
+})();
+
+/* fogo interno da pedra: fagulhas de prisma dentro das facetas acesas */
+const FIRE_COLORS=['#DFF2FF','#8FD0FF','#B9A8FF','#FFD9EC','#9FE8D8'];
+function renderFogo(lit){
+  const box=$('fogoInterno'); box.innerHTML='';
+  const qtd=Math.min(14, Math.round(lit*0.5 + POLV*11));
+  for(let i=0;i<qtd;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(26+Math.random()*48)+'%';
+    sp.style.top=(14+Math.random()*52)+'%';
+    sp.style.background=FIRE_COLORS[i%FIRE_COLORS.length];
+    sp.style.boxShadow='0 0 6px '+FIRE_COLORS[i%FIRE_COLORS.length];
+    sp.style.animationDuration=((2.6-POLV*1.2)+Math.random()*2.4)+'s';
+    sp.style.animationDelay=(Math.random()*2.5)+'s';
+    box.appendChild(sp);
+  }
+}
+
+/* glint sequencial: uma faceta acesa cintila de cada vez, mais rapido quanto mais polida */
+let litFacets=[];
+let glintTimer=null;
+function agendarGlint(){
+  if(glintTimer) clearInterval(glintTimer);
+  glintTimer=setInterval(darGlint, Math.round(2800 - POLV*2050));
+}
+function darGlint(){
+  if(!litFacets.length) return;
+  const id=litFacets[Math.floor(Math.random()*litFacets.length)];
+  const el=$(id); if(!el) return;
+  el.classList.add('glintF');
+  setTimeout(()=>el.classList.remove('glintF'), 480);
+  /* estrela de 4 pontas na superfície da pedra */
+  const wrap=document.querySelector('.gema-wrap');
+  const st=document.createElement('div'); st.className='estrela';
+  st.style.left=(22+Math.random()*56)+'%';
+  st.style.top=(10+Math.random()*55)+'%';
+  wrap.appendChild(st);
+  setTimeout(()=>st.remove(), 1200);
+}
+agendarGlint();
+
+/* ===== estações ===== */
+document.querySelectorAll('.est').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.est').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.view').forEach(v=>v.classList.remove('on'));
+    $(b.dataset.v).classList.add('on');
+  };
+});
+
+(function(){
+  const dn = Math.max(1, Math.floor((new Date(TODAY)-new Date(START))/86400000)+1);
+  $('diaChip').textContent = 'DIA '+Math.min(dn,30)+'/30';
+  const d=new Date();
+  $('corteData').textContent = String(d.getDate()).padStart(2,'0')+'.'+String(d.getMonth()+1).padStart(2,'0');
+})();
+
+/* ===== O POLIMENTO: o brilho da pedra e a soma da execucao =====
+   receita 40% · acoes do desafio 25% · metas do ciclo 15% · reunioes 20% */
+const GRAUS = [
+  {min:0,   nome:'bruta',       frase:'Pedra bruta. Nada foi cortado ainda.'},
+  {min:.12, nome:'desbastada',  frase:'A pedra foi desbastada. O contorno apareceu.'},
+  {min:.30, nome:'facetada',    frase:'As facetas nasceram. A luz começou a entrar.'},
+  {min:.52, nome:'polida',      frase:'Pedra polida. Ela já devolve luz.'},
+  {min:.74, nome:'com fogo',    frase:'A pedra pegou fogo interno.'},
+  {min:.94, nome:'lapidada',    frase:'Lapidação completa. Ela é uma joia.'}
+];
+function grauDe(p){ let g=GRAUS[0]; GRAUS.forEach(x=>{ if(p>=x.min) g=x; }); return g; }
+function fontesPolimento(){
+  const receita = contratos.reduce((a,c)=>a+(Number(c.valor)||0),0);
+  const fReceita = Math.min(1, receita/10000);
+  const totalAcoes = ACTIONS.length;
+  const feitas = ACTIONS.filter(a=>actions[a.id]).length;
+  const fAcoes = totalAcoes ? feitas/totalAcoes : 0;
+  const fMetas = OBJETIVOS.length ? OBJETIVOS.filter(o=>objetivos[o.id]).length/OBJETIVOS.length : 0;
+  const p = getProsp(); let reun=0;
+  Object.keys(p).forEach(d=>{ if(d>=START) reun += (p[d].r||0); });
+  const fReun = Math.min(1, reun/10);
+  return {fReceita,fAcoes,fMetas,fReun,receita,feitas,totalAcoes,reun};
+}
+function renderPolimento(){
+  const f = fontesPolimento();
+  const novo = f.fReceita*.40 + f.fAcoes*.25 + f.fMetas*.15 + f.fReun*.20;
+  const subiu = novo > POL + .0001;
+  const grauAntes = grauDe(POL);
+  POL = novo;
+  POLV = Math.pow(novo, .62);
+  document.documentElement.style.setProperty('--pol', POLV.toFixed(3));
+  const pct = Math.round(POL*100);
+  $('polPct').textContent = pct+'%';
+  $('polBar').style.width = pct+'%';
+  const g = grauDe(POL);
+  $('polGrau').textContent = g.nome;
+  const cel=[['pfReceita',f.fReceita],['pfAcoes',f.fAcoes],['pfMetas',f.fMetas],['pfReun',f.fReun]];
+  cel.forEach(([id,v])=>{
+    const el=$(id); el.querySelector('b').textContent = Math.round(v*100)+'%';
+    el.classList.toggle('cheia', v>=1);
+  });
+  $('varredura').setAttribute('opacity', (POLV*0.85).toFixed(2));
+  const an=$('sweepAnim'); if(an) an.setAttribute('dur', (7.5 - POLV*4.2).toFixed(1)+'s');
+  $('coracaoLuz').setAttribute('opacity', (POLV*0.75).toFixed(2));
+  agendarGlint();
+  renderFogo(litFacets.length);
+  const salvo = gs('pol-grau', null);
+  if(subiu && g.nome !== grauAntes.nome && salvo !== g.nome){
+    ss('pol-grau', g.nome);
+    gritar(g.frase);
+    const gm=$('gema'); gm.classList.remove('burst'); void gm.offsetWidth; gm.classList.add('burst');
+  } else if(salvo === null){ ss('pol-grau', g.nome); }
+}
+function gritar(txt){
+  const d=document.createElement('div'); d.className='grito'; d.textContent=txt;
+  document.body.appendChild(d); setTimeout(()=>d.remove(), 3300);
+}
+
+/* ===== RECEITA + GEMA ===== */
+let contratos = gs('contratos',[])||[];
+function renderReceita(){
+  const total = contratos.reduce((a,c)=>a+(Number(c.valor)||0),0);
+  const pct = Math.min(100, Math.round(total/10000*100));
+  $('receitaBig').textContent = fmtR(total);
+  $('receitaPct').textContent = pct+'%';
+  $('kTotal').textContent = fmtR(total);
+  $('kFalta').textContent = fmtR(Math.max(0,10000-total));
+  const ordem=['fc5','fc1','fc2','fc3','fc4','fp3','fp2','fp4','fp1','fp5'];
+  const lit = Math.min(10, Math.floor(total/1000));
+  ordem.forEach((id,i)=> $(id).classList.toggle('lit', i<lit));
+  litFacets = ordem.slice(0,lit);
+  const gema=$('gema');
+  gema.classList.toggle('temluz', lit>0 && total<10000);
+  gema.classList.toggle('full', total>=10000);
+  $('caustica').style.opacity = Math.min(.8, (lit>0?.18+lit*.05:0) + POLV*.35);
+  document.querySelectorAll('#raios line').forEach((l,i)=>{ l.style.opacity = i<Math.ceil(POLV*5) ? .14+POLV*.24 : 0; });
+  renderFogo(lit);
+  $('kCt').textContent = (total/1000).toFixed(1).replace('.',',')+' CT';
+
+  const q = $('quilates'); q.innerHTML='';
+  contratos.forEach((c,i)=>{
+    const el=document.createElement('div'); el.className='quilate';
+    el.innerHTML = '<svg viewBox="0 0 24 24"><path d="M7 3 L17 3 L21 9 L12 21 L3 9 Z"/><path d="M3 9 L21 9"/></svg><span>'+esc(c.nome)+'</span><b>'+fmtR(c.valor)+'</b><button title="Remover">✕</button>';
+    el.querySelector('button').onclick=()=>{ contratos.splice(i,1); ss('contratos',contratos); renderReceita(); };
+    q.appendChild(el);
+  });
+  if(!contratos.length) q.innerHTML='<span style="font-size:12px;color:var(--dim)">O primeiro quilate vem do pipeline. A pedra espera.</span>';
+  renderPolimento();
+}
+function addContrato(){
+  const n=$('contratoNome').value.trim(); const v=parseFloat($('contratoValor').value);
+  if(!n||!v) return;
+  contratos.push({nome:n,valor:v,data:TODAY}); ss('contratos',contratos);
+  logar('CONTRATO FECHADO · '+n+' · '+fmtR(v));
+  $('contratoNome').value=''; $('contratoValor').value='';
+  renderReceita();
+  const g=$('gema'); g.classList.remove('burst'); void g.offsetWidth; g.classList.add('burst');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ===== O CORTE ===== */
+function getProsp(){ return gs('prosp',{})||{}; }
+function bumpProsp(k,delta,cell){
+  const p=getProsp(); const t=p[TODAY]||{l:0,c:0,d:0,r:0};
+  t[k]=Math.max(0,(t[k]||0)+delta); p[TODAY]=t; ss('prosp',p);
+  renderCorte(); renderPolimento();
+  if(delta>0){ const NM={l:'ligação',c:'conexão',d:'decisor alcançado',r:'REUNIÃO MARCADA'}; logar('+1 '+(NM[k]||k)+' · total do dia: '+t[k]); }
+  if(delta>0 && cell!==undefined){
+    const el=document.querySelectorAll('.corte')[cell];
+    if(el){
+      el.classList.remove('pisca'); void el.offsetWidth; el.classList.add('pisca');
+      const num=el.querySelector('.corte-num');
+      if(num){ num.classList.remove('pop'); void num.offsetWidth; num.classList.add('pop'); }
+      for(let i=0;i<3;i++){
+        const sp=document.createElement('span'); sp.className='spark';
+        sp.style.setProperty('--sx',(Math.random()*56-28)+'px');
+        sp.style.animationDelay=(i*0.05)+'s';
+        el.appendChild(sp);
+        setTimeout(()=>sp.remove(), 800);
+      }
+    }
+  }
+}
+function renderCorte(){
+  const p=getProsp(); const t=p[TODAY]||{l:0,c:0,d:0,r:0};
+  $('cortes').innerHTML = PROSP_FIELDS.map((f,i)=>
+    '<div class="corte" onclick="bumpProsp(\''+f.k+'\',1,'+i+')">'+
+    '<div class="flash"></div>'+
+    '<button class="menos" onclick="event.stopPropagation();bumpProsp(\''+f.k+'\',-1)">−</button>'+
+    '<div class="lbl">'+f.lbl+'</div>'+
+    '<div class="corte-num">'+(t[f.k]||0)+'</div>'+
+    '<div class="mais-dica">TOQUE +1</div></div>'
+  ).join('');
+  const tot={l:0,c:0,d:0,r:0};
+  Object.keys(p).forEach(d=>{ if(d>=START){ PROSP_FIELDS.forEach(f=>{ tot[f.k]+=(p[d][f.k]||0); }); } });
+  $('reunioesNum').textContent = tot.r+'/10';
+  $('reunioesBar').style.width = Math.min(100,tot.r*10)+'%';
+  $('cicloTotal').textContent = 'CICLO · '+tot.l+' LIGAÇÕES · '+tot.c+' CONEXÕES · '+tot.d+' DECISORES';
+}
+
+/* ===== BANCADA ===== */
+function getLeads(){ return gs('leads',[])||[]; }
+function addLead(){
+  const inp=$('leadNome'); const n=inp.value.trim(); if(!n)return;
+  const ls=getLeads(); ls.unshift({n:n,s:'contato',d:TODAY,t:TODAY}); ss('leads',ls);
+  inp.value=''; renderLeads();
+}
+function cycleLead(i){
+  const ls=getLeads(); if(!ls[i])return;
+  const idx=LEAD_STATUS.findIndex(s=>s.k===ls[i].s);
+  ls[i].s=LEAD_STATUS[(idx+1)%LEAD_STATUS.length].k;
+  ls[i].t=TODAY; ss('leads',ls); renderLeads();
+}
+function delLead(i){ const ls=getLeads(); ls.splice(i,1); ss('leads',ls); renderLeads(); }
+function tocarLead(i){ const ls=getLeads(); if(!ls[i])return; ls[i].t=TODAY; ss('leads',ls); renderLeads(); }
+function renderLeads(){
+  const box=$('leadsList'); const ls=getLeads();
+  const cnt={}; ls.forEach(l=>cnt[l.s]=(cnt[l.s]||0)+1);
+  $('fases').innerHTML = LEAD_STATUS.map(s=>
+    '<span class="fase-pill" style="color:'+(cnt[s.k]?s.c:'var(--dim)')+';border-color:'+(cnt[s.k]?s.c:'var(--line)')+'"><b>'+(cnt[s.k]||0)+'</b> '+s.l+'</span>'
+  ).join('');
+  if(!ls.length){ box.innerHTML='<p style="font-size:12.5px;color:var(--dim);margin-top:4px">Nenhuma pedra na bancada. Toda ligação boa vira um nome aqui.</p>'; return; }
+  const ordem={contato:0,conversa:1,reuniao:2,proposta:3,fechado:4,perdido:5};
+  const rows=ls.map((ld,i)=>({ld,i})).sort((a,b)=>(ordem[a.ld.s]||0)-(ordem[b.ld.s]||0));
+  box.innerHTML = rows.map(r=>{
+    const st=LEAD_STATUS.find(s=>s.k===r.ld.s)||LEAD_STATUS[0];
+    const idle=Math.floor((new Date(TODAY)-new Date(r.ld.t||r.ld.d))/86400000);
+    const stale = idle>=3 && r.ld.s!=='fechado' && r.ld.s!=='perdido';
+    const dim = r.ld.s==='perdido' ? 'color:var(--dim);text-decoration:line-through' : '';
+    return '<div class="lead">'+
+      '<svg class="pedra-ic'+(stale?' stale':'')+'" viewBox="0 0 24 24" style="fill:'+st.c+'"><path d="M7 3 L17 3 L21 9 L12 21 L3 9 Z"/></svg>'+
+      '<div class="nome" style="'+dim+'" onclick="tocarLead('+r.i+')">'+esc(r.ld.n)+'</div>'+
+      (stale?'<span class="idle">'+idle+'D PARADO</span>':'')+
+      '<button class="stchip" style="color:'+st.c+';border-color:'+st.c+'" onclick="cycleLead('+r.i+')">'+st.l+'</button>'+
+      '<button class="del" onclick="delLead('+r.i+')">✕</button></div>';
+  }).join('');
+}
+
+/* ===== METAS ===== */
+let objetivos = gs('objetivos',{})||{};
+function renderObj(){
+  let done=0;
+  $('objList').innerHTML = OBJETIVOS.map((o,i)=>{
+    const d=!!objetivos[o.id]; if(d)done++;
+    return '<div class="obj'+(d?' done':'')+'">'+
+      '<div class="obj-n">'+String(i+1).padStart(2,'0')+'</div>'+
+      '<div style="flex:1"><div class="t">'+o.text+'</div><div class="m">'+o.meta+'</div></div>'+
+      '<div class="ocheck'+(d?' done':'')+'" onclick="toggleObj(\''+o.id+'\')">'+(d?chk:'')+'</div></div>';
+  }).join('');
+  $('objCount').textContent = done+'/'+OBJETIVOS.length;
+}
+function toggleObj(id){
+  objetivos[id]=!objetivos[id]; ss('objetivos',objetivos); renderObj(); renderPolimento();
+  if(objetivos[id]){ const o=OBJETIVOS.find(x=>x.id===id); logar('Meta do ciclo concluída: '+(o?o.text:id)); }
+}
+
+/* ===== data-pid ===== */
+function restorePchecks(){
+  const saved=gs('pchecks',{})||{};
+  document.querySelectorAll('input[type=checkbox][data-pid]').forEach(cb=>{
+    const id=cb.getAttribute('data-pid');
+    cb.checked=!!saved[id];
+    const lab=cb.closest('.pc'); if(lab) lab.classList.toggle('pc-done',cb.checked);
+    cb.addEventListener('change',()=>{
+      const s=gs('pchecks',{})||{}; s[id]=cb.checked; ss('pchecks',s);
+      if(lab) lab.classList.toggle('pc-done',cb.checked);
+    });
+  });
+}
+
+/* ===== DESAFIO ===== */
+let actions = gs('actions',{})||{};
+let mostrandoTodas=false;
+function acHTML(a){
+  const done=!!actions[a.id];
+  const tasks=a.tasks.map(t=>'<div class="task"><i></i><div>'+t+'</div></div>').join('');
+  const pratica=a.pratica?'<div class="pratica"><div class="pl">Atividade prática</div>'+a.pratica+'</div>':'';
+  const quote=a.quote?'<div class="quote">"'+a.quote+'"</div>':'';
+  let desafio='';
+  if(a.desafio){
+    const dDone=!!actions['d-'+a.desafio.id];
+    const dTasks=a.desafio.tasks.map(t=>'<div class="task"><i></i><div>'+t+'</div></div>').join('');
+    desafio='<div class="desafio-box"><div class="dl"><span class="dchk'+(dDone?' done':'')+'" onclick="event.stopPropagation();toggleDesafio(\''+a.desafio.id+'\')">'+(dDone?chk:'')+'</span>Desafio da semana</div>'+
+      '<div class="dt'+(dDone?' done':'')+'">'+a.desafio.title+'</div>'+
+      '<div style="margin-bottom:8px">'+a.desafio.desc+'</div>'+dTasks+'</div>';
+  }
+  return '<div class="ac'+(done?' done-card':'')+'">'+
+    '<div class="ac-head" onclick="toggleAB('+a.id+')">'+
+    '<div class="ac-num">'+String(a.id).padStart(2,'0')+'</div>'+
+    '<div class="ac-info"><div class="ac-title">'+a.title+'</div><div class="ac-desc">'+a.desc+'</div></div>'+
+    '<div class="ac-chk'+(done?' done':'')+'" onclick="event.stopPropagation();toggleAction('+a.id+')">'+(done?chk:'')+'</div></div>'+
+    '<div class="ac-body" id="ab-'+a.id+'"><p>'+a.desc+'</p>'+tasks+pratica+quote+desafio+'</div></div>';
+}
+function renderAcoes(){
+  const pend = ACTIONS.filter(a=>!actions[a.id]).slice(0,3);
+  $('proxList').innerHTML = pend.length ? pend.map(acHTML).join('') : '<p style="font-size:12.5px;color:var(--st-fechado)">Todas as ações concluídas. O Desafio está lapidado.</p>';
+  $('acoesList').innerHTML = mostrandoTodas ? ACTIONS.map(acHTML).join('') : '';
+  $('acoesList').style.display = mostrandoTodas ? 'block' : 'none';
+  $('btnTodas').textContent = mostrandoTodas ? 'Esconder a lista completa' : 'Ver as '+ACTIONS.length+' ações';
+  const done=ACTIONS.filter(a=>actions[a.id]).length;
+  $('bbFill').style.width = Math.round(done/ACTIONS.length*100)+'%';
+  $('bbNum').textContent = done+'/'+ACTIONS.length;
+}
+function toggleTodas(){ mostrandoTodas=!mostrandoTodas; renderAcoes(); }
+function toggleAB(id){ const b=$('ab-'+id); if(b) b.classList.toggle('open'); }
+function toggleAction(id){
+  actions[id]=!actions[id]; ss('actions',actions); renderAcoes(); renderPolimento();
+  if(actions[id]){ const a=ACTIONS.find(x=>x.id===id); logar('Ação '+id+' do Desafio 10K: '+(a?a.title:'')); }
+}
+function toggleDesafio(id){
+  actions['d-'+id]=!actions['d-'+id]; ss('actions',actions); renderAcoes(); renderPolimento();
+  if(actions['d-'+id]) logar('Desafio da semana vencido: '+id);
+}
+
+/* ===== RAS ===== */
+function salvarRas(){
+  const v=$('ras-lowex-1').value.trim(); if(!v)return;
+  const hist=gs('ras-lowex',{})||{};
+  const ts=new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'});
+  if(!hist[TODAY]) hist[TODAY]=[];
+  hist[TODAY].unshift({vals:[v],ts});
+  ss('ras-lowex',hist);
+  $('ras-lowex-1').value='';
+  renderRas();
+}
+function renderRas(){
+  const hist=gs('ras-lowex',{})||{};
+  const hoje=hist[TODAY]||[];
+  $('rasAtualBox').innerHTML = hoje.length
+    ? '<div class="ras-atual"><small>Intenção cravada às '+hoje[0].ts+'</small>'+esc(hoje[0].vals[0])+'</div>'
+    : '';
+}
+
+/* ===== INIT ===== */
+renderReceita(); renderCorte(); renderLeads(); renderObj(); restorePchecks(); renderAcoes(); renderRas();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ renderReceita(); renderCorte(); renderLeads(); }});
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'lapidacao';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>

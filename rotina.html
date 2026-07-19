@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Travessia</title>
+<link href="https://fonts.googleapis.com/css2?family=Marcellus+SC&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --noite:#070A18; --pedra:#101430; --pedra2:#171C3C; --fio:#232A55; --fio2:#333C6E;
+    --marfim:#EDE7DC; --areia:#A9A7C4; --sombra:#6A6D96;
+    --ouro:#F0C56A; --ouro-hi:#FFE9B0; --brasa:#FF9E5A;
+    --lapis:#7C8FE0; --faianca:#59B7A6; --cornalina:#D9694E; --ametista:#A88BD0; --basalto:#3A4066;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--noite);color:var(--marfim);font-family:'Jost',system-ui,sans-serif;font-weight:300;
+    min-height:100vh;overflow-x:hidden;padding:0 0 44px;
+  }
+  .wrap{max-width:460px;margin:0 auto;padding:0 15px}
+
+  .top{display:flex;justify-content:space-between;align-items:center;padding:15px 0 8px}
+  .back{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:var(--sombra);text-decoration:none}
+  .chip{font-size:10.5px;letter-spacing:.24em;text-transform:uppercase;color:var(--ouro);border:1px solid var(--fio2);padding:5px 12px}
+
+  /* ===== o céu ===== */
+  .ceu-wrap{position:relative;line-height:0;width:100vw;margin-left:calc(50% - 50vw)}
+  .ceu{width:100%;display:block}
+  .passo{animation:passo 2.4s ease-in-out infinite}
+  @keyframes passo{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-1.8px) rotate(-1.4deg)}}
+  .portal{animation:pulsarPortal 4.2s ease-in-out infinite}
+  @keyframes pulsarPortal{0%,100%{opacity:.72}50%{opacity:1}}
+  .facho{animation:subirFacho 5.5s ease-in-out infinite;transform-origin:center bottom}
+  @keyframes subirFacho{0%,100%{opacity:.42}50%{opacity:.85}}
+  .pisca{animation:piscar ease-in-out infinite}
+  @keyframes piscar{0%,100%{opacity:var(--o,.6)}50%{opacity:calc(var(--o,.6) * .28)}}
+  .risco{animation:riscar linear infinite;opacity:0}
+  @keyframes riscar{0%,92%{opacity:0;transform:translate(0,0)}93%{opacity:.9}100%{opacity:0;transform:translate(-84px,58px)}}
+  .deriva{animation:derivar linear infinite}
+  @keyframes derivar{0%{transform:translateX(-26px)}100%{transform:translateX(26px)}}
+  .grao{animation:escorrer linear infinite}
+  @keyframes escorrer{
+    0%{opacity:0;transform:translateY(-16px)}
+    18%{opacity:1}
+    82%{opacity:1}
+    100%{opacity:0;transform:translateY(30px)}
+  }
+  .lanterna{cursor:pointer}
+  .pulsa{animation:respira 3.4s ease-in-out infinite}
+  .halo-lento{animation:respira 6s ease-in-out infinite}
+  @keyframes respira{0%,100%{opacity:.35;r:13}50%{opacity:.7;r:17}}
+  .cintila{animation:cintilar 4s ease-in-out infinite}
+  @keyframes cintilar{0%,100%{opacity:.55}50%{opacity:1}}
+
+  /* ===== a estela: o agora ===== */
+  .estela{border:1px solid var(--fio2);background:linear-gradient(180deg,var(--pedra),#0B0F24);padding:0;margin-top:-2px;position:relative}
+  .estela-fx{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;border-bottom:1px solid var(--fio)}
+  .estela-fx span{font-size:10px;letter-spacing:.26em;text-transform:uppercase;color:var(--sombra)}
+  .estela-fx b{font-size:11px;letter-spacing:.14em;color:var(--c,var(--ouro));font-weight:400}
+  .estela-corpo{padding:17px 15px 16px;text-align:center}
+  .estela-corpo h1{font-family:'Marcellus SC';font-weight:400;font-size:clamp(25px,7.2vw,33px);line-height:1.18;letter-spacing:.01em}
+  .friso{display:flex;align-items:center;justify-content:center;gap:9px;margin:12px 0 11px}
+  .friso i{width:44px;height:1px;background:linear-gradient(90deg,transparent,var(--fio2))}
+  .friso i:last-child{background:linear-gradient(90deg,var(--fio2),transparent)}
+  .friso b{width:5px;height:5px;background:var(--c,var(--ouro));transform:rotate(45deg)}
+  .conta{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--areia)}
+  .conta b{font-family:'Marcellus SC';font-size:19px;letter-spacing:.04em;color:var(--c,var(--ouro));font-weight:400}
+  .ritual{font-size:13.5px;line-height:1.75;color:var(--areia);margin-top:13px;text-align:left;border-top:1px solid var(--fio);padding-top:13px}
+  .acender{
+    width:100%;margin-top:15px;padding:15px;cursor:pointer;border:1px solid var(--c,var(--ouro));
+    background:transparent;color:var(--c,var(--ouro));
+    font-family:'Marcellus SC';font-size:14px;letter-spacing:.24em;text-transform:uppercase;
+  }
+  .acender:active{background:var(--c,var(--ouro));color:#070A18}
+  .acender.feito{border-color:var(--fio2);color:var(--sombra)}
+
+  /* ===== títulos ===== */
+  .titulo{display:flex;align-items:center;gap:12px;margin:26px 0 13px}
+  .titulo i{flex:1;height:1px;background:var(--fio)}
+  .titulo span{font-family:'Marcellus SC';font-size:16px;letter-spacing:.16em;text-transform:uppercase;color:var(--ouro);white-space:nowrap}
+  .titulo em{font-style:normal;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sombra)}
+
+  /* ===== a trilha ===== */
+  .marco{display:flex;align-items:center;gap:12px;padding:12px 13px;background:var(--pedra);border:1px solid var(--fio);margin-bottom:6px;position:relative}
+  .marco::before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--c);opacity:.5}
+  .marco.agora{border-color:var(--brasa);background:linear-gradient(90deg,rgba(255,158,90,.10),var(--pedra))}
+  .marco.aceso::before{opacity:1}
+  .marco.perdido{opacity:.42}
+  .marco.hoje-so{border-style:dashed}
+  .hora{font-size:11.5px;letter-spacing:.1em;color:var(--c);min-width:40px;flex-shrink:0;line-height:1.5}
+  .hora small{display:block;font-size:9.5px;color:var(--sombra);letter-spacing:.08em}
+  .nome{flex:1;min-width:0;font-size:14.5px;line-height:1.3;font-weight:300}
+  .nome i{display:block;font-style:normal;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--sombra);margin-top:4px}
+  .chama{width:26px;height:26px;flex-shrink:0;border:1px solid var(--fio2);border-radius:50%;cursor:pointer;position:relative}
+  .chama::after{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:8px;height:8px;border-radius:50%;background:var(--fio2)}
+  .marco.aceso .chama{border-color:var(--c);box-shadow:0 0 12px -2px var(--c)}
+  .marco.aceso .chama::after{background:var(--c);box-shadow:0 0 8px var(--c)}
+  .cinzel{background:none;border:0;color:var(--sombra);cursor:pointer;font-size:9px;letter-spacing:.18em;text-transform:uppercase;padding:4px 2px;flex-shrink:0}
+  .fita{position:absolute;top:-1px;right:12px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:#070A18;background:var(--ouro);padding:1px 6px}
+
+  /* ===== gaveta ===== */
+  .gaveta{border:1px solid var(--fio2);background:var(--pedra2);padding:15px;margin:-2px 0 8px}
+  .gaveta .par{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+  .gaveta label{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--sombra);margin-bottom:5px}
+  .gaveta input,.gaveta select,.gaveta textarea{width:100%;background:#0A0E22;border:1px solid var(--fio2);color:var(--marfim);font-family:'Jost';font-weight:300;font-size:13.5px;padding:10px}
+  .gaveta textarea{min-height:54px;resize:vertical;line-height:1.65}
+  .gaveta input:focus,.gaveta select:focus,.gaveta textarea:focus{outline:none;border-color:var(--ouro)}
+  .gaveta .fim{display:flex;gap:9px;margin-top:12px}
+  .gaveta .fim button{flex:1;padding:12px;cursor:pointer;font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'Jost';font-weight:400}
+  .b1{background:var(--ouro);border:0;color:#070A18}
+  .b2{background:none;border:1px solid var(--fio2);color:var(--sombra)}
+
+  .juntar{display:flex;gap:8px;margin-top:11px}
+  .juntar button{flex:1;background:none;border:1px solid var(--fio2);color:var(--areia);padding:13px 6px;cursor:pointer;font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;font-family:'Jost';font-weight:400}
+  .juntar button.destaque{border-color:var(--ouro);color:var(--ouro)}
+
+  /* ===== seletores ===== */
+  .dias{display:flex;border:1px solid var(--fio2);margin:22px 0 0}
+  .dias button{flex:1;background:none;border:0;border-right:1px solid var(--fio);color:var(--sombra);padding:11px 3px;cursor:pointer;font-size:10px;letter-spacing:.18em;text-transform:uppercase;font-family:'Jost';font-weight:400}
+  .dias button:last-child{border-right:0}
+  .dias button.on{background:rgba(240,197,106,.09);color:var(--ouro)}
+  .dias button.hoje::after{content:" ✦";font-size:8px;color:var(--brasa)}
+  .modo{display:flex;border:1px solid var(--fio2);border-top:0}
+  .modo button{flex:1;background:none;border:0;border-right:1px solid var(--fio);color:var(--sombra);padding:9px 4px;cursor:pointer;font-size:9px;letter-spacing:.1em;font-family:'Jost';font-weight:300}
+  .modo button:last-child{border-right:0}
+  .modo button.on{background:var(--pedra2);color:var(--marfim)}
+
+  /* ===== painéis ===== */
+  .painel{border:1px solid var(--fio);background:var(--pedra);padding:16px;margin-top:20px}
+  .painel h3{font-family:'Marcellus SC';font-weight:400;font-size:19px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px;color:var(--ouro)}
+  .painel p{font-size:13px;line-height:1.75;color:var(--areia);margin-bottom:13px}
+  .b-larga{width:100%;background:none;border:1px solid var(--ouro);color:var(--ouro);padding:14px;cursor:pointer;font-family:'Marcellus SC';font-size:13px;letter-spacing:.22em;text-transform:uppercase;margin-bottom:13px}
+  .passo{font-size:12px;line-height:2;color:var(--sombra);letter-spacing:.02em}
+  .passo em{color:var(--areia);font-style:normal}
+  .campo{margin-bottom:11px}
+  .campo label{display:block;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--sombra);margin-bottom:5px}
+  .campo textarea,.campo input{width:100%;background:#0A0E22;border:1px solid var(--fio2);color:var(--marfim);font-family:'Jost';font-weight:300;font-size:13.5px;padding:11px;line-height:1.65;resize:vertical}
+  .campo textarea{min-height:58px}
+  .campo textarea:focus,.campo input:focus{outline:none;border-color:var(--ouro)}
+  .b-cheio{width:100%;background:var(--ouro);border:0;color:#070A18;padding:14px;cursor:pointer;font-family:'Marcellus SC';font-size:13px;letter-spacing:.22em;text-transform:uppercase}
+  .passada{border:1px solid var(--fio);background:var(--pedra2);padding:12px 13px;margin-top:8px;font-size:12.5px;line-height:1.65;color:var(--areia)}
+  .passada b{display:block;font-size:10px;letter-spacing:.16em;color:var(--ouro);margin-bottom:5px;font-weight:400}
+
+  /* ===== registro ===== */
+  .oreg{border:1px solid var(--fio);background:var(--pedra);padding:16px;margin-top:20px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+  .oreg-head b{font-family:'Marcellus SC';font-weight:400;font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--marfim)}
+  .oreg-head span{font-size:10px;letter-spacing:.12em;color:var(--sombra)}
+  .oreg-sub{font-size:11.5px;color:var(--sombra);margin-bottom:12px;line-height:1.65}
+  .rg-linha{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-top:1px solid var(--fio)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:10px;letter-spacing:.1em;color:var(--ouro);flex-shrink:0;min-width:36px;padding-top:3px}
+  .rg-m{font-size:13px;color:var(--marfim);line-height:1.5;flex:1}
+  .rg-vazio{font-size:12px;color:var(--sombra);padding:6px 0;line-height:1.65}
+  .rg-dias{margin-top:13px;border-top:1px solid var(--fio);padding-top:11px}
+  .rg-dia{width:100%;text-align:left;background:var(--pedra2);border:1px solid var(--fio);padding:10px 12px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--marfim)}
+  .rg-dia small{font-size:10px;color:var(--sombra);letter-spacing:.1em}
+  .rg-dia b{font-size:11px;letter-spacing:.1em;font-weight:400}
+  .rg-dia.aberto{border-color:var(--ouro)}
+  .rg-corpo{padding:2px 12px 10px;display:none}
+  .rg-corpo.on{display:block}
+
+  footer{text-align:center;margin-top:28px;font-family:'Marcellus SC';font-size:13px;letter-spacing:.14em;color:var(--sombra)}
+  @media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip" id="chipDia">DIA 1/30</div>
+  </div>
+</div>
+
+<div class="ceu-wrap">
+  <svg class="ceu" id="ceu" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+    <defs>
+      <linearGradient id="gCeu" x1="0" y1="0" x2="0" y2="1">
+        <stop id="ceu0" offset="0" stop-color="#04050D"/>
+        <stop id="ceu1" offset=".34" stop-color="#0A0E2A"/>
+        <stop id="ceu2" offset=".66" stop-color="#16204E"/>
+        <stop id="ceu3" offset="1" stop-color="#24325F"/>
+      </linearGradient>
+      <linearGradient id="gVia" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#7C8FE0" stop-opacity="0"/>
+        <stop offset=".42" stop-color="#9FAEF0" stop-opacity=".30"/>
+        <stop offset=".58" stop-color="#C9B8F0" stop-opacity=".26"/>
+        <stop offset="1" stop-color="#7C8FE0" stop-opacity="0"/>
+      </linearGradient>
+      <radialGradient id="gAstro"><stop offset="0" stop-color="#FFF6DC" stop-opacity=".5"/><stop offset=".45" stop-color="#FFE9B0" stop-opacity=".14"/><stop offset="1" stop-color="#FFE9B0" stop-opacity="0"/></radialGradient>
+      <radialGradient id="gHalo"><stop offset="0" stop-color="#FFE9B0" stop-opacity=".62"/><stop offset="1" stop-color="#FFE9B0" stop-opacity="0"/></radialGradient>
+      <radialGradient id="gBrasa"><stop offset="0" stop-color="#FF9E5A" stop-opacity=".65"/><stop offset="1" stop-color="#FF9E5A" stop-opacity="0"/></radialGradient>
+      <radialGradient id="gEstrela"><stop offset="0" stop-color="#FFFFFF" stop-opacity=".85"/><stop offset=".35" stop-color="#CFDCF5" stop-opacity=".22"/><stop offset="1" stop-color="#CFDCF5" stop-opacity="0"/></radialGradient>
+      <linearGradient id="gFim" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#070A18" stop-opacity="0"/><stop offset="1" stop-color="#070A18" stop-opacity="1"/>
+      </linearGradient>
+      <linearGradient id="gPorta" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#FFE9B0" stop-opacity=".95"/><stop offset="1" stop-color="#F0C56A" stop-opacity=".25"/>
+      </linearGradient>
+      <linearGradient id="gFacho" x1="0" y1="1" x2="0" y2="0">
+        <stop offset="0" stop-color="#FFE9B0" stop-opacity=".55"/><stop offset="1" stop-color="#FFE9B0" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="gAr" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#59B7A6" stop-opacity="0"/><stop offset="1" stop-color="#59B7A6" stop-opacity=".26"/>
+      </linearGradient>
+      <linearGradient id="gBrilhoHor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#FFD9A0" stop-opacity="0"/><stop offset="1" stop-color="#FFD9A0" stop-opacity=".42"/>
+      </linearGradient>
+    </defs>
+    <rect id="fundoCeu" x="0" y="0" width="400" height="252" fill="url(#gCeu)"/>
+    <g id="via"></g>
+    <g id="estrelas"></g>
+    <g id="astro"></g>
+    <g id="constelacao"></g>
+    <g id="nuvens"></g>
+    <g id="horizonte"></g>
+    <g id="piramides"></g>
+    <g id="dunas"></g>
+    <path id="trilha" fill="none" stroke="#3C4064" stroke-width="2.4" stroke-linecap="round" opacity=".75"/>
+    <g id="lampioes"></g>
+    <g id="portal"></g>
+    <g id="viajante"></g>
+    <rect id="fade" x="0" y="332" width="400" height="68" fill="url(#gFim)"/>
+  </svg>
+</div>
+
+<div class="wrap">
+  <div class="estela" id="estela">
+    <div class="estela-fx"><span id="eEt">agora</span><b id="eFx"></b></div>
+    <div class="estela-corpo">
+      <h1 id="eNome">—</h1>
+      <div class="friso"><i></i><b></b><i></i></div>
+      <div class="conta"><b id="eConta"></b> <span id="eLeg"></span></div>
+      <div class="ritual" id="eRitual"></div>
+      <button class="acender" id="eBtn" onclick="acenderAgora()">Acender o lampião</button>
+    </div>
+  </div>
+
+  <div class="titulo"><span>A trilha</span><i></i><em id="trLeg"></em></div>
+  <div id="marcos"></div>
+
+  <div class="juntar">
+    <button class="destaque" onclick="novoExtra()">+ Lampião de hoje</button>
+    <button onclick="novoFixo()">+ Lampião fixo</button>
+  </div>
+
+  <div class="dias" id="seletorDia"></div>
+  <div class="modo" id="modoSemana" style="display:none">
+    <button data-m="ferias" class="on">Férias · até 2 ago</button>
+    <button data-m="aula">Com aula · a partir de 3 ago</button>
+  </div>
+
+  <div class="painel">
+    <h3>Os sinos do templo</h3>
+    <p>O site não toca alarme com ele fechado, o iPhone não deixa. Quem faz isso bem é o Calendário, então a Travessia escreve a trilha inteira num arquivo e entrega pro iPhone, que te chama 5 minutos antes de cada lampião, toda semana, mesmo sem internet.</p>
+    <button class="b-larga" onclick="baixarAlarmes()">Gerar os sinos deste dia</button>
+    <div class="passo">
+      <em>1.</em> toca o botão e abre o arquivo baixado<br>
+      <em>2.</em> o iPhone pergunta em qual calendário adicionar<br>
+      <em>3.</em> cria um calendário só pra rotina, dá pra apagar tudo de uma vez<br>
+      <em>4.</em> mexeu na trilha? apaga o calendário antigo e gera de novo
+    </div>
+  </div>
+
+  <div id="areaDomingo" style="display:none">
+    <div class="painel">
+      <h3>A pesagem do coração</h3>
+      <p>No Egito pesavam o coração contra a pena da verdade. Se pesasse mais, era porque estava cheio do que a pessoa fingia não ter feito. Domingo de manhã, vinte minutos: você põe a semana na balança e ela não mente.</p>
+      <div class="campo"><label>Os números da semana</label><input id="rNumeros" placeholder="ligações, reuniões, treinos, páginas, faturamento"></div>
+      <div class="campo"><label>Três acertos</label><textarea id="rAcertos" placeholder="o que funcionou e por quê"></textarea></div>
+      <div class="campo"><label>Três melhorias · protagonista, não vítima</label><textarea id="rMelhorias" placeholder="o que falhou por decisão sua"></textarea></div>
+      <div class="campo"><label>O padrão que só aparece de longe</label><textarea id="rPadrao" placeholder="o que o diário do dia não mostrou sozinho"></textarea></div>
+      <div class="campo"><label>Um ajuste para a semana que vem</label><input id="rAjuste" placeholder="um só, específico, executável"></div>
+      <button class="b-cheio" onclick="salvarRevisao()">Pesar a semana</button>
+      <div id="revisoes"></div>
+    </div>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Cada lampião aceso fica gravado aqui, com a hora.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>quem atravessa o deserto não conta as horas, acende lampiões</footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const START = '2026-07-19';
+const AULA_VOLTA = '2026-08-03';
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function mins(h){ const p=String(h).split(':'); return (+p[0])*60 + (+p[1]||0); }
+function hhmm(m){ m=((m%1440)+1440)%1440; return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0'); }
+function pintar(alvo, html){
+  const doc = new DOMParser().parseFromString('<svg xmlns="'+NS+'">'+html+'</svg>','image/svg+xml');
+  alvo.textContent='';
+  Array.from(doc.documentElement.childNodes).forEach(n=>alvo.appendChild(document.importNode(n,true)));
+}
+
+const TIPOS = {
+  sol:     { n:'Ritual solar',  c:'#F0C56A' },
+  foco:    { n:'Foco profundo', c:'#7C8FE0' },
+  corpo:   { n:'Corpo',         c:'#D9694E' },
+  ocio:    { n:'Ócio dirigido', c:'#59B7A6' },
+  pessoal: { n:'Pessoal',       c:'#A88BD0' },
+  sono:    { n:'Sono',          c:'#3A4066' },
+};
+const PADRAO = {
+  ferias: [
+    {i:'08:00',f:'08:30',nome:'Despertar e ritual solar',tipo:'sol',ritual:'Pé no chão, 15 minutos de sol nos olhos antes de qualquer tela, água antes do café. É esse botão que decide a que horas o sono chega hoje à noite.'},
+    {i:'08:30',f:'10:00',nome:'Faculdade · bloco profundo',tipo:'foco',ritual:'O mais difícil no horário mais limpo. Celular em outro cômodo, mesa limpa, uma tarefa única dita em voz alta, timer. Os primeiros 30 minutos custam, e isso é normal.'},
+    {i:'10:00',f:'10:15',nome:'Pausa real',tipo:'ocio',ritual:'Sem tela. Levanta, anda, olha longe. Pausa com celular é troca de estímulo, e o bloco seguinte paga a conta.'},
+    {i:'10:15',f:'11:00',nome:'Direito · missão do protocolo',tipo:'foco',ritual:'Fecha com a síntese do que aprendeu, sem consultar o material.'},
+    {i:'11:00',f:'12:00',nome:'Almoço',tipo:'corpo',ritual:'Comida de verdade, sem tela.'},
+    {i:'12:00',f:'12:15',nome:'Ócio criativo · caminhada no sol',tipo:'ocio',ritual:'Uma pergunta em aberto, sem fone, caminhando no sol. Não force a resposta. Silêncio sem pergunta é ruminação, silêncio com pergunta é pensamento difuso. O que aparecer vai pro diário à noite.'},
+    {i:'12:30',f:'14:00',nome:'Academia · Quartel',tipo:'corpo',ritual:'Treino depois do almoço mata o apagão da tarde em vez de sofrer com ele.'},
+    {i:'14:30',f:'16:00',nome:'10K · bloco comercial',tipo:'foco',ritual:'Telefone no horário em que empresário atende, com o corpo já ativado pelo treino.'},
+    {i:'16:00',f:'16:20',nome:'Pausa e água',tipo:'ocio',ritual:'Sem tela outra vez.'},
+    {i:'16:20',f:'17:30',nome:'Blackcamp ou estudo do 10K',tipo:'foco',ritual:'Aprender e já anotar onde aplica. Conhecimento que não vira ação amanhã é entretenimento.'},
+    {i:'17:30',f:'18:15',nome:'Leitura · 20 páginas',tipo:'foco',ritual:'Pergunta antes, leitura, síntese sem consultar. A ficha fica na Biblioteca.'},
+    {i:'18:15',f:'19:15',nome:'Banho, jantar e arrumar',tipo:'corpo',ritual:''},
+    {i:'19:30',f:'22:30',nome:'Casa da namorada',tipo:'pessoal',ritual:'Presença inteira. Esse tempo não é sobra do dia, é parte dele.'},
+    {i:'22:45',f:'23:15',nome:'Diário e fechamento',tipo:'sol',ritual:'Luz baixa, telas no mínimo, diário no Farol.'},
+    {i:'23:30',f:'08:00',nome:'Sono',tipo:'sono',ritual:'Sete a oito horas. O sono é a metade invisível do treino e do estudo.'}
+  ],
+  aula: [
+    {i:'08:00',f:'08:30',nome:'Despertar e ritual solar',tipo:'sol',ritual:'15 minutos de sol antes de qualquer tela.'},
+    {i:'08:30',f:'10:00',nome:'Faculdade · bloco profundo',tipo:'foco',ritual:'Uma tarefa única, timer, celular fora.'},
+    {i:'10:00',f:'10:15',nome:'Pausa real',tipo:'ocio',ritual:'Sem tela.'},
+    {i:'10:15',f:'11:00',nome:'Direito · missão do protocolo',tipo:'foco',ritual:'Fecha com síntese sem consultar.'},
+    {i:'11:00',f:'12:00',nome:'Almoço',tipo:'corpo',ritual:''},
+    {i:'12:00',f:'12:15',nome:'Ócio criativo · caminhada no sol',tipo:'ocio',ritual:'Uma pergunta em aberto, sem fone.'},
+    {i:'12:30',f:'14:00',nome:'Academia · Quartel',tipo:'corpo',ritual:''},
+    {i:'14:30',f:'16:30',nome:'10K · bloco comercial',tipo:'foco',ritual:'Bloco maior, porque a noite agora é da faculdade.'},
+    {i:'16:30',f:'17:15',nome:'Leitura · 20 páginas',tipo:'foco',ritual:'Ficha na Biblioteca.'},
+    {i:'17:15',f:'18:20',nome:'Jantar e deslocamento',tipo:'corpo',ritual:''},
+    {i:'18:40',f:'22:30',nome:'Faculdade · aula',tipo:'foco',ritual:'Aula com pergunta na mão, não com o corpo presente e a cabeça longe.'},
+    {i:'22:45',f:'23:15',nome:'Diário e fechamento',tipo:'sol',ritual:'Luz baixa, diário no Farol.'},
+    {i:'23:30',f:'08:00',nome:'Sono',tipo:'sono',ritual:''}
+  ],
+  sabado: [
+    {i:'08:30',f:'09:00',nome:'Despertar e sol',tipo:'sol',ritual:'O corpo não sabe que é sábado. Dormir demais aqui custa a segunda-feira inteira.'},
+    {i:'09:00',f:'10:30',nome:'Academia',tipo:'corpo',ritual:'Treino cedo, porque no sábado o dia foge se você deixar.'},
+    {i:'10:45',f:'12:00',nome:'Estudo · bloco livre',tipo:'foco',ritual:'Sem aula na semana, o sábado de manhã é onde o Direito ganha vantagem.'},
+    {i:'12:00',f:'13:00',nome:'Almoço',tipo:'corpo',ritual:''},
+    {i:'14:00',f:'15:30',nome:'Segundo estudo ou lapidação',tipo:'foco',ritual:'Opcional. Se estiver gasto, troca por leitura, não por rolagem de tela.'},
+    {i:'15:30',f:'19:00',nome:'Livre de verdade',tipo:'ocio',ritual:'Descanso sem culpa faz parte. O que quebra atleta não é treino, é treino sem recuperação.'},
+    {i:'19:00',f:'23:00',nome:'Namorada, família, vida',tipo:'pessoal',ritual:''},
+    {i:'23:15',f:'23:40',nome:'Diário',tipo:'sol',ritual:''},
+    {i:'23:45',f:'08:30',nome:'Sono',tipo:'sono',ritual:''}
+  ],
+  domingo: [
+    {i:'09:00',f:'09:30',nome:'Despertar e sol',tipo:'sol',ritual:'Sem pressa, mas com sol.'},
+    {i:'09:30',f:'10:15',nome:'A pesagem do coração',tipo:'foco',ritual:'O único compromisso do domingo e o mais importante do ciclo. Números na balança, três acertos, três melhorias, um ajuste.'},
+    {i:'10:15',f:'10:45',nome:'Ócio longo · caminhada',tipo:'ocio',ritual:'Leva a pergunta que a pesagem levantou.'},
+    {i:'10:45',f:'22:00',nome:'Domingo livre',tipo:'pessoal',ritual:'Sem plano, de propósito. Um dia sem estrutura por semana é o que faz os outros seis aguentarem.'},
+    {i:'22:15',f:'22:45',nome:'Diário e preparo da semana',tipo:'sol',ritual:'Decide qual é a batalha de segunda. Domingo à noite sem plano vira ansiedade.'},
+    {i:'23:00',f:'08:00',nome:'Sono',tipo:'sono',ritual:''}
+  ]
+};
+
+let rotinas = gs('rot-rotinas', null);
+if(!rotinas || typeof rotinas!=='object'){ rotinas = JSON.parse(JSON.stringify(PADRAO)); ss('rot-rotinas', rotinas); }
+Object.keys(PADRAO).forEach(k=>{ if(!Array.isArray(rotinas[k])) rotinas[k]=JSON.parse(JSON.stringify(PADRAO[k])); });
+let extras   = gs('rot-extras', {}) || {};
+let checks   = gs('rot-checks', {}) || {};
+let revisoes = gs('rot-revisoes', []) || [];
+
+function tipoDoDia(d){
+  const dw = new Date(d+'T12:00:00').getDay();
+  if(dw===0) return 'domingo';
+  if(dw===6) return 'sabado';
+  return (d >= AULA_VOLTA) ? 'aula' : 'ferias';
+}
+let modoSemana = gs('rot-modo', null) || (TODAY>=AULA_VOLTA?'aula':'ferias');
+let diaVisto = tipoDoDia(TODAY);
+if(diaVisto==='ferias'||diaVisto==='aula'){ modoSemana=diaVisto; diaVisto='semana'; }
+let editando = null;
+
+function chaveAtiva(){ return diaVisto==='semana' ? modoSemana : diaVisto; }
+function ehHoje(){ return chaveAtiva() === tipoDoDia(TODAY); }
+function agoraMin(){ const n=new Date(); return n.getHours()*60+n.getMinutes(); }
+function dentro(b,m){ const a=mins(b.i), z=mins(b.f); return (z>a) ? (m>=a && m<z) : (m>=a || m<z); }
+function idDe(b){ return b.i+'|'+b.nome; }
+function listaAtiva(){
+  const base=(rotinas[chaveAtiva()]||[]).map(b=>({...b, extra:false}));
+  const ex = ehHoje() ? (extras[TODAY]||[]).map(b=>({...b, extra:true})) : [];
+  return base.concat(ex).sort((a,b)=>mins(a.i)-mins(b.i));
+}
+function guardar(lista){
+  rotinas[chaveAtiva()] = lista.filter(b=>!b.extra).map(b=>({i:b.i,f:b.f,nome:b.nome,tipo:b.tipo,ritual:b.ritual}));
+  ss('rot-rotinas', rotinas);
+  if(ehHoje()){
+    extras[TODAY] = lista.filter(b=>b.extra).map(b=>({i:b.i,f:b.f,nome:b.nome,tipo:b.tipo,ritual:b.ritual}));
+    ss('rot-extras', extras);
+  }
+}
+
+/* ===================== O CÉU ===================== */
+let W = 400;
+function medirCeu(){
+  const vw = Math.max(320, Math.min(window.innerWidth || 400, 1800));
+  const alvo = Math.max(320, Math.min(470, vw*0.98));
+  W = Math.round(vw * 400 / alvo);
+  const svg = $('ceu');
+  svg.setAttribute('viewBox', '0 0 '+W+' 400');
+  svg.style.height = alvo+'px';
+  ['fundoCeu','fade'].forEach(id=>$(id).setAttribute('width', W));
+}
+
+const PARADAS = [
+  {h:0,  c:['#04050D','#0A0E2A','#16204E','#22305C']},
+  {h:5,  c:['#0A0F32','#1B2158','#453168','#7E4560']},
+  {h:7,  c:['#1B2E62','#3E5A9A','#9C6E7E','#F0A05E']},
+  {h:9,  c:['#1E4A92','#3F79C2','#79A8D8','#B8D2E8']},
+  {h:13, c:['#1E5AAE','#3F86D2','#78AEDE','#C4DEEE']},
+  {h:17, c:['#22417E','#4A5C9A','#A0688A','#F0A05E']},
+  {h:19, c:['#101744','#2C2A62','#6A3A6E','#A8515E']},
+  {h:21, c:['#06081C','#0C1030','#1A2350','#26345E']},
+  {h:24, c:['#04050D','#0A0E2A','#16204E','#22305C']},
+];
+function mistura(a,b,t){
+  const n=x=>parseInt(x,16);
+  const p=(c)=>[n(c.slice(1,3)),n(c.slice(3,5)),n(c.slice(5,7))];
+  const A=p(a), B=p(b);
+  return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('');
+}
+function coresDoCeu(m){
+  const h=m/60;
+  let a=PARADAS[0], b=PARADAS[PARADAS.length-1];
+  for(let i=0;i<PARADAS.length-1;i++){ if(h>=PARADAS[i].h && h<=PARADAS[i+1].h){ a=PARADAS[i]; b=PARADAS[i+1]; break; } }
+  const t=(b.h===a.h)?0:(h-a.h)/(b.h-a.h);
+  return [0,1,2,3].map(i=>mistura(a.c[i], b.c[i], t));
+}
+function fatorNoite(m){
+  const h=m/60;
+  if(h<4.6 || h>20.4) return 1;
+  if(h<6.4) return (6.4-h)/1.8;
+  if(h>18.6) return (h-18.6)/1.8;
+  return 0;
+}
+
+/* campo estelar: guardado em fração da largura pra acompanhar qualquer tela */
+const CORES_EST=['#FFFFFF','#E8EEFF','#FFD9A0','#A8C4FF','#FFEFD0'];
+const ESTRELAS=[];
+(function(){
+  let z=7; const rnd=()=>{ z=(z*16807)%2147483647; return z/2147483647; };
+  for(let i=0;i<130;i++) ESTRELAS.push({u:rnd(), y:3+rnd()*238, r:0.45+rnd()*0.75, b:0.2+rnd()*0.5, cor:CORES_EST[Math.floor(rnd()*5)], t:2.6+rnd()*5, d:rnd()*7, tier:1});
+  for(let i=0;i<34;i++)  ESTRELAS.push({u:rnd(), y:4+rnd()*230, r:1.0+rnd()*0.7,  b:0.55+rnd()*0.35, cor:CORES_EST[Math.floor(rnd()*5)], t:3+rnd()*4.5, d:rnd()*6, tier:2});
+  for(let i=0;i<9;i++)   ESTRELAS.push({u:0.05+rnd()*0.9, y:12+rnd()*186, r:1.7+rnd()*0.9, b:0.9+rnd()*0.1, cor:CORES_EST[Math.floor(rnd()*3)], t:3.6+rnd()*3, d:rnd()*5, tier:3});
+})();
+/* poeira densa da via láctea, em coordenada da faixa */
+const VIA=[];
+(function(){
+  let z=99; const rnd=()=>{ z=(z*16807)%2147483647; return z/2147483647; };
+  for(let i=0;i<150;i++) VIA.push({u:rnd(), off:(rnd()-0.5), r:0.35+rnd()*0.6, b:0.15+rnd()*0.55, t:3+rnd()*5, d:rnd()*8});
+})();
+
+/* trilha e cenário, tudo proporcional à largura */
+function pontos(){
+  const c=W/2;
+  return {
+    p:[
+      {x:W*0.15, y:252, l:56, h:52},
+      {x:c,      y:252, l:76, h:78},
+      {x:W*0.85, y:252, l:52, h:46},
+    ],
+    seg:[
+      [[W*0.05,392],[W*0.42,380],[W*0.10,332],[W*0.36,306]],
+      [[W*0.36,306],[W*0.60,288],[W*0.30,272],[c,254]],
+    ]
+  };
+}
+function bez(p,u){
+  const k=1-u;
+  return [
+    k*k*k*p[0][0] + 3*k*k*u*p[1][0] + 3*k*u*u*p[2][0] + u*u*u*p[3][0],
+    k*k*k*p[0][1] + 3*k*k*u*p[1][1] + 3*k*u*u*p[2][1] + u*u*u*p[3][1]
+  ];
+}
+function pontoNaTrilha(t){
+  t=Math.max(0,Math.min(1,t));
+  const S=pontos().seg;
+  return t<0.5 ? bez(S[0], t*2) : bez(S[1], (t-0.5)*2);
+}
+function dTrilha(){
+  const S=pontos().seg, a=S[0], b=S[1];
+  return 'M '+a[0][0].toFixed(1)+' '+a[0][1]+' C '+a[1][0].toFixed(1)+' '+a[1][1]+' '+a[2][0].toFixed(1)+' '+a[2][1]+' '+a[3][0].toFixed(1)+' '+a[3][1]+
+         ' C '+b[1][0].toFixed(1)+' '+b[1][1]+' '+b[2][0].toFixed(1)+' '+b[2][1]+' '+b[3][0].toFixed(1)+' '+b[3][1];
+}
+function onda(y1, amp, cor){
+  let d='M0 '+y1;
+  const n=5;
+  for(let i=0;i<n;i++){
+    const x1=W*(i+0.5)/n, x2=W*(i+1)/n;
+    d+=' Q '+x1.toFixed(1)+' '+(y1+(i%2?amp:-amp)).toFixed(1)+' '+x2.toFixed(1)+' '+y1;
+  }
+  return '<path d="'+d+' L '+W+' 400 L 0 400 Z" fill="'+cor+'"/>';
+}
+
+function renderCeu(){
+  medirCeu();
+  const lista=listaAtiva(), hoje=ehHoje(), m=hoje?agoraMin():600;
+  const feitos=checks[TODAY]||[];
+  const cor=coresDoCeu(m), noite=fatorNoite(m);
+
+  $('ceu0').setAttribute('stop-color',cor[0]);
+  $('ceu1').setAttribute('stop-color',cor[1]);
+  $('ceu2').setAttribute('stop-color',cor[2]);
+  $('ceu3').setAttribute('stop-color',cor[3]);
+
+  /* ---- via láctea: faixa de luz atravessando o céu ---- */
+  if(noite>0.06){
+    const ang=-22, cx=W*0.5, cy=118;
+    let v='<g transform="rotate('+ang+' '+cx+' '+cy+')">';
+    v+='<ellipse cx="'+cx+'" cy="'+cy+'" rx="'+(W*0.78).toFixed(0)+'" ry="46" fill="url(#gVia)" opacity="'+noite.toFixed(2)+'"/>';
+    v+='<ellipse cx="'+(cx-W*0.16).toFixed(0)+'" cy="'+(cy+9)+'" rx="'+(W*0.30).toFixed(0)+'" ry="9" fill="#0A0E26" opacity="'+(noite*0.55).toFixed(2)+'"/>';
+    v+='<ellipse cx="'+(cx+W*0.20).toFixed(0)+'" cy="'+(cy-11)+'" rx="'+(W*0.22).toFixed(0)+'" ry="7" fill="#0A0E26" opacity="'+(noite*0.45).toFixed(2)+'"/>';
+    VIA.forEach(e=>{
+      const x=e.u*W, y=cy+e.off*72;
+      const o=e.b*noite;
+      if(o<=0.03) return;
+      v+='<circle class="pisca" style="--o:'+o.toFixed(2)+';animation-duration:'+e.t.toFixed(1)+'s;animation-delay:-'+e.d.toFixed(1)+'s" cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+e.r.toFixed(2)+'" fill="#DCE6FF" opacity="'+o.toFixed(2)+'"/>';
+    });
+    v+='</g>';
+    pintar($('via'), v);
+  } else pintar($('via'), '');
+
+  /* ---- estrelas em três grandezas ---- */
+  let s='';
+  ESTRELAS.forEach(e=>{
+    const o=e.b*noite;
+    if(o<=0.03) return;
+    const x=e.u*W;
+    if(e.tier>=2) s+='<circle cx="'+x.toFixed(1)+'" cy="'+e.y.toFixed(1)+'" r="'+(e.r*(e.tier===3?7:4.2)).toFixed(1)+'" fill="url(#gEstrela)" opacity="'+(o*(e.tier===3?0.9:0.5)).toFixed(2)+'"/>';
+    s+='<circle class="pisca" style="--o:'+o.toFixed(2)+';animation-duration:'+e.t.toFixed(1)+'s;animation-delay:-'+e.d.toFixed(1)+'s" cx="'+x.toFixed(1)+'" cy="'+e.y.toFixed(1)+'" r="'+e.r.toFixed(2)+'" fill="'+e.cor+'" opacity="'+o.toFixed(2)+'"/>';
+    if(e.tier===3){
+      const L=e.r*5.4;
+      s+='<path d="M'+(x-L).toFixed(1)+' '+e.y.toFixed(1)+' H'+(x+L).toFixed(1)+' M'+x.toFixed(1)+' '+(e.y-L).toFixed(1)+' V'+(e.y+L).toFixed(1)+'" stroke="'+e.cor+'" stroke-width="0.55" opacity="'+(o*0.6).toFixed(2)+'"/>';
+    }
+  });
+  if(noite>0.45){
+    s+='<line class="risco" style="animation-duration:19s;animation-delay:-4s" x1="'+(W*0.86).toFixed(0)+'" y1="30" x2="'+(W*0.92).toFixed(0)+'" y2="14" stroke="#FFF6DC" stroke-width="1.4" stroke-linecap="round"/>';
+    s+='<line class="risco" style="animation-duration:29s;animation-delay:-16s" x1="'+(W*0.32).toFixed(0)+'" y1="74" x2="'+(W*0.38).toFixed(0)+'" y2="58" stroke="#CFDCF5" stroke-width="1.1" stroke-linecap="round"/>';
+  }
+  pintar($('estrelas'), s);
+
+  /* ---- sol ou lua ---- */
+  const dia=(m>=360 && m<=1080);
+  const t=dia ? (m-360)/720 : ((m<360 ? m+360 : m-1080)/720);
+  const ax=W*0.06 + t*W*0.88;
+  const ay=234 - Math.sin(Math.PI*t)*186;
+  let a='';
+  a+='<circle cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="'+(dia?62:52)+'" fill="url(#gAstro)"/>';
+  if(dia){
+    a+='<circle cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="17" fill="#FFF6DC"/>';
+    a+='<circle cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="24" fill="none" stroke="#FFE9B0" stroke-width="0.8" opacity=".35"/>';
+  } else {
+    a+='<circle cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="16" fill="#F5E9CE"/>';
+    a+='<circle cx="'+(ax-6.5).toFixed(1)+'" cy="'+(ay-5).toFixed(1)+'" r="3.4" fill="#DDCCA6" opacity=".8"/>';
+    a+='<circle cx="'+(ax+5.5).toFixed(1)+'" cy="'+(ay+6).toFixed(1)+'" r="2.6" fill="#DDCCA6" opacity=".7"/>';
+    a+='<circle cx="'+(ax+2).toFixed(1)+'" cy="'+(ay-8).toFixed(1)+'" r="1.8" fill="#DDCCA6" opacity=".6"/>';
+    a+='<circle cx="'+ax.toFixed(1)+'" cy="'+ay.toFixed(1)+'" r="26" fill="none" stroke="#F5E9CE" stroke-width="0.7" opacity="'+(0.22*noite).toFixed(2)+'"/>';
+  }
+  pintar($('astro'), a);
+
+  /* ---- a constelação da Ampulheta: asterismo irregular ---- */
+  const cxC = Math.min(W-96, W*0.80), cyC = 78;
+  const P = {
+    a:[cxC-46, cyC-42], b:[cxC+44, cyC-47], c:[cxC-22, cyC-16], d:[cxC+25, cyC-19],
+    n:[cxC+1,  cyC+2 ],
+    e:[cxC-26, cyC+22], f:[cxC+22, cyC+20], g:[cxC-49, cyC+47], h:[cxC+41, cyC+44]
+  };
+  const passou=m/1440;
+  const caiu=Math.round(passou*4);
+  const vis=0.30+noite*0.70;
+  let k='';
+  const fio=(p,q,o)=>'<line x1="'+p[0].toFixed(1)+'" y1="'+p[1].toFixed(1)+'" x2="'+q[0].toFixed(1)+'" y2="'+q[1].toFixed(1)+'" stroke="#9FAEF0" stroke-width="0.6" opacity="'+(o*vis).toFixed(2)+'"/>';
+  k+=fio(P.a,P.b,.30)+fio(P.g,P.h,.30);
+  k+=fio(P.a,P.c,.24)+fio(P.c,P.n,.24)+fio(P.b,P.d,.24)+fio(P.d,P.n,.24);
+  k+=fio(P.n,P.e,.24)+fio(P.e,P.g,.24)+fio(P.n,P.f,.24)+fio(P.f,P.h,.24);
+  const astro=(p,mag,on,tw,cor)=>{
+    const o=(on?(0.6+noite*0.4):0.16*vis);
+    let g='';
+    if(on) g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(mag*4.4).toFixed(1)+'" fill="url(#gEstrela)" opacity="'+(o*0.85).toFixed(2)+'"/>';
+    g+='<circle class="pisca" style="--o:'+o.toFixed(2)+';animation-duration:'+tw+'s;animation-delay:-'+(tw/2).toFixed(1)+'s" cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+mag+'" fill="'+(on?cor:'#4E5788')+'" opacity="'+o.toFixed(2)+'"/>';
+    if(on&&mag>=2.2){
+      const L=mag*4;
+      g+='<path d="M'+(p[0]-L).toFixed(1)+' '+p[1].toFixed(1)+' H'+(p[0]+L).toFixed(1)+' M'+p[0].toFixed(1)+' '+(p[1]-L).toFixed(1)+' V'+(p[1]+L).toFixed(1)+'" stroke="'+cor+'" stroke-width="0.5" opacity="'+(o*0.55).toFixed(2)+'"/>';
+    }
+    return g;
+  };
+  const CIMA=[[P.a,2.6,'#FFEFD0',3.4],[P.b,2.2,'#E8EEFF',4.1],[P.c,1.5,'#FFFFFF',3.8],[P.d,1.7,'#A8C4FF',4.6]];
+  const BAIXO=[[P.g,2.4,'#FFD9A0',3.6],[P.h,2.0,'#FFFFFF',4.3],[P.e,1.6,'#E8EEFF',3.2],[P.f,1.4,'#FFEFD0',4.8]];
+  CIMA.forEach((q,i)=>{ k+=astro(q[0],q[1], i>=caiu, q[3], q[2]); });
+  BAIXO.forEach((q,i)=>{ k+=astro(q[0],q[1], i<caiu, q[3], q[2]); });
+  k+='<circle class="halo-lento" cx="'+P.n[0].toFixed(1)+'" cy="'+P.n[1].toFixed(1)+'" r="13" fill="url(#gHalo)" opacity="'+(0.35+noite*0.55).toFixed(2)+'"/>';
+  k+='<circle class="cintila" cx="'+P.n[0].toFixed(1)+'" cy="'+P.n[1].toFixed(1)+'" r="2.6" fill="#FFFFFF" opacity="'+(0.6+noite*0.4).toFixed(2)+'"/>';
+  const GRAOS=[[-2,1.1,3.4,0],[2,0.8,4.3,1.0],[0,1.3,3.7,2.0],[-3,0.7,4.9,2.9],[3,1.0,4.0,3.7],[1,0.6,5.4,4.6]];
+  GRAOS.forEach(g=>{
+    k+='<circle class="grao" style="animation-duration:'+g[2]+'s;animation-delay:-'+g[3]+'s" cx="'+(P.n[0]+g[0]).toFixed(1)+'" cy="'+(P.n[1]-4).toFixed(1)+'" r="'+g[1]+'" fill="#FFE9B0" opacity="'+(0.45+noite*0.55).toFixed(2)+'"/>';
+  });
+  pintar($('constelacao'), k);
+  $('constelacao').setAttribute('opacity', (0.13 + noite*0.87).toFixed(2));
+
+  /* ---- nuvens e brilho do horizonte ---- */
+  const hh=m/60;
+  let fx=0;
+  if(hh>4.4&&hh<9.6) fx=1-Math.abs(hh-7)/2.6;
+  else if(hh>15.4&&hh<20.6) fx=1-Math.abs(hh-18)/2.6;
+  let nu='';
+  if(fx>0.04){
+    const cc=cor[3];
+    [[0.16,150,0.22,5.2,44],[0.52,134,0.28,4.2,58],[0.34,172,0.19,6.0,50],[0.78,160,0.24,4.6,66]].forEach((L,i)=>{
+      nu+='<ellipse class="deriva" style="animation-duration:'+L[4]+'s;animation-delay:-'+(i*9)+'s" cx="'+(W*L[0]).toFixed(0)+'" cy="'+L[1]+'" rx="'+(W*L[2]).toFixed(0)+'" ry="'+L[3]+'" fill="'+cc+'" opacity="'+(fx*0.55).toFixed(2)+'"/>';
+    });
+    nu+='<rect x="0" y="186" width="'+W+'" height="66" fill="url(#gBrilhoHor)" opacity="'+fx.toFixed(2)+'"/>';
+  }
+  if(noite>0.2) nu+='<rect x="0" y="196" width="'+W+'" height="56" fill="url(#gAr)" opacity="'+(noite*0.75).toFixed(2)+'"/>';
+  pintar($('nuvens'), nu);
+
+  /* ---- pirâmides ---- */
+  const PT=pontos();
+  const TURNOS=[{a:0,z:720},{a:720,z:1080},{a:1080,z:1440}];
+  const feito=TURNOS.map(t=>{
+    const doTurno=lista.filter(b=>{ const x=mins(b.i); return x>=t.a && x<t.z; });
+    return doTurno.length>0 && doTurno.every(b=>feitos.indexOf(idDe(b))>=0);
+  });
+  pintar($('horizonte'), '<rect x="0" y="248" width="'+W+'" height="152" fill="#080C1E"/>');
+  let p='';
+  PT.p.forEach((q,i)=>{
+    const face=['#10142E','#181D42','#10142E'][i];
+    p+='<polygon points="'+(q.x-q.l).toFixed(1)+','+q.y+' '+q.x.toFixed(1)+','+(q.y-q.h)+' '+(q.x+q.l).toFixed(1)+','+q.y+'" fill="'+face+'"/>';
+    p+='<polygon points="'+q.x.toFixed(1)+','+(q.y-q.h)+' '+(q.x+q.l).toFixed(1)+','+q.y+' '+(q.x+q.l*0.34).toFixed(1)+','+q.y+'" fill="#0A0D22" opacity=".6"/>';
+    if(hoje && feito[i]){
+      p+='<circle cx="'+q.x.toFixed(1)+'" cy="'+(q.y-q.h+4)+'" r="22" fill="url(#gHalo)"/>';
+      p+='<polygon points="'+q.x.toFixed(1)+','+(q.y-q.h)+' '+(q.x+11).toFixed(1)+','+(q.y-q.h+13)+' '+(q.x-11).toFixed(1)+','+(q.y-q.h+13)+'" fill="#F0C56A"/>';
+    } else {
+      p+='<polygon points="'+q.x.toFixed(1)+','+(q.y-q.h)+' '+(q.x+9).toFixed(1)+','+(q.y-q.h+11)+' '+(q.x-9).toFixed(1)+','+(q.y-q.h+11)+'" fill="#252B54"/>';
+    }
+  });
+  pintar($('piramides'), p);
+
+  /* ---- dunas ---- */
+  pintar($('dunas'), onda(262,10,'#11152F')+onda(298,13,'#181D3C')+onda(344,11,'#212648'));
+  $('trilha').setAttribute('d', dTrilha());
+
+  /* ---- lampiões ---- */
+  let l='';
+  lista.forEach((b,i)=>{
+    const pt=pontoNaTrilha(mins(b.i)/1440);
+    const tp=TIPOS[b.tipo]||TIPOS.foco;
+    const aceso=hoje && feitos.indexOf(idDe(b))>=0;
+    const ativo=hoje && dentro(b,m);
+    if(ativo){
+      l+='<circle class="pulsa" cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="15" fill="url(#gBrasa)"/>';
+      l+='<circle class="lanterna" data-i="'+i+'" cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="5" fill="#FFC98A"/>';
+    } else if(aceso){
+      l+='<circle cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="12" fill="url(#gHalo)"/>';
+      l+='<circle class="lanterna" data-i="'+i+'" cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="4" fill="'+tp.c+'"/>';
+    } else {
+      l+='<circle class="lanterna" data-i="'+i+'" cx="'+pt[0].toFixed(1)+'" cy="'+pt[1].toFixed(1)+'" r="3.2" fill="#2A3058" stroke="#434A7C" stroke-width="0.8"/>';
+    }
+  });
+  pintar($('lampioes'), l);
+  $('lampioes').querySelectorAll('.lanterna').forEach(n=>{
+    n.addEventListener('click', ()=>{
+      editando=+n.getAttribute('data-i');
+      renderMarcos();
+      const alvo=document.querySelectorAll('.marco')[editando];
+      if(alvo) alvo.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+  });
+
+  /* ---- o viajante e o templo ---- */
+  const acesos = hoje ? lista.filter(b=>feitos.indexOf(idDe(b))>=0).length : 0;
+  const grau = lista.length ? acesos/lista.length : 0;
+  const central = PT.p[1];
+  const px = central.x, pyBase = central.y, apice = central.y - central.h;
+
+  function figura(x, y, escala, virado){
+    let v='<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') scale('+(virado?-escala:escala)+' '+escala+')">';
+    v+='<g class="passo">';
+    v+='<ellipse cx="0" cy="1.5" rx="9" ry="2.4" fill="#04060E" opacity=".55"/>';
+    v+='<path d="M-2 0 L-5.4 -10 L-1.4 -10.6 Z" fill="#161B36"/>';
+    v+='<path d="M2.4 0 L5.4 -10 L1.4 -10.6 Z" fill="#161B36"/>';
+    v+='<path d="M-6.4 -0.6 C-7.6 -9 -5.4 -16.6 0 -17.8 C5.4 -16.6 7.6 -9 6.4 -0.6 Z" fill="#232A52"/>';
+    v+='<path d="M0 -17.8 C5.4 -16.6 7.6 -9 6.4 -0.6 L0 -0.6 Z" fill="#3A427A"/>';
+    v+='<path d="M-6.2 -3.4 C-11 -6.4 -13.6 -12 -12 -17.4 C-9.4 -13.4 -7.6 -8.4 -6.6 -1.6 Z" fill="#1B2144"/>';
+    v+='<path d="M6.4 -2.6 C 10.4 -5 12.6 -9.6 11.6 -14.6" fill="none" stroke="#3A427A" stroke-width="1.8" stroke-linecap="round"/>';
+    v+='<circle cx="0" cy="-20.6" r="3.8" fill="#2E3562"/>';
+    v+='<path d="M-4 -21 C-4 -24.8 -2 -26.2 0 -26.2 C2 -26.2 4 -24.8 4 -21 C2.6 -18.6 -2.6 -18.6 -4 -21 Z" fill="#454E8E"/>';
+    v+='<path d="M3.6 -22.4 C 7.6 -21 8.6 -16.4 7.4 -11.8" fill="none" stroke="#454E8E" stroke-width="1.6" stroke-linecap="round"/>';
+    v+='<path d="M2.2 -21.8 C 4.6 -21 5.4 -19 5 -17" fill="none" stroke="#C9A86A" stroke-width="0.8" opacity=".8"/>';
+    v+='<path d="M6.4 -1 C 7.4 -8 7.2 -13 6.2 -16.6" fill="none" stroke="#C9A86A" stroke-width="0.9" opacity=".75"/>';
+    v+='<line x1="8.6" y1="-19" x2="10.2" y2="1" stroke="#5A4E33" stroke-width="1.3" stroke-linecap="round"/>';
+    v+='<circle cx="10.4" cy="-5" r="7" fill="url(#gHalo)" opacity=".95"/>';
+    v+='<circle cx="10.4" cy="-5" r="1.8" fill="#FFF6DC"/>';
+    v+='</g></g>';
+    return v;
+  }
+
+  if(!hoje){
+    pintar($('portal'),''); pintar($('viajante'),'');
+  } else if(grau >= 1){
+    /* templo aberto: ele entrou, e a pirâmide devolve a luz ao céu */
+    let pt='';
+    pt+='<polygon class="facho" points="'+(px-13).toFixed(1)+','+apice+' '+(px+13).toFixed(1)+','+apice+' '+(px+52).toFixed(1)+',-40 '+(px-52).toFixed(1)+',-40" fill="url(#gFacho)"/>';
+    pt+='<circle cx="'+px.toFixed(1)+'" cy="'+apice+'" r="30" fill="url(#gHalo)"/>';
+    pt+='<ellipse cx="'+px.toFixed(1)+'" cy="'+(pyBase+2)+'" rx="46" ry="11" fill="url(#gHalo)" opacity=".8"/>';
+    pt+='<polygon class="portal" points="'+(px-11).toFixed(1)+','+pyBase+' '+(px+11).toFixed(1)+','+pyBase+' '+(px+8).toFixed(1)+','+(pyBase-30)+' '+(px-8).toFixed(1)+','+(pyBase-30)+'" fill="url(#gPorta)"/>';
+    pt+='<path d="M'+(px-15)+' '+(pyBase-32)+' H'+(px+15)+'" stroke="#F0C56A" stroke-width="1.6" opacity=".85"/>';
+    pt+='<path d="M'+(px-24)+' '+(pyBase-6)+' L'+(px-15)+' '+(pyBase-34)+' M'+(px+24)+' '+(pyBase-6)+' L'+(px+15)+' '+(pyBase-34)+'" stroke="#C9A86A" stroke-width="1.1" opacity=".55" fill="none"/>';
+    pintar($('portal'), pt);
+    pintar($('viajante'), '');
+  } else if(grau >= 0.8){
+    /* a porta se abre e ele caminha pro limiar */
+    let pt='';
+    pt+='<ellipse cx="'+px.toFixed(1)+'" cy="'+(pyBase+2)+'" rx="34" ry="8" fill="url(#gHalo)" opacity=".6"/>';
+    pt+='<polygon class="portal" points="'+(px-10).toFixed(1)+','+pyBase+' '+(px+10).toFixed(1)+','+pyBase+' '+(px+7.4).toFixed(1)+','+(pyBase-27)+' '+(px-7.4).toFixed(1)+','+(pyBase-27)+'" fill="url(#gPorta)" opacity=".8"/>';
+    pt+='<path d="M'+(px-13)+' '+(pyBase-29)+' H'+(px+13)+'" stroke="#F0C56A" stroke-width="1.3" opacity=".7"/>';
+    pintar($('portal'), pt);
+    const dist = 30 - (grau-0.8)/0.2*16;
+    pintar($('viajante'), figura(px-dist, pyBase+9, 1.05, false));
+  } else {
+    pintar($('portal'), '');
+    const pv=pontoNaTrilha(m/1440);
+    pintar($('viajante'), figura(pv[0], pv[1]+3, 1.05, false));
+  }
+}
+
+/* ===================== A ESTELA ===================== */
+function renderEstela(){
+  const lista=listaAtiva(), hoje=ehHoje(), m=agoraMin();
+  const feitos=checks[TODAY]||[];
+  const el=$('estela');
+  if(!hoje){
+    el.style.setProperty('--c','#7C8FE0');
+    $('eEt').textContent='outra trilha';
+    $('eFx').textContent=lista.length+' lampiões';
+    $('eNome').textContent=({semana:'Dia de semana',sabado:'Sábado',domingo:'Domingo'})[diaVisto];
+    $('eConta').textContent='—';
+    $('eLeg').textContent='o céu só corre no dia de hoje';
+    $('eRitual').textContent='Você está vendo a trilha de outro dia. Dá pra editar tudo por aqui, mas os lampiões só acendem no dia certo.';
+    $('eBtn').style.display='none';
+    return;
+  }
+  $('eBtn').style.display='block';
+  const atual=lista.find(b=>dentro(b,m));
+  if(atual){
+    const t=TIPOS[atual.tipo];
+    let resta=mins(atual.f)-m; if(resta<0) resta+=1440;
+    const aceso=feitos.indexOf(idDe(atual))>=0;
+    el.style.setProperty('--c', t.c);
+    $('eEt').textContent = aceso ? 'lampião aceso' : 'o lampião de agora';
+    $('eFx').textContent = atual.i+' — '+atual.f;
+    $('eNome').textContent = atual.nome;
+    $('eConta').textContent = resta>=60 ? Math.floor(resta/60)+'h'+String(resta%60).padStart(2,'0') : resta+' min';
+    $('eLeg').textContent = 'até o próximo trecho';
+    $('eRitual').textContent = atual.ritual || 'Sem ritual escrito. Toca em cinzelar na trilha e escreve o que faz esse trecho funcionar.';
+    $('eBtn').textContent = aceso ? 'lampião já aceso' : 'Acender o lampião';
+    $('eBtn').className = 'acender'+(aceso?' feito':'');
+  } else {
+    const prox=lista.filter(b=>mins(b.i)>m).sort((a,b)=>mins(a.i)-mins(b.i))[0];
+    el.style.setProperty('--c','#6A6D96');
+    $('eEt').textContent='trecho escuro';
+    $('eFx').textContent=hhmm(m);
+    $('eNome').textContent='Nenhum lampião aqui';
+    $('eConta').textContent = prox ? prox.i : '—';
+    $('eLeg').textContent = prox ? 'o próximo é '+prox.nome.slice(0,24).toLowerCase() : 'nada mais previsto hoje';
+    $('eRitual').textContent='Este pedaço da trilha está no escuro. Ou você planta um lampião aqui, ou atravessa ele às cegas.';
+    $('eBtn').textContent='+ Plantar um lampião agora';
+    $('eBtn').className='acender feito';
+  }
+}
+function acenderAgora(){
+  const b=listaAtiva().find(x=>dentro(x,agoraMin()));
+  if(b) acender(idDe(b), b.nome, b.i); else novoExtra();
+}
+function acender(id, nome, hora){
+  if(!ehHoje()) return;
+  const arr=checks[TODAY]||[];
+  const p=arr.indexOf(id);
+  if(p>=0){ arr.splice(p,1); } else { arr.push(id); logar('Lampião aceso · '+hora+' '+nome); }
+  checks[TODAY]=arr; ss('rot-checks',checks);
+  renderTudo();
+}
+
+/* ===================== A TRILHA (lista) ===================== */
+function renderMarcos(){
+  const lista=listaAtiva(), hoje=ehHoje(), m=agoraMin();
+  const feitos=checks[TODAY]||[];
+  const box=$('marcos'); box.innerHTML='';
+  let n=0;
+  lista.forEach((b,i)=>{
+    const t=TIPOS[b.tipo]||TIPOS.foco;
+    const ativo=hoje && dentro(b,m);
+    const aceso=hoje && feitos.indexOf(idDe(b))>=0;
+    const perdido=hoje && !aceso && !ativo && mins(b.f)>mins(b.i) && mins(b.f)<=m;
+    if(aceso) n++;
+    const el=document.createElement('div');
+    el.className='marco'+(aceso?' aceso':'')+(ativo?' agora':'')+(perdido?' perdido':'')+(b.extra?' hoje-so':'');
+    el.style.setProperty('--c', t.c);
+    el.innerHTML =
+      '<div class="hora">'+b.i+'<small>'+b.f+'</small></div>'+
+      (b.extra?'<div class="fita">hoje</div>':'')+
+      '<div class="nome">'+esc(b.nome)+'<i>'+t.n+'</i></div>'+
+      '<button class="cinzel">cinzelar</button>'+
+      '<div class="chama"></div>';
+    el.querySelector('.chama').onclick=()=>acender(idDe(b), b.nome, b.i);
+    el.querySelector('.cinzel').onclick=()=>{ editando=(editando===i?null:i); renderMarcos(); };
+    box.appendChild(el);
+    if(editando===i) box.appendChild(gaveta(b,i));
+  });
+  $('trLeg').textContent = hoje ? (n+' de '+lista.length+' acesos') : (lista.length+' lampiões');
+}
+function gaveta(b,i){
+  const g=document.createElement('div'); g.className='gaveta';
+  g.innerHTML =
+    '<div class="par">'+
+      '<div><label>Começa</label><input type="time" id="gi" value="'+b.i+'"></div>'+
+      '<div><label>Termina</label><input type="time" id="gf" value="'+b.f+'"></div>'+
+    '</div>'+
+    '<div style="margin-bottom:10px"><label>Nome do trecho</label><input id="gn" value="'+esc(b.nome)+'"></div>'+
+    '<div style="margin-bottom:10px"><label>Natureza</label><select id="gt">'+
+      Object.keys(TIPOS).map(k=>'<option value="'+k+'"'+(k===b.tipo?' selected':'')+'>'+TIPOS[k].n+'</option>').join('')+'</select></div>'+
+    '<div><label>O ritual deste trecho</label><textarea id="gr">'+esc(b.ritual||'')+'</textarea></div>'+
+    '<div class="fim"><button class="b1" onclick="salvarMarco('+i+')">Gravar</button><button class="b2" onclick="apagarMarco('+i+')">Apagar</button></div>';
+  return g;
+}
+function salvarMarco(i){
+  const lista=listaAtiva(), b=lista[i];
+  b.i=$('gi').value||b.i; b.f=$('gf').value||b.f;
+  b.nome=$('gn').value.trim()||b.nome; b.tipo=$('gt').value; b.ritual=$('gr').value.trim();
+  guardar(lista); logar('Trilha cinzelada · '+b.i+' '+b.nome);
+  editando=null; renderTudo();
+}
+function apagarMarco(i){
+  const lista=listaAtiva(); lista.splice(i,1);
+  guardar(lista); editando=null; renderTudo();
+}
+function novoExtra(){
+  if(!ehHoje()){
+    const t=tipoDoDia(TODAY);
+    diaVisto=(t==='domingo'?'domingo':(t==='sabado'?'sabado':'semana'));
+    if(t==='ferias'||t==='aula') modoSemana=t;
+  }
+  const ex=extras[TODAY]||[];
+  const base=Math.ceil(agoraMin()/15)*15;
+  ex.push({i:hhmm(base), f:hhmm(base+60), nome:'Lampião de hoje', tipo:'foco', ritual:''});
+  extras[TODAY]=ex; ss('rot-extras',extras);
+  logar('Lampião de hoje plantado na trilha');
+  renderTudo();
+  editando=listaAtiva().findIndex(b=>b.extra && b.nome==='Lampião de hoje');
+  renderMarcos();
+}
+function novoFixo(){
+  const lista=listaAtiva();
+  lista.push({i:'12:00',f:'13:00',nome:'Lampião fixo novo',tipo:'foco',ritual:'',extra:false});
+  lista.sort((a,b)=>mins(a.i)-mins(b.i));
+  guardar(lista); renderTudo();
+  editando=listaAtiva().findIndex(b=>b.nome==='Lampião fixo novo');
+  renderMarcos();
+}
+
+/* ===================== seletores ===================== */
+function renderSeletor(){
+  const ht=tipoDoDia(TODAY);
+  const abas=[['semana','Semana'],['sabado','Sábado'],['domingo','Domingo']];
+  $('seletorDia').innerHTML = abas.map(function(a){
+    const k=a[0], n=a[1];
+    const eh=(k==='semana')?(ht==='ferias'||ht==='aula'):ht===k;
+    return '<button class="'+(diaVisto===k?'on ':'')+(eh?'hoje':'')+'" onclick="verDia(\''+k+'\')">'+n+'</button>';
+  }).join('');
+  $('modoSemana').style.display = diaVisto==='semana'?'flex':'none';
+  $('areaDomingo').style.display = diaVisto==='domingo'?'block':'none';
+  document.querySelectorAll('#modoSemana button').forEach(b=>b.classList.toggle('on', b.dataset.m===modoSemana));
+}
+function verDia(k){ diaVisto=k; editando=null; renderTudo(); }
+document.querySelectorAll('#modoSemana button').forEach(b=>{
+  b.onclick=()=>{ modoSemana=b.dataset.m; ss('rot-modo',modoSemana); editando=null; renderTudo(); };
+});
+
+/* ===================== sinos (.ics) ===================== */
+function pad(n){ return String(n).padStart(2,'0'); }
+function baixarAlarmes(){
+  const lista=listaAtiva().filter(b=>b.tipo!=='sono');
+  const DIAS={ferias:['MO','TU','WE','TH','FR'],aula:['MO','TU','WE','TH'],sabado:['SA'],domingo:['SU']};
+  const byday=(DIAS[chaveAtiva()]||['MO','TU','WE','TH','FR']).join(',');
+  const h=new Date();
+  const base=h.getFullYear()+pad(h.getMonth()+1)+pad(h.getDate());
+  const limpo=s=>String(s||'').replace(/[\\,;]/g,' ').replace(/\r?\n/g,' ');
+  let ics=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//A Forja//A Travessia//PT-BR','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  lista.forEach((b,idx)=>{
+    let dataFim=base;
+    if(mins(b.f)<=mins(b.i)){ const d2=new Date(h); d2.setDate(d2.getDate()+1); dataFim=d2.getFullYear()+pad(d2.getMonth()+1)+pad(d2.getDate()); }
+    ics=ics.concat([
+      'BEGIN:VEVENT','UID:travessia-'+chaveAtiva()+'-'+idx+'-'+base+'@jvx','DTSTAMP:'+base+'T000000Z',
+      'DTSTART:'+base+'T'+b.i.replace(':','')+'00','DTEND:'+dataFim+'T'+b.f.replace(':','')+'00',
+      'RRULE:FREQ=WEEKLY;BYDAY='+byday,'SUMMARY:'+limpo(b.nome),'DESCRIPTION:'+limpo(b.ritual).slice(0,240),
+      'BEGIN:VALARM','TRIGGER:-PT5M','ACTION:DISPLAY','DESCRIPTION:'+limpo(b.nome),'END:VALARM','END:VEVENT'
+    ]);
+  });
+  ics.push('END:VCALENDAR');
+  const blob=new Blob([ics.join('\r\n')],{type:'text/calendar;charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob); a.download='travessia-'+chaveAtiva()+'.ics';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+  logar('Sinos gerados · '+lista.length+' trechos de '+chaveAtiva());
+}
+
+/* ===================== a pesagem ===================== */
+function salvarRevisao(){
+  const r={d:TODAY,numeros:$('rNumeros').value.trim(),acertos:$('rAcertos').value.trim(),
+    melhorias:$('rMelhorias').value.trim(),padrao:$('rPadrao').value.trim(),ajuste:$('rAjuste').value.trim()};
+  if(!r.acertos && !r.melhorias && !r.ajuste){ $('rAcertos').focus(); return; }
+  revisoes.push(r); ss('rot-revisoes',revisoes);
+  ['rNumeros','rAcertos','rMelhorias','rPadrao','rAjuste'].forEach(k=>$(k).value='');
+  logar('Semana pesada'+(r.ajuste?' · ajuste: '+r.ajuste.slice(0,60):''));
+  renderRevisoes();
+}
+function renderRevisoes(){
+  const box=$('revisoes'); if(!box) return; box.innerHTML='';
+  if(!revisoes.length){ box.innerHTML='<div class="passada">Nenhuma semana pesada ainda. A primeira dói mais e ensina mais.</div>'; return; }
+  revisoes.slice().reverse().slice(0,8).forEach(r=>{
+    const el=document.createElement('div'); el.className='passada';
+    el.innerHTML='<b>'+r.d.split('-').reverse().join('.')+(r.numeros?' · '+esc(r.numeros):'')+'</b>'+
+      (r.ajuste?'Ajuste: '+esc(r.ajuste):'')+(r.padrao?'<br>Padrão: '+esc(r.padrao):'');
+    box.appendChild(el);
+  });
+}
+
+/* ===================== O REGISTRO ===================== */
+const SALA='travessia';
+function logar(msg){
+  try{
+    const L=gs('log',{})||{};
+    L[TODAY]=L[TODAY]||[];
+    const u=L[TODAY][L[TODAY].length-1];
+    const h=new Date().toTimeString().slice(0,5);
+    if(u && u.s===SALA && u.m===msg && u.h===h) return;
+    L[TODAY].push({h:h,s:SALA,m:msg});
+    const ds=Object.keys(L).sort(); while(ds.length>90){ delete L[ds.shift()]; }
+    ss('log',L); renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(l){ return l.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L=gs('log',{})||{};
+  $('rgData').textContent=rgData(TODAY);
+  const hoje=rgFiltra(L[TODAY]||[]);
+  const box=$('rgHoje'); box.innerHTML='';
+  if(!hoje.length){ box.innerHTML='<div class="rg-vazio">Nenhum lampião aceso hoje ainda.</div>'; }
+  else hoje.slice().reverse().forEach(e=>{
+    const d=document.createElement('div'); d.className='rg-linha';
+    d.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+    box.appendChild(d);
+  });
+  const ds=Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx=$('rgDias'); cx.innerHTML='';
+  ds.forEach(d=>{
+    const its=rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML='<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+
+function renderTudo(){
+  renderSeletor(); renderCeu(); renderEstela(); renderMarcos();
+  const dn=Math.max(1, Math.round((new Date(TODAY)-new Date(START))/86400000)+1);
+  $('chipDia').textContent = dn<=30 ? ('DIA '+dn+' DE 30') : 'CICLO VENCIDO';
+}
+renderTudo(); renderRevisoes(); renderRegistro();
+setInterval(()=>{ renderCeu(); renderEstela(); renderMarcos(); }, 60000);
+let redraw=null;
+window.addEventListener('resize', ()=>{ clearTimeout(redraw); redraw=setTimeout(renderCeu, 180); });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) renderTudo(); });
+</script>
+</body>
+</html>

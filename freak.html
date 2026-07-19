@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0B0D0A">
+<title>O QUARTEL · Freak</title>
+<link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rubik:ital,wght@0,300;0,400;0,600;0,700;1,500&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0B0D0A; --panel:#12150F; --panel2:#181C13; --line:#242B1D; --line2:#37402C;
+    --text:#E8E4D8; --muted:#93967F; --dim:#5C6050;
+    --sinal:#E2543A; --sinal-hi:#FF8A6B; --sinal-soft:#E2543A22;
+    --oliva:#8A9B5C; --khaki:#C9BE96; --aco:#9BA8B0;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Rubik',sans-serif;
+    max-width:660px;margin:0 auto;
+    padding:max(14px,env(safe-area-inset-top)) 15px 60px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.5;
+    background:
+      linear-gradient(63deg, rgba(138,155,92,.045) 0 22%, transparent 22% 100%),
+      linear-gradient(-48deg, rgba(155,168,176,.035) 0 18%, transparent 18% 100%);
+  }
+  .wrap{position:relative;z-index:1}
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+  .back{color:var(--muted);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase}
+  .patente-mini{display:flex;align-items:center;gap:9px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 12px}
+  .chevrons{display:flex;flex-direction:column-reverse;gap:2px}
+  .chev{width:22px;height:7px;clip-path:polygon(0 100%, 50% 0, 100% 100%, 100% 60%, 50% -40%, 0 60%);background:var(--line2)}
+  .chev.on{background:var(--sinal)}
+  .pat-nome{font-family:'Black Ops One';font-size:12px;text-transform:uppercase;color:var(--khaki);line-height:1.1}
+  .pat-sub{font-family:'Share Tech Mono',monospace;font-size:8px;color:var(--dim);letter-spacing:.06em;text-transform:uppercase}
+
+  .hero{text-align:center;margin-bottom:14px}
+  .hero .eyebrow{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.5em;text-transform:uppercase;color:var(--oliva);margin-bottom:8px}
+  .hero h1{font-family:'Black Ops One';font-size:clamp(32px,8.5vw,46px);line-height:1;text-transform:uppercase}
+  .hero h1 em{font-style:normal;color:var(--sinal)}
+  .lema{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;letter-spacing:.08em;line-height:1.8;text-transform:uppercase}
+
+  .sec-tag{
+    display:flex;align-items:center;gap:10px;margin:20px 0 10px;
+    font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--dim);text-transform:uppercase;
+  }
+  .sec-tag b{font-family:'Black Ops One';font-size:15px;letter-spacing:.06em;color:var(--text)}
+  .sec-tag b i{font-style:normal;color:var(--sinal)}
+  .sec-tag::after{content:"";flex:1;height:4px;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2)}
+
+  /* ===== §01 escala de serviço ===== */
+  .escala{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+  .dia{
+    border:1px solid var(--line);border-radius:7px;background:var(--panel);padding:9px 2px 8px;
+    text-align:center;cursor:pointer;transition:.15s;position:relative;
+  }
+  .dia .wd{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+  .dia .cod{font-family:'Black Ops One';font-size:15px;margin-top:3px;color:var(--muted)}
+  .dia .st{width:6px;height:6px;border-radius:50%;background:var(--line2);margin:5px auto 0}
+  .dia.sel{border-color:var(--khaki)}
+  .dia.hoje{border-color:var(--sinal)}
+  .dia.hoje .wd{color:var(--sinal)}
+  .dia.feito .st{background:var(--sinal);box-shadow:0 0 5px rgba(226,84,58,.6)}
+  .dia.folga .cod{color:var(--dim);font-size:10px;letter-spacing:.06em;padding-top:4px}
+  .escala-cap{font-family:'Share Tech Mono',monospace;font-size:8.5px;color:var(--dim);letter-spacing:.08em;margin-top:8px;text-align:center;text-transform:uppercase}
+
+  /* ===== §02 ordem do dia ===== */
+  .ordem-dia{
+    background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;position:relative;
+  }
+  .od-head{
+    background:linear-gradient(90deg, var(--sinal-soft), transparent 70%);
+    border-bottom:1px solid var(--line);padding:14px 16px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  }
+  .od-carimbo{
+    font-family:'Black Ops One';font-size:11px;letter-spacing:.14em;color:var(--sinal);
+    border:2px solid var(--sinal);border-radius:4px;padding:3px 9px;transform:rotate(-2deg);text-transform:uppercase;
+  }
+  .od-title{font-family:'Black Ops One';font-size:19px;text-transform:uppercase;flex:1}
+  .od-sub{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;width:100%;text-transform:uppercase}
+  .od-body{padding:6px 16px 16px}
+  .exr{
+    display:grid;grid-template-columns:64px 1fr;gap:12px;padding:11px 0;border-bottom:1px dashed var(--line2);
+  }
+  .exr:last-of-type{border:none}
+  .exr .srs{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--sinal);padding-top:1px}
+  .exr b{font-weight:600;font-size:13.5px}
+  .exr small{display:block;color:var(--muted);font-size:11px;margin-top:2px;line-height:1.55}
+  .od-done{
+    margin:12px 16px 16px;width:calc(100% - 32px);
+    font-family:'Black Ops One';font-size:13px;letter-spacing:.08em;text-transform:uppercase;
+    background:var(--sinal);color:#0B0D0A;border:none;border-radius:8px;padding:13px;cursor:pointer;
+  }
+  .od-done.ok{background:var(--oliva);color:#0B0D0A}
+  .od-done:active{transform:scale(.98)}
+  .od-folga{padding:26px 16px;text-align:center;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.1em;line-height:2;text-transform:uppercase}
+  .od-folga b{color:var(--oliva)}
+
+  /* ===== §03 doutrina ===== */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;position:relative}
+  .dout{display:flex;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line2);font-size:12.5px;line-height:1.6;align-items:baseline}
+  .dout:last-child{border:none}
+  .dout i{font-family:'Black Ops One';font-style:normal;color:var(--sinal);font-size:12px;min-width:28px}
+  .dout b{display:block;font-size:13px;text-transform:uppercase}
+  .dout small{color:var(--muted);font-size:11.5px}
+  .ciencia{
+    margin-top:12px;background:var(--panel2);border:1px solid var(--line2);border-radius:8px;padding:11px 13px;
+    font-size:11.5px;color:var(--muted);line-height:1.65;
+  }
+  .ciencia b{color:var(--khaki);font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:4px}
+
+  /* ===== §04 rações ===== */
+  .racao{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .rc{background:var(--panel2);border:1px solid var(--line);border-radius:8px;padding:12px 8px;text-align:center}
+  .rc b{font-family:'Share Tech Mono',monospace;font-size:17px;color:var(--sinal);display:block}
+  .rc span{font-family:'Share Tech Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .rc-nota{font-size:11.5px;color:var(--muted);line-height:1.65;margin-top:11px}
+
+  /* ===== §05 registro ===== */
+  input[type=number],select{
+    width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:10px 12px;color:var(--text);font-family:'Rubik';font-size:13.5px;
+  }
+  input:focus,select:focus{outline:none;border-color:var(--sinal)}
+  .btn{
+    font-family:'Black Ops One';font-size:12px;letter-spacing:.06em;text-transform:uppercase;
+    background:var(--sinal);color:#0B0D0A;border:none;border-radius:8px;padding:10px 16px;cursor:pointer;
+  }
+  .btn:active{transform:scale(.96)}
+  .tabs2{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:13px}
+  .t2{font-family:'Share Tech Mono',monospace;font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--dim);background:var(--panel2);border:1px solid var(--line);border-radius:7px;padding:9px 4px;cursor:pointer}
+  .t2.on{color:#0B0D0A;background:var(--khaki);border-color:var(--khaki)}
+  .sub2{display:none}.sub2.on{display:block}
+  .reg-row{display:grid;grid-template-columns:1.4fr .7fr .7fr auto;gap:7px;margin-bottom:8px}
+  .peso-row{display:grid;grid-template-columns:1fr auto;gap:7px;margin-bottom:8px}
+  .reg-item{display:flex;gap:10px;align-items:baseline;padding:8px 2px;border-bottom:1px solid var(--line);font-size:12.5px}
+  .reg-item:last-child{border:none}
+  .reg-item .rd{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--dim);min-width:42px}
+  .reg-item .rn{flex:1;font-weight:600}
+  .reg-item .rv{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--sinal)}
+  .reg-item .up{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--oliva)}
+  .reg-item .del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:12px}
+
+  /* cardio + água */
+  .quick{display:flex;gap:7px;margin-bottom:10px}
+  .qk{flex:1;font-family:'Share Tech Mono',monospace;font-size:11px;background:var(--panel2);border:1px solid var(--line2);color:var(--khaki);border-radius:8px;padding:11px;cursor:pointer}
+  .qk:active{border-color:var(--sinal);color:var(--sinal)}
+  .medidor{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.06em;text-align:center;margin-bottom:10px;text-transform:uppercase}
+  .medidor b{color:var(--sinal);font-size:16px}
+  .copos{display:grid;grid-template-columns:repeat(12,1fr);gap:4px;margin-bottom:10px}
+  .copo{
+    aspect-ratio:1/1.3;border:1.5px solid var(--line2);border-radius:3px 3px 5px 5px;cursor:pointer;position:relative;overflow:hidden;
+  }
+  .copo::after{content:"";position:absolute;left:0;right:0;bottom:0;height:0;background:var(--aco);transition:.25s}
+  .copo.cheio{border-color:var(--aco)}
+  .copo.cheio::after{height:82%}
+
+  footer{text-align:center;margin-top:26px;font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--dim);line-height:1.9}
+  footer b{color:var(--sinal)}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--sinal);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--sinal)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="patente-mini">
+      <div class="chevrons" id="chevrons"></div>
+      <div><div class="pat-nome" id="patNome">Recruta</div><div class="pat-sub" id="patSub">0 semanas</div></div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Freak · Protocolo Soldado</div>
+    <h1>O <em>QUARTEL</em></h1>
+    <div class="lema">6 dias de serviço · 1 de folga · cada músculo 2x por semana.<br>Motivação acaba. Escala não.</div>
+  </div>
+
+  <div class="sec-tag">§01 <b>ESCALA DE <i>SERVIÇO</i></b></div>
+  <div class="escala" id="escala"></div>
+  <div class="escala-cap" id="escalaCap">Toca num dia pra ver a ordem dele · ponto laranja = cumprido</div>
+
+  <div class="sec-tag">§02 <b>ORDEM DO <i>DIA</i></b></div>
+  <div class="ordem-dia" id="ordemDia"></div>
+
+  <div class="sec-tag">§03 <b>A <i>DOUTRINA</i></b></div>
+  <div class="card">
+    <div class="dout"><i>01</i><div><b>Frequência 2x por músculo</b><small>Cada grupo é atacado duas vezes na semana. As revisões de Schoenfeld mostram: 2x supera 1x pra hipertrofia com o mesmo volume. A divisão antiga (cada músculo 1x) fica pra trás.</small></div></div>
+    <div class="dout"><i>02</i><div><b>Volume na zona de crescimento</b><small>10 a 20 séries por músculo por semana, somando as duas sessões. É aí que a literatura coloca o máximo de crescimento sem enterrar a recuperação.</small></div></div>
+    <div class="dout"><i>03</i><div><b>1 a 2 na reserva, progressão dupla</b><small>Termina cada série podendo fazer 1-2 a mais. Fechou o topo das reps em todas as séries? Sobe 2-2,5kg na próxima. Registrado, senão é achismo.</small></div></div>
+    <div class="dout"><i>04</i><div><b>O ego fica no portão</b><small>Amplitude completa, descida controlada. Série suja não conta pra escala.</small></div></div>
+    <div class="dout"><i>05</i><div><b>Dia de caos, missão mínima</b><small>2 compostos + 10 min de cardio, e o ponto do dia vale. Quartel não fecha, reduz expediente.</small></div></div>
+    <div class="ciencia"><b>Integração com o Campo</b>O físico do Campo (sprints e agilidade, 2x) cai nos dias de EMPURRAR ou PUXAR, nunca em dia de PERNAS. Domingo é folga total: é na cama que o treino vira músculo.</div>
+  </div>
+
+  <div class="sec-tag">§04 <b>AS <i>RAÇÕES</i></b></div>
+  <div class="card">
+    <div class="racao">
+      <div class="rc"><b>150g</b><span>Proteína / dia</span></div>
+      <div class="rc"><b>~2.500</b><span>kcal / dia</span></div>
+      <div class="rc"><b>3L+</b><span>Água / dia</span></div>
+    </div>
+    <div class="rc-nota">Calibrado pra 1,75m e 80kg em recomposição: músculo subindo com o shape secando aos poucos. Tradução: proteína em toda refeição grande, sem exceção, e sono de 7h30+ como parte do protocolo, não como luxo.</div>
+  </div>
+
+  <div class="sec-tag">§05 <b>O <i>REGISTRO</i></b></div>
+  <div class="card">
+    <div class="tabs2">
+      <button class="t2 on" data-s="sCargas">Cargas</button>
+      <button class="t2" data-s="sPeso">Peso</button>
+      <button class="t2" data-s="sCardio">Cardio</button>
+      <button class="t2" data-s="sAgua">Água</button>
+    </div>
+    <div class="sub2 on" id="sCargas">
+      <div class="reg-row">
+        <select id="rEx">
+          <option value="Supino reto">Supino reto</option>
+          <option value="Agachamento">Agachamento</option>
+          <option value="Terra romeno">Terra romeno</option>
+          <option value="Remada curvada">Remada curvada</option>
+          <option value="Desenvolvimento">Desenvolvimento</option>
+        </select>
+        <input type="number" id="rKg" placeholder="kg">
+        <input type="number" id="rReps" placeholder="reps">
+        <button class="btn" onclick="addCarga()">+</button>
+      </div>
+      <div id="cargasList"></div>
+    </div>
+    <div class="sub2" id="sPeso">
+      <div class="peso-row">
+        <input type="number" step="0.1" id="pKg" placeholder="kg de hoje (partida: 80,0)">
+        <button class="btn" onclick="addPeso()">+</button>
+      </div>
+      <div id="pesoList"></div>
+    </div>
+    <div class="sub2" id="sCardio">
+      <div class="medidor">HOJE: <b id="cardioHoje">0</b> MIN · MÍNIMO DO FERRO: 10</div>
+      <div class="quick">
+        <button class="qk" onclick="addCardio(10)">+10 MIN</button>
+        <button class="qk" onclick="addCardio(15)">+15 MIN</button>
+        <button class="qk" onclick="addCardio(-5)">−5</button>
+      </div>
+      <div id="cardioList"></div>
+    </div>
+    <div class="sub2" id="sAgua">
+      <div class="medidor">HOJE: <b id="aguaHoje">0,0</b> L DE 3,0 · 1 COPO = 250ML</div>
+      <div class="copos" id="copos"></div>
+      <div class="escala-cap">Toca no copo pra encher · toca no último cheio pra esvaziar</div>
+    </div>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>
+    disciplina é liberdade<br>
+    <b>o corpo obedece quem aparece</b>
+  </footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function fmtD(iso){ return iso.slice(8,10)+'.'+iso.slice(5,7); }
+function weekKey(){
+  const d = new Date();
+  const monday = new Date(d);
+  monday.setDate(d.getDate() - ((d.getDay()+6)%7));
+  return localISO(monday);
+}
+
+/* ===== o programa: PPL ×2 ===== */
+const SESSOES = {
+  pa:{t:'Empurrar A · peito pesado', ex:[
+    ['4×5-8','Supino reto com barra','O rei do empurrar. Vai pro Registro. Pausa de 1s no peito.'],
+    ['3×8-12','Supino inclinado com halteres','Peito superior: a diferença entre ter peito e ter peitoral.'],
+    ['3×12-15','Crucifixo na máquina ou crossover','Alongamento máximo, aperto de 1s. É a 3ª via do peito.'],
+    ['3×8-12','Desenvolvimento com halteres','Ombro que empurra junto.'],
+    ['3×12-15','Elevação lateral','Carga honesta, execução perfeita. Largura mora aqui.'],
+    ['3×10-15','Tríceps na corda','Cotovelo colado, extensão completa.'],
+    ['10 MIN','Cardio pós-treino','O mínimo do ferro. Sempre.'],
+  ]},
+  ca:{t:'Puxar A · largura', ex:[
+    ['4×6-10','Barra fixa (ou puxada alta)','Meta de soldado: 10 completas. Até lá, elástico ou gravitron.'],
+    ['4×6-10','Remada curvada com barra','Costas espessas. Vai pro Registro.'],
+    ['3×10-12','Remada baixa na polia','Aperta 1s na contração.'],
+    ['3×15','Face pull','Ombro saudável de quem empurra pesado. Inegociável.'],
+    ['3×8-12','Rosca direta com barra','Sem balanço de corpo.'],
+    ['2×10-12','Rosca martelo','Antebraço e braquial fechando o dia.'],
+    ['10 MIN','Cardio pós-treino','Ritmo de conversa difícil.'],
+  ]},
+  la:{t:'Pernas A · quadríceps', ex:[
+    ['4×5-8','Agachamento livre','O exercício mais importante do quartel. Registro. Profundidade antes de carga.'],
+    ['3×10-12','Leg press','Volume sem fritar a lombar.'],
+    ['3×12-15','Cadeira extensora','Aperto de 1s em cima. A 3ª via do quadríceps.'],
+    ['3×10-12','Mesa flexora','Posterior começa hoje e termina no dia B.'],
+    ['4×10-15','Panturrilha em pé','Pausa de 1s embaixo. Panturrilha de jogador tem pausa.'],
+    ['3×45s','Prancha + lateral','Core divide expediente com o Campo.'],
+  ]},
+  pb:{t:'Empurrar B · ombro pesado', ex:[
+    ['4×6-10','Desenvolvimento militar com barra','Hoje o ombro é o titular. Vai pro Registro.'],
+    ['3×6-10','Supino inclinado com barra','Peito pesado pela 2ª vez na semana: é isso que a frequência 2x significa.'],
+    ['4×12-20','Elevação lateral','Volume alto de propósito: deltoide lateral responde a repetição.'],
+    ['3×12-15','Crucifixo inverso','Posterior de ombro: postura e ombro blindado.'],
+    ['3×8-12','Supino reto com halteres','Fecha o peito da semana (série nº 10-13 do grupo).'],
+    ['3×10-12','Tríceps testa','Alongamento total do tríceps.'],
+    ['10 MIN','Cardio pós-treino','Sem choro.'],
+  ]},
+  cb:{t:'Puxar B · espessura', ex:[
+    ['4×8-10','Remada cavalinho (ou T)','Meio das costas, carga alta.'],
+    ['3×10-12','Puxada aberta','Dorsal pela 2ª vez na semana.'],
+    ['3×8-12','Remada unilateral com halter','Cada lado por si. Corrige assimetria.'],
+    ['3×12-15','Encolhimento com halteres','Trapézio: segura 1s em cima.'],
+    ['3×15','Face pull','De novo, sim. É o seguro do ombro.'],
+    ['3×10-12','Rosca scott (ou banco inclinado)','Bíceps sem roubo.'],
+    ['10 MIN','Cardio pós-treino','Fecha a conta.'],
+  ]},
+  lb:{t:'Pernas B · posterior e atleta', ex:[
+    ['4×6-10','Levantamento terra romeno','O seguro contra lesão de jogo e o motor do sprint. Registro.'],
+    ['3×8-10','Agachamento búlgaro (cada perna)','Perna de academia vira perna de jogo aqui.'],
+    ['3×8-12','Elevação pélvica (hip thrust)','Glúteo é o músculo do sprint. Ponto final.'],
+    ['3×12-15','Flexora sentado','Posterior fechando as ~12 séries da semana.'],
+    ['4×12-20','Panturrilha sentado','Sóleo: a outra metade da panturrilha.'],
+    ['3×20m','Caminhada do fazendeiro','Pegada, core, mentalidade. Termina como soldado.'],
+  ]},
+  folga:{t:'Folga', ex:[]}
+};
+/* dom seg ter qua qui sex sáb */
+const MAPA = ['folga','pa','ca','la','pb','cb','lb'];
+const COD  = {pa:'E1',ca:'P1',la:'PR1',pb:'E2',cb:'P2',lb:'PR2',folga:'FOLGA'};
+const WD = ['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+let selDia = new Date().getDay();
+
+/* ===== escala ===== */
+function renderEscala(){
+  const wk = weekKey();
+  const sem = (gs('freak-semana',{})||{})[wk]||{};
+  const box=$('escala'); box.innerHTML='';
+  for(let i=1;i<=7;i++){
+    const dow = i%7; /* seg..dom */
+    const code = MAPA[dow];
+    const el=document.createElement('div');
+    el.className='dia'+(dow===selDia?' sel':'')+(dow===new Date().getDay()?' hoje':'')+(sem[code]?' feito':'')+(code==='folga'?' folga':'');
+    el.innerHTML='<div class="wd">'+WD[dow]+'</div><div class="cod">'+COD[code]+'</div><div class="st"></div>';
+    el.onclick=()=>{ selDia=dow; renderEscala(); renderOrdem(); };
+    box.appendChild(el);
+  }
+}
+
+/* ===== ordem do dia ===== */
+function renderOrdem(){
+  const code = MAPA[selDia];
+  const s = SESSOES[code];
+  const box=$('ordemDia');
+  const hoje = selDia===new Date().getDay();
+  if(code==='folga'){
+    box.innerHTML='<div class="od-folga"><b>DOMINGO · FOLGA TOTAL</b><br>Recuperar é ordem, não recompensa.<br>É na cama que o treino vira músculo.</div>';
+    return;
+  }
+  const wk = weekKey();
+  const sem = (gs('freak-semana',{})||{})[wk]||{};
+  const done = !!sem[code];
+  box.innerHTML =
+    '<div class="od-head">'+
+      '<span class="od-carimbo">'+(hoje?'ORDEM DO DIA':WD[selDia])+'</span>'+
+      '<span class="od-title">'+s.t+'</span>'+
+      '<span class="od-sub">RIR 1-2 · descanso 2-3 min nos compostos, 60-90s no resto</span>'+
+    '</div>'+
+    '<div class="od-body">'+
+      s.ex.map(e=>'<div class="exr"><span class="srs">'+e[0]+'</span><div><b>'+e[1]+'</b><small>'+e[2]+'</small></div></div>').join('')+
+    '</div>'+
+    '<button class="od-done'+(done?' ok':'')+'" onclick="marcar(\''+code+'\')">'+(done?'✓ CUMPRIDO · PONTO NA ESCALA':'MISSÃO CUMPRIDA')+'</button>';
+}
+function marcar(code){
+  const wk = weekKey();
+  const all = gs('freak-semana',{})||{};
+  if(!all[wk]) all[wk]={};
+  all[wk][code]=!all[wk][code];
+  ss('freak-semana',all);
+  renderEscala(); renderOrdem(); renderPatente();
+  if(all[wk][code]) logar('Carga cumprida: treino '+String(code).toUpperCase());
+}
+
+/* ===== patente: semana com 5+ treinos = divisa ===== */
+const PATENTES=[
+  {min:0, n:'Recruta'},{min:1, n:'Soldado'},{min:3, n:'Cabo'},{min:6, n:'Sargento'},
+  {min:10,n:'Tenente'},{min:16,n:'Capitão'},{min:24,n:'Major'},
+];
+function semanasCompletas(){
+  const sem = gs('freak-semana',{})||{};
+  let n=0;
+  Object.keys(sem).forEach(wk=>{
+    const feitos=['pa','ca','la','pb','cb','lb'].filter(c=>sem[wk][c]).length;
+    if(feitos>=5) n++;
+  });
+  return n;
+}
+function renderPatente(){
+  const n = semanasCompletas();
+  let pat=PATENTES[0], idx=0;
+  PATENTES.forEach((p,i)=>{ if(n>=p.min){ pat=p; idx=i; } });
+  $('patNome').textContent = pat.n;
+  const prox = PATENTES[idx+1];
+  $('patSub').textContent = n+' sem.'+(prox?(' · próx: '+(prox.min-n)):'');
+  const ch=$('chevrons'); ch.innerHTML='';
+  for(let i=0;i<6;i++){
+    const c=document.createElement('div');
+    c.className='chev'+(i<idx?' on':'');
+    ch.appendChild(c);
+  }
+}
+
+/* ===== registro: cargas ===== */
+let cargas = gs('freak-cargas',[])||[];
+function addCarga(){
+  const ex=$('rEx').value;
+  const kg=parseFloat($('rKg').value);
+  const reps=parseInt($('rReps').value)||null;
+  if(!kg) return;
+  cargas.push({d:TODAY, ex, kg, reps});
+  ss('freak-cargas',cargas);
+  $('rKg').value='';$('rReps').value='';
+  renderCargas();
+}
+function delCarga(i){ cargas.splice(i,1); ss('freak-cargas',cargas); renderCargas(); }
+function renderCargas(){
+  const box=$('cargasList');
+  if(!cargas.length){ box.innerHTML='<p style="font-size:12px;color:var(--dim)">Nenhuma carga registrada. A primeira anotação é a linha de base.</p>'; return; }
+  box.innerHTML=[...cargas].reverse().map((c,ri)=>{
+    const i=cargas.length-1-ri;
+    const anteriores=cargas.filter((x,xi)=>x.ex===c.ex && xi<i);
+    const best=anteriores.length?Math.max(...anteriores.map(x=>x.kg)):null;
+    const up=best!==null && c.kg>best;
+    return '<div class="reg-item"><span class="rd">'+fmtD(c.d)+'</span>'+
+      '<span class="rn">'+esc(c.ex)+'</span>'+
+      '<span class="rv">'+c.kg+'kg'+(c.reps?(' × '+c.reps):'')+'</span>'+
+      (up?'<span class="up">▲ RECORDE</span>':'')+
+      '<button class="del" onclick="delCarga('+i+')">✕</button></div>';
+  }).join('');
+}
+
+/* ===== registro: peso ===== */
+let pesos = gs('freak-peso',[])||[];
+function addPeso(){
+  const kg=parseFloat($('pKg').value);
+  if(!kg) return;
+  pesos.push({d:TODAY, kg});
+  ss('freak-peso',pesos);
+  $('pKg').value='';
+  renderPeso();
+}
+function delPeso(i){ pesos.splice(i,1); ss('freak-peso',pesos); renderPeso(); }
+function renderPeso(){
+  const box=$('pesoList');
+  if(!pesos.length){ box.innerHTML='<p style="font-size:12px;color:var(--dim)">Partida: 80,0kg. Segunda de manhã, em jejum, sempre igual.</p>'; return; }
+  box.innerHTML=[...pesos].reverse().map((p,ri)=>{
+    const i=pesos.length-1-ri;
+    const ant = i>0 ? pesos[i-1].kg : 80;
+    const diff = (p.kg-ant);
+    const sinal = diff>0?'+':'';
+    return '<div class="reg-item"><span class="rd">'+fmtD(p.d)+'</span>'+
+      '<span class="rn">Peso corporal</span>'+
+      '<span class="rv">'+p.kg.toFixed(1).replace('.',',')+'kg</span>'+
+      '<span class="up" style="color:'+(Math.abs(diff)<0.05?'var(--dim)':'var(--khaki)')+'">'+sinal+diff.toFixed(1).replace('.',',')+'</span>'+
+      '<button class="del" onclick="delPeso('+i+')">✕</button></div>';
+  }).join('');
+}
+
+/* ===== registro: cardio ===== */
+function addCardio(min){
+  const c = gs('freak-cardio',{})||{};
+  c[TODAY] = Math.max(0,(c[TODAY]||0)+min);
+  ss('freak-cardio',c);
+  renderCardio();
+}
+function renderCardio(){
+  const c = gs('freak-cardio',{})||{};
+  $('cardioHoje').textContent = c[TODAY]||0;
+  const dias = Object.keys(c).filter(d=>c[d]>0).sort().reverse().slice(0,7);
+  $('cardioList').innerHTML = dias.map(d=>
+    '<div class="reg-item"><span class="rd">'+fmtD(d)+'</span><span class="rn">Cardio</span><span class="rv">'+c[d]+' min</span></div>'
+  ).join('');
+}
+
+/* ===== registro: água ===== */
+function renderAgua(){
+  const a = gs('freak-agua',{})||{};
+  const ml = a[TODAY]||0;
+  $('aguaHoje').textContent = (ml/1000).toFixed(1).replace('.',',');
+  const box=$('copos'); box.innerHTML='';
+  const cheios = Math.round(ml/250);
+  for(let i=0;i<12;i++){
+    const el=document.createElement('div');
+    el.className='copo'+(i<cheios?' cheio':'');
+    el.onclick=()=>{
+      const novo = (i<cheios) ? i*250 : (i+1)*250;
+      const aa = gs('freak-agua',{})||{};
+      aa[TODAY]=novo; ss('freak-agua',aa); renderAgua();
+    };
+    box.appendChild(el);
+  }
+}
+
+/* sub-abas */
+document.querySelectorAll('.t2').forEach(b=>{
+  b.onclick=()=>{
+    document.querySelectorAll('.t2').forEach(x=>x.classList.remove('on'));
+    b.classList.add('on');
+    document.querySelectorAll('.sub2').forEach(v=>v.classList.remove('on'));
+    $(b.dataset.s).classList.add('on');
+  };
+});
+
+renderEscala(); renderOrdem(); renderPatente(); renderCargas(); renderPeso(); renderCardio(); renderAgua();
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden){ renderEscala(); renderOrdem(); renderPatente(); renderCardio(); renderAgua(); }});
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'quartel';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>

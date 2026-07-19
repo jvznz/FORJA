@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F4F1E8">
+<title>O PÓRTICO · Filosofia</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F4F1E8; --marble:#FBF9F3; --soft:#ECE8DC; --line:#DCD6C6; --line2:#C4BCA6;
+    --ink:#211E18; --muted:#75705F; --dim:#A39B85;
+    --egeu:#31639C; --terra:#A8502B; --bronze:#8C6D2F; --bronze-hi:#C9A24B;
+    --louro:#6E7F4E;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--ink);font-family:'EB Garamond',serif;
+    max-width:680px;margin:0 auto;
+    padding:max(14px,env(safe-area-inset-top)) 16px 60px;
+  }
+  /* veios de mármore */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.6;
+    background:
+      radial-gradient(60% 40% at 20% 10%, rgba(49,99,156,.04), transparent 70%),
+      radial-gradient(50% 35% at 85% 30%, rgba(140,109,47,.05), transparent 70%),
+      radial-gradient(45% 30% at 40% 80%, rgba(33,30,24,.03), transparent 70%);
+  }
+  .wrap{position:relative;z-index:1}
+
+  /* friso grego (meandro estilizado) */
+  .friso{
+    height:14px;margin-bottom:4px;
+    border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);
+    background:repeating-linear-gradient(90deg,
+      var(--ink) 0 2px, transparent 2px 8px,
+      var(--ink) 8px 10px, transparent 10px 12px,
+      var(--ink) 12px 14px, transparent 14px 22px);
+    opacity:.75;
+  }
+
+  .top{display:flex;justify-content:space-between;align-items:center;margin:12px 0 16px}
+  .back{color:var(--muted);text-decoration:none;font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.2em;text-transform:uppercase}
+  .back:active{color:var(--ink)}
+  .chip-dia{font-family:'Cinzel',serif;font-weight:600;font-size:10px;letter-spacing:.14em;color:var(--bronze);border:1px solid var(--line2);border-radius:2px;padding:6px 13px;text-transform:uppercase}
+
+  .hero{text-align:center;margin-bottom:22px}
+  .hero .eyebrow{font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.5em;text-transform:uppercase;color:var(--terra);margin-bottom:8px}
+  .hero h1{font-family:'Cinzel',serif;font-weight:700;font-size:clamp(34px,9vw,50px);letter-spacing:.1em;line-height:1.05}
+  .hero h1 em{font-style:normal;color:var(--egeu)}
+  .hero p{font-size:15px;font-style:italic;color:var(--muted);margin-top:9px;line-height:1.6}
+
+  /* colunas decorativas laterais do hero */
+  .colunata{display:flex;align-items:flex-end;justify-content:center;gap:10px;margin-top:14px;opacity:.8}
+  .colunata svg{width:26px;height:52px;stroke:var(--line2);fill:none;stroke-width:2}
+  .colunata svg.alta{height:64px}
+
+  /* ===== divisor de louros ===== */
+  .divisor{display:flex;align-items:center;gap:12px;margin:26px 0 14px}
+  .divisor i{flex:1;height:1px;background:var(--line2)}
+  .divisor span{font-family:'Cinzel',serif;font-weight:600;font-size:clamp(15px,4.2vw,19px);letter-spacing:.24em;text-transform:uppercase;white-space:nowrap}
+  .divisor span b{color:var(--terra);font-weight:600}
+  .divisor svg{width:16px;height:16px;stroke:var(--louro);fill:none;stroke-width:2;stroke-linecap:round}
+
+  /* ===== meditação do dia ===== */
+  .slab{
+    background:var(--marble);border:1px solid var(--line);border-radius:3px;
+    box-shadow:0 2px 0 var(--line2), 0 10px 30px rgba(33,30,24,.08);
+    padding:26px 24px 22px;position:relative;text-align:center;
+  }
+  .slab::before{content:"“";position:absolute;top:2px;left:14px;font-family:'Cinzel',serif;font-size:64px;color:var(--line2);line-height:1}
+  .slab::after{content:"”";position:absolute;bottom:-26px;right:14px;font-family:'Cinzel',serif;font-size:64px;color:var(--line2);line-height:1}
+  .med-txt{font-size:clamp(19px,5vw,24px);font-weight:500;line-height:1.5;font-style:italic}
+  .med-autor{font-family:'Cinzel',serif;font-weight:600;font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--terra);margin-top:16px}
+  .med-obra{font-size:12.5px;font-style:italic;color:var(--dim);margin-top:3px}
+  .med-par{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px;text-align:left}
+  @media(max-width:560px){.med-par{grid-template-columns:1fr}}
+  .med-box{background:var(--soft);border-left:2px solid var(--egeu);padding:11px 13px}
+  .med-box.at{border-left-color:var(--bronze)}
+  .med-box .ml{font-family:'Cinzel',serif;font-weight:600;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--egeu);margin-bottom:5px}
+  .med-box.at .ml{color:var(--bronze)}
+  .med-box p{font-size:13.5px;line-height:1.6}
+
+  /* ===== canto de reflexão ===== */
+  .card{background:var(--marble);border:1px solid var(--line);border-radius:3px;padding:20px;box-shadow:0 2px 0 var(--line2)}
+  .hint{color:var(--muted);font-size:13.5px;font-style:italic;line-height:1.65;margin-bottom:13px}
+  textarea,input[type=text]{
+    width:100%;background:var(--bg);border:1px solid var(--line2);border-radius:2px;
+    padding:13px 14px;color:var(--ink);font-family:'EB Garamond',serif;font-size:15px;line-height:1.6;
+  }
+  textarea{resize:vertical;min-height:96px}
+  textarea:focus,input:focus{outline:none;border-color:var(--egeu)}
+  .btn{
+    font-family:'Cinzel',serif;font-weight:600;font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    background:var(--ink);color:var(--bg);border:none;border-radius:2px;padding:12px 26px;cursor:pointer;margin-top:10px;
+  }
+  .btn:active{transform:scale(.97)}
+  .hist{margin-top:16px}
+  .hist-item{border-left:2px solid var(--line2);padding:4px 0 4px 13px;margin-bottom:12px}
+  .hist-item .hd{font-family:'Cinzel',serif;font-weight:600;font-size:9px;letter-spacing:.2em;color:var(--dim);text-transform:uppercase;margin-bottom:3px}
+  .hist-item p{font-size:14px;color:var(--muted);line-height:1.6;font-style:italic}
+
+  /* ===== as colunas (escolas) ===== */
+  .colunas{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media(max-width:560px){.colunas{grid-template-columns:1fr}}
+  .coluna{
+    background:var(--marble);border:1px solid var(--line);border-radius:3px;padding:17px 16px 15px;
+    box-shadow:0 2px 0 var(--line2);position:relative;
+  }
+  .coluna::before{content:"";position:absolute;top:0;left:14px;right:14px;height:3px;
+    background:repeating-linear-gradient(90deg, var(--line2) 0 6px, transparent 6px 10px)}
+  .col-nome{font-family:'Cinzel',serif;font-weight:700;font-size:15px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+  .col-quem{font-size:12px;font-style:italic;color:var(--dim);margin-bottom:8px}
+  .col-ess{font-size:13.5px;line-height:1.6;margin-bottom:10px}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+  .chip{font-family:'Inter',sans-serif;font-size:9.5px;font-weight:600;letter-spacing:.04em;background:var(--soft);border:1px solid var(--line);border-radius:2px;padding:4px 8px;color:var(--ink)}
+  .gancho{border-top:1px solid var(--line);padding-top:9px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+  .gancho b{font-family:'Cinzel',serif;font-weight:600;font-size:8.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--terra);display:block;margin-bottom:3px}
+
+  /* ===== ideias ===== */
+  .add-row{display:flex;gap:8px}
+  .add-row .btn{margin-top:0;padding:0 20px}
+  .ideias{margin-top:14px}
+  .ideia{display:flex;gap:11px;align-items:baseline;padding:9px 2px;border-bottom:1px solid var(--line)}
+  .ideia:last-child{border:none}
+  .ideia .num{font-family:'Cinzel',serif;font-weight:600;font-size:11px;color:var(--bronze);min-width:22px}
+  .ideia p{flex:1;font-size:14.5px;line-height:1.55}
+  .ideia .del{background:none;border:none;color:var(--dim);cursor:pointer;font-size:13px;font-family:'Inter'}
+  .ideia .del:active{color:var(--terra)}
+  .ponte{font-size:12.5px;font-style:italic;color:var(--dim);margin-top:12px;text-align:center}
+
+  footer{text-align:center;margin-top:30px}
+  footer .friso{margin-bottom:12px}
+  footer p{font-family:'Cinzel',serif;font-weight:600;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted)}
+  footer em{display:block;font-size:14px;font-style:italic;color:var(--ink);margin-bottom:8px;letter-spacing:0;text-transform:none;font-family:'EB Garamond'}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--marble);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--bronze-hi);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--ink);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--soft);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--bronze-hi)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="friso"></div>
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Forja</a>
+    <div class="chip-dia" id="dataChip">·</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Filosofia · A Stoa</div>
+    <h1>O <em>PÓRTICO</em></h1>
+    <p>Onde as ideias de 2.300 anos viram atitude de hoje<br>e conteúdo de amanhã.</p>
+    <div class="colunata">
+      <svg viewBox="0 0 26 52"><path d="M3 6 H23 M5 10 H21 M7 10 V46 M13 10 V46 M19 10 V46 M5 46 H21 M3 50 H23"/></svg>
+      <svg class="alta" viewBox="0 0 26 64"><path d="M3 6 H23 M5 10 H21 M7 10 V58 M13 10 V58 M19 10 V58 M5 58 H21 M3 62 H23"/></svg>
+      <svg viewBox="0 0 26 52"><path d="M3 6 H23 M5 10 H21 M7 10 V46 M13 10 V46 M19 10 V46 M5 46 H21 M3 50 H23"/></svg>
+    </div>
+  </div>
+
+  <div class="divisor"><i></i><svg viewBox="0 0 24 24"><path d="M12 3 C9 8 9 14 12 21 C15 14 15 8 12 3 Z M12 8 C8 9 5 12 4 16 M12 8 C16 9 19 12 20 16"/></svg><span>MEDITAÇÃO <b>DO DIA</b></span><svg viewBox="0 0 24 24"><path d="M12 3 C9 8 9 14 12 21 C15 14 15 8 12 3 Z M12 8 C8 9 5 12 4 16 M12 8 C16 9 19 12 20 16"/></svg><i></i></div>
+
+  <div class="slab">
+    <div class="med-txt" id="medTxt"></div>
+    <div class="med-autor" id="medAutor"></div>
+    <div class="med-obra" id="medObra"></div>
+    <div class="med-par">
+      <div class="med-box"><div class="ml">A pergunta do pórtico</div><p id="medPergunta"></p></div>
+      <div class="med-box at"><div class="ml">A atitude de hoje</div><p id="medAtitude"></p></div>
+    </div>
+  </div>
+
+  <div class="divisor"><i></i><span>O CANTO DE <b>REFLEXÃO</b></span><i></i></div>
+  <div class="card">
+    <p class="hint">Responde a pergunta do dia com a tua vida, não com teoria. Três linhas honestas valem mais que uma página decorada. Cada reflexão salva é semente de vídeo.</p>
+    <textarea id="reflexao" placeholder="O que essa ideia toca na minha vida hoje..."></textarea>
+    <button class="btn" onclick="salvarReflexao()">Gravar no mármore</button>
+    <div class="hist" id="reflexHist"></div>
+  </div>
+
+  <div class="divisor"><i></i><span>AS <b>COLUNAS</b></span><i></i></div>
+  <p class="hint" style="margin:-4px 2px 12px">As seis escolas que sustentam o teto. Cada uma com sua essência, seus conceitos e o gancho pra virar vídeo de 60 segundos do pilar de filosofia da LOWEX.</p>
+  <div class="colunas">
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--egeu)">Estoicismo</div>
+      <div class="col-quem">Zenão · Sêneca · Epicteto · Marco Aurélio</div>
+      <div class="col-ess">Separa o que depende de você do que não depende, e gasta energia só no primeiro. O obstáculo não impede o caminho: ele é o caminho.</div>
+      <div class="chips"><span class="chip">dicotomia do controle</span><span class="chip">amor fati</span><span class="chip">memento mori</span><span class="chip">premeditatio malorum</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>O CR7 é estoico sem saber: rotina blindada, zero energia no que não controla. Conecta um lance real dele à dicotomia do controle.</div>
+    </div>
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--terra)">Cinismo</div>
+      <div class="col-quem">Diógenes de Sinope</div>
+      <div class="col-ess">Liberdade radical: precisar de quase nada é ser quase invencível. Diógenes morava num barril e mandou Alexandre sair da frente do sol.</div>
+      <div class="chips"><span class="chip">autossuficiência</span><span class="chip">desprezo do supérfluo</span><span class="chip">parrhesía · falar verdade</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>Minimalismo antes do minimalismo: o que Diógenes diria do consumo por status hoje. Choque de época que rende demais em 60s.</div>
+    </div>
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--louro)">Epicurismo</div>
+      <div class="col-quem">Epicuro · o Jardim</div>
+      <div class="col-ess">Prazer verdadeiro é ausência de dor e de perturbação: amigos, pão e paz. O resto é desejo fabricado que nunca sacia.</div>
+      <div class="chips"><span class="chip">ataraxia</span><span class="chip">desejos naturais x vãos</span><span class="chip">amizade</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>Epicuro explica a dopamina: por que o scroll infinito é o desejo vão perfeito, e o que ele mandaria fazer no lugar.</div>
+    </div>
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--bronze)">Método Socrático</div>
+      <div class="col-quem">Sócrates · Platão</div>
+      <div class="col-ess">A sabedoria começa admitindo o que não se sabe. E a pergunta certa desmonta qualquer certeza mal construída.</div>
+      <div class="chips"><span class="chip">maiêutica</span><span class="chip">só sei que nada sei</span><span class="chip">vida examinada</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>A técnica de perguntar que fecha vendas e vence discussões tem 2.400 anos. Sócrates aplicado à prospecção da LOWEX.</div>
+    </div>
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--egeu)">Heráclito</div>
+      <div class="col-quem">O Obscuro de Éfeso</div>
+      <div class="col-ess">Tudo flui: ninguém entra duas vezes no mesmo rio. A tensão dos opostos não é defeito do mundo, é o motor dele.</div>
+      <div class="chips"><span class="chip">panta rhei · tudo flui</span><span class="chip">logos</span><span class="chip">unidade dos opostos</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>Por que você nunca treina o mesmo treino nem estuda o mesmo estudo: Heráclito e a identidade de quem está virando outra pessoa.</div>
+    </div>
+    <div class="coluna">
+      <div class="col-nome" style="color:var(--terra)">Aristóteles</div>
+      <div class="col-quem">O Liceu · Ética a Nicômaco</div>
+      <div class="col-ess">A excelência não é um dom nem um momento: é uma disposição construída pela repetição. Vira-se justo praticando justiça, corajoso praticando coragem.</div>
+      <div class="chips"><span class="chip">areté · excelência</span><span class="chip">hábito</span><span class="chip">eudaimonia</span><span class="chip">justo meio</span></div>
+      <div class="gancho"><b>Gancho de vídeo</b>A base filosófica do teu sistema inteiro: a corrente da Forja é Aristóteles em código. Excelência como hábito, provada em 30 dias.</div>
+    </div>
+  </div>
+
+  <div class="divisor"><i></i><span>IDEIAS PRA <b>GRAVAR</b></span><i></i></div>
+  <div class="card">
+    <p class="hint">Toda vez que uma meditação ou reflexão der faísca de vídeo, ancora aqui antes que fuja.</p>
+    <div class="add-row">
+      <input type="text" id="ideiaInput" maxlength="160" placeholder="Ex: Diógenes vs consumo por status, com cena de anime...">
+      <button class="btn" onclick="addIdeia()">+</button>
+    </div>
+    <div class="ideias" id="ideiasList"></div>
+    <p class="ponte">Ideia madura vira roteiro na cadência da Lapidação: 8 vídeos no ciclo.</p>
+  </div>
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+  <footer>
+    <div class="friso"></div>
+    <em>"O caráter de um homem é o seu destino."</em>
+    <p>Heráclito · O Pórtico</p>
+  </footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v!==null ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+function esc(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+/* ===== as meditações ===== */
+const MEDITACOES=[
+ {t:'O que impede a ação impulsiona a ação. O obstáculo torna-se o caminho.', a:'Marco Aurélio', o:'Meditações, V.20', p:'Qual obstáculo de hoje pode virar exatamente o teu treino?', at:'Pega a coisa que está travando o dia e transforma ela na primeira tarefa atacada.'},
+ {t:'Não perca mais tempo discutindo o que é um homem bom. Seja um.', a:'Marco Aurélio', o:'Meditações, X.16', p:'Onde você está teorizando o que já deveria estar praticando?', at:'Uma ação hoje no lugar de uma explicação.'},
+ {t:'A alma se tinge da cor dos seus pensamentos.', a:'Marco Aurélio', o:'Meditações, V.16', p:'Que cor os teus pensamentos de hoje estão passando pra tua alma?', at:'Ao pegar um pensamento azedo, troca ele por uma pergunta útil: "o que dá pra fazer agora?"'},
+ {t:'Podes deixar a vida agora mesmo. Que isso determine o que fazes, dizes e pensas.', a:'Marco Aurélio', o:'Meditações, II.11', p:'Se hoje fosse contado entre os últimos, o que sairia da tua lista?', at:'Corta uma coisa irrelevante do dia e coloca presença total no que fica.'},
+ {t:'Sofremos mais na imaginação do que na realidade.', a:'Sêneca', o:'Cartas a Lucílio, 13', p:'Qual medo teu é filme e qual é fato?', at:'Escreve o pior cenário real de uma preocupação. Vê o tamanho verdadeiro dele.'},
+ {t:'Enquanto adiamos, a vida passa.', a:'Sêneca', o:'Cartas a Lucílio, 1', p:'O que você está esperando "o momento certo" pra começar?', at:'Dez minutos hoje na coisa adiada. Só dez. O resto vem.'},
+ {t:'Nenhum vento é favorável para quem não sabe a que porto se dirige.', a:'Sêneca', o:'Cartas a Lucílio, 71', p:'Tua bússola está apontada ou você está só remando forte?', at:'Relê a tua bússola em voz alta antes do primeiro bloco de foco.'},
+ {t:'Não é que temos pouco tempo: é que perdemos muito.', a:'Sêneca', o:'Sobre a Brevidade da Vida', p:'Pra onde vazou a tua última hora perdida?', at:'Identifica o teu maior ralo de tempo e fecha ele por hoje.'},
+ {t:'Não são as coisas que perturbam os homens, mas as opiniões que têm delas.', a:'Epicteto', o:'Enquirídion, 5', p:'Qual situação neutra você está pintando de tragédia?', at:'Descreve um problema de hoje só com fatos, sem adjetivos. Olha o que sobra.'},
+ {t:'Primeiro diz a ti mesmo o que queres ser; depois faz o que tens de fazer.', a:'Epicteto', o:'Discursos, III.23', p:'O que a pessoa que você decidiu ser faria nas próximas duas horas?', at:'Age como o título que você quer carregar: o melhor aluno, o fundador, o 10.'},
+ {t:'Nenhum homem é livre se não é senhor de si mesmo.', a:'Epicteto', o:'Fragmentos', p:'Quem mandou em você hoje: você ou o impulso?', at:'Escolhe uma vontade pequena pra vencer hoje só pra lembrar quem manda.'},
+ {t:'Das coisas, umas dependem de nós, outras não. Aí começa a sabedoria.', a:'Epicteto', o:'Enquirídion, 1', p:'No teu problema de hoje, o que é teu e o que é do mundo?', at:'Divide a preocupação em duas colunas. Trabalha a primeira, solta a segunda.'},
+ {t:'Ninguém entra duas vezes no mesmo rio.', a:'Heráclito', o:'Fragmento 91', p:'O que em você já não é o mesmo de um mês atrás?', at:'Nota uma evolução recente por menor que seja. Mudança percebida vira combustível.'},
+ {t:'O caráter de um homem é o seu destino.', a:'Heráclito', o:'Fragmento 119', p:'O que os teus hábitos de hoje estão profetizando sobre teu futuro?', at:'O destino se edita no hábito: cumpre os 5 de ferro e você editou o futuro hoje.'},
+ {t:'Uma vida sem exame não merece ser vivida.', a:'Sócrates', o:'Apologia, 38a', p:'Quando foi a última vez que você questionou uma certeza tua?', at:'Escolhe uma opinião forte tua e defende o lado contrário por dois minutos.'},
+ {t:'Só sei que nada sei.', a:'Sócrates', o:'Tradição da Apologia', p:'Onde a arrogância de "já sei" está te impedindo de aprender?', at:'Estuda hoje como iniciante, mesmo no que você domina. Lei seca do zero.'},
+ {t:'A primeira e maior vitória é a conquista de si mesmo.', a:'Platão', o:'Leis, 626e', p:'Qual batalha interna você está evitando travar?', at:'Vence a menor delas hoje: a de levantar, a de começar, a de terminar.'},
+ {t:'É construindo casas que os homens se tornam construtores, e praticando a justiça, justos.', a:'Aristóteles', o:'Ética a Nicômaco, II.1', p:'Que pessoa os teus atos repetidos estão construindo?', at:'Não espera se sentir disciplinado pra agir: age, e a disciplina nasce do ato.'},
+ {t:'A virtude moral é resultado do hábito.', a:'Aristóteles', o:'Ética a Nicômaco, II', p:'Qual hábito de hoje é um tijolo e qual é um cupim?', at:'Um tijolo a mais, um cupim a menos. Só isso já muda a obra.'},
+ {t:'Não estragues o que tens desejando o que não tens.', a:'Epicuro', o:'Sentenças Vaticanas, 35', p:'O que de bom na tua vida está invisível por causa da próxima meta?', at:'Agradece por escrito uma coisa que o João de 2 anos atrás sonharia ter.'},
+ {t:'De dia, com a lâmpada acesa, procuro um homem.', a:'Diógenes', o:'Diógenes Laércio, VI', p:'Você está sendo autêntico ou performando pra plateia?', at:'Faz hoje uma escolha que você faria mesmo se ninguém visse.'},
+ {t:'Temos dois ouvidos e uma boca para ouvir o dobro do que falamos.', a:'Zenão de Cítio', o:'Diógenes Laércio, VII', p:'Na última conversa importante, você ouviu pra entender ou pra responder?', at:'Na próxima ligação da LOWEX, faz uma pergunta a mais antes de oferecer.'},
+ {t:'O destino conduz quem consente e arrasta quem resiste.', a:'Cleantes', o:'citado por Sêneca, Carta 107', p:'Contra o que você está brigando que já aconteceu?', at:'Aceita o fato consumado de hoje e gasta a energia no próximo lance.'},
+ {t:'Se fazes algo bom com esforço, o esforço passa e o bom permanece.', a:'Musônio Rufo', o:'Fragmentos', p:'Qual esforço de hoje você vai agradecer daqui a um ano?', at:'Quando pesar, lembra: a dor é aluguel, o resultado é escritura.'},
+];
+
+const START = '2026-07-19';
+function diaDoCiclo(){
+  const d = Math.floor((new Date(TODAY+'T12:00:00') - new Date(START+'T12:00:00'))/86400000) + 1;
+  return d;
+}
+(function(){
+  const dc = diaDoCiclo();
+  const idx = dc>=1 ? (dc-1) % MEDITACOES.length : 0;
+  const m = MEDITACOES[idx];
+  $('medTxt').textContent = m.t;
+  $('medAutor').textContent = m.a;
+  $('medObra').textContent = m.o;
+  $('medPergunta').textContent = m.p;
+  $('medAtitude').textContent = m.at;
+  const d=new Date();
+  const ms=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+  $('dataChip').textContent = (dc>=1 && dc<=30 ? 'DIA '+dc+'/30 · ' : '') + d.getDate()+' '+ms[d.getMonth()];
+})();
+
+/* ===== canto de reflexão ===== */
+let reflex = gs('portico-reflexoes',{})||{};
+function renderReflex(){
+  $('reflexao').value = reflex[TODAY]||'';
+  const dates=Object.keys(reflex).filter(d=>d!==TODAY && reflex[d]).sort().reverse().slice(0,5);
+  $('reflexHist').innerHTML = dates.map(d=>
+    '<div class="hist-item"><div class="hd">'+d.split('-').reverse().join(' · ')+'</div><p>'+esc(reflex[d]).substring(0,220)+'</p></div>'
+  ).join('');
+}
+function salvarReflexao(){
+  reflex[TODAY]=$('reflexao').value.trim();
+  ss('portico-reflexoes',reflex);
+  renderReflex();
+  if(reflex[TODAY]) logar('Reflexão do dia registrada no Pórtico');
+}
+
+/* ===== ideias pra gravar ===== */
+let ideias = gs('portico-ideias',[])||[];
+function renderIdeias(){
+  const box=$('ideiasList');
+  if(!ideias.length){ box.innerHTML='<p class="hint" style="margin:4px 0 0">O mármore espera a primeira faísca.</p>'; return; }
+  box.innerHTML=[...ideias].reverse().map((v,ri)=>{
+    const i=ideias.length-1-ri;
+    return '<div class="ideia"><span class="num">'+String(ideias.length-ri).padStart(2,'0')+'</span><p>'+esc(v.t)+'</p><button class="del" onclick="delIdeia('+i+')">✕</button></div>';
+  }).join('');
+}
+function addIdeia(){
+  const v=$('ideiaInput').value.trim(); if(!v)return;
+  ideias.push({t:v, d:TODAY});
+  ss('portico-ideias',ideias);
+  logar('Ideia de vídeo anotada: '+v.slice(0,60));
+  $('ideiaInput').value='';
+  renderIdeias();
+}
+function delIdeia(i){ ideias.splice(i,1); ss('portico-ideias',ideias); renderIdeias(); }
+$('ideiaInput').addEventListener('keydown',e=>{ if(e.key==='Enter') addIdeia(); });
+
+renderReflex(); renderIdeias();
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'portico';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>
