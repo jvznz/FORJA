@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="A Forja">
+<meta name="theme-color" content="#0C0B09">
+<title>A FORJA</title>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0C0B09; --panel:#151310; --panel2:#1B1814; --line:#2A2620; --line2:#3A342A;
+    --text:#EDEAE2; --muted:#8D877A; --dim:#5C574C;
+    --molten:#E8A33D; --molten-hi:#FFCB6B; --ember:#E06230; --ember-soft:#E0623026;
+    --navy:#7FA8D9; --red:#E0705C; --green:#7FBF9A; --amber:#E8B366; --violet:#A99BD9; --gray:#9A948A; --grass:#8FCF7F;
+  }
+  body.vela{
+    --bg:#161006; --panel:#211809; --panel2:#281E0C; --line:#3E2F14; --line2:#54401C;
+    --text:#F2E3C2; --muted:#B39A66; --dim:#7A6840;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--text);font-family:'Space Grotesk',sans-serif;
+    max-width:640px;margin:0 auto;
+    padding:max(12px,env(safe-area-inset-top)) 14px max(20px,env(safe-area-inset-bottom));
+    transition:background 1.2s ease,color 1.2s ease;
+  }
+  body::after{ /* brasas subindo do chão da forja: esquenta com a corrente */
+    content:"";position:fixed;left:0;right:0;bottom:0;height:calc(22vh + var(--heat,0)*7vh);pointer-events:none;z-index:0;
+    background:radial-gradient(70% 100% at 50% 100%, rgba(224,98,48,calc(.10 + var(--heat,0)*.06)) 0%, transparent 72%);
+    transition:height 2s ease;
+  }
+  .fagulhas{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+  .fagulhas span{
+    position:absolute;bottom:-8px;width:3px;height:3px;border-radius:50%;
+    background:var(--molten-hi);opacity:0;
+    animation:subir linear infinite;
+  }
+  @keyframes subir{
+    0%{transform:translateY(0) translateX(0);opacity:0}
+    12%{opacity:.75}
+    85%{opacity:.15}
+    100%{transform:translateY(-96vh) translateX(var(--dx,18px));opacity:0}
+  }
+  .wrap{position:relative;z-index:1}
+  .card,.porta,.item,.riv{transition:background 1.2s ease,border-color 1.2s ease,color 1.2s ease}
+
+  /* ===== a janela da forja ===== */
+  .janela{
+    position:relative;border-radius:14px;overflow:hidden;
+    border:5px solid #201C15;outline:1px solid var(--line2);
+    box-shadow:inset 0 0 30px rgba(0,0,0,.35), 0 8px 30px rgba(0,0,0,.5);
+    min-height:150px;display:flex;flex-direction:column;justify-content:flex-end;
+    padding:14px 16px;transition:background 1.5s ease;
+  }
+  .janela::before, .janela::after{ /* caixilhos */
+    content:"";position:absolute;background:#201C15;box-shadow:0 0 6px rgba(0,0,0,.5);z-index:3;
+  }
+  .janela::before{left:50%;top:0;bottom:0;width:4px;transform:translateX(-50%)}
+  .janela::after{top:46%;left:0;right:0;height:4px}
+  .orb{position:absolute;width:52px;height:52px;border-radius:50%;transition:all 1.5s ease;z-index:1}
+  .stars{position:absolute;inset:0;pointer-events:none;z-index:1}
+  .stars span{position:absolute;width:2px;height:2px;border-radius:50%;background:#EDE9DB;animation:tw 3.4s ease-in-out infinite}
+  @keyframes tw{0%,100%{opacity:.2}50%{opacity:.9}}
+  .dragao{
+    position:absolute;top:16%;left:-30%;width:110px;z-index:2;opacity:0;
+    filter:drop-shadow(0 2px 6px rgba(0,0,0,.4));
+  }
+  .dragao.voa{animation:voo 34s linear infinite}
+  @keyframes voo{
+    0%{left:-30%;top:20%;opacity:0;transform:scaleX(1)}
+    6%{opacity:.9}
+    44%{left:105%;top:8%;opacity:.9;transform:scaleX(1)}
+    46%{opacity:0}
+    54%{left:105%;top:14%;opacity:0;transform:scaleX(-1)}
+    60%{opacity:.9;transform:scaleX(-1)}
+    96%{left:-30%;top:24%;opacity:.9;transform:scaleX(-1)}
+    100%{left:-30%;opacity:0;transform:scaleX(-1)}
+  }
+  .dragao svg{width:100%;fill:rgba(15,12,10,.85);stroke:none}
+  .jan-info{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:flex-end;gap:10px}
+  .jan-data{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
+  .jan-saud{font-family:'Space Grotesk';font-weight:300;font-size:13px;opacity:.92;text-align:right}
+
+  /* ===== monumento do dia ===== */
+  .monumento{display:flex;align-items:baseline;gap:14px;margin:18px 2px 4px;flex-wrap:wrap}
+  .monumento h1{
+    font-family:'Anton',sans-serif;font-weight:400;font-size:clamp(58px,16vw,92px);line-height:.9;
+    letter-spacing:.01em;color:var(--text);
+  }
+  .monumento h1 b{
+    color:transparent;-webkit-text-stroke:2px var(--molten);
+    text-shadow:0 0 26px rgba(232,163,61,.35);font-weight:400;
+  }
+  .mon-meta{display:flex;flex-direction:column;gap:4px;padding-bottom:8px}
+  .mon-meta .mm1{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted)}
+  .fogo{
+    display:inline-flex;align-items:center;gap:7px;font-family:'JetBrains Mono',monospace;
+    font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--molten-hi);
+    background:linear-gradient(135deg,#2A1F10,#1C150A);border:1px solid #4A3A1C;
+    border-radius:999px;padding:6px 13px;width:max-content;
+  }
+  .fogo svg{width:12px;height:12px;fill:var(--ember)}
+
+  .bussola{
+    font-size:12.5px;font-weight:300;color:var(--muted);line-height:1.75;margin:12px 2px 20px;
+    padding-left:13px;border-left:2px solid var(--ember);max-width:540px;
+  }
+  .bussola::before{content:"“";font-family:'Anton';color:var(--ember);font-size:18px;margin-right:3px}
+  .vela-note{display:none;font-size:13px;font-weight:300;color:var(--amber);line-height:1.7;margin:12px 2px 20px;padding-left:13px;border-left:2px solid var(--amber)}
+  body.vela .vela-note{display:block}
+  body.vela .bussola{display:none}
+
+  /* ===== a corrente ===== */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:17px;margin-bottom:13px}
+  .sec{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:13px}
+  .sec b{font-family:'Anton';font-weight:400;font-size:15px;letter-spacing:.18em;text-transform:uppercase;color:var(--text)}
+  .sec span{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;color:var(--molten)}
+
+  .chain{display:flex;flex-wrap:wrap;row-gap:9px;padding:4px 2px 2px}
+  .elo{
+    width:31px;height:17px;border:3px solid var(--line2);border-radius:999px;flex-shrink:0;
+    background:transparent;position:relative;
+  }
+  .elo.v{width:17px;height:25px;margin:-4px -7px 0 -7px;z-index:2;align-self:center}
+  .elo.full{
+    border-color:var(--molten);
+    box-shadow:0 0 10px rgba(232,163,61,.5), inset 0 0 5px rgba(255,203,107,.55);
+  }
+  .elo.min-d{border-style:dashed;border-color:var(--molten)}
+  .elo.today{border-color:var(--ember);animation:brasa 2.2s ease-in-out infinite}
+  @keyframes brasa{
+    0%,100%{box-shadow:0 0 6px rgba(224,98,48,.45)}
+    50%{box-shadow:0 0 16px rgba(224,98,48,.9)}
+  }
+  .chain-legend{display:flex;gap:16px;margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.06em;color:var(--dim);text-transform:uppercase;flex-wrap:wrap}
+  .chain-legend i{display:inline-block;width:14px;height:9px;border-radius:99px;border:2px solid var(--line2);margin-right:5px;vertical-align:-1px}
+
+  /* a obra que a corrente forja */
+  .obra{margin-top:16px;border-top:1px solid var(--line);padding-top:14px}
+  .obra svg{width:100%;display:block}
+  .obra svg > *{opacity:.10;transition:opacity 1.2s ease, filter 1.2s ease;fill:var(--line2)}
+  #swLamina{fill:url(#lam)}
+  #swFio{stroke:var(--bg);stroke-width:1.4;fill:none}
+  #swGuarda,#swCabo,#swPomo{fill:#6B5A34}
+  .obra svg > *.on{opacity:1}
+  .obra.completa svg{filter:drop-shadow(0 0 10px rgba(232,163,61,.7));animation:lamina 3s ease-in-out infinite}
+  @keyframes lamina{0%,100%{filter:drop-shadow(0 0 8px rgba(232,163,61,.55))}50%{filter:drop-shadow(0 0 18px rgba(255,203,107,.9))}}
+  .obra-cap{display:flex;justify-content:space-between;margin-top:9px;font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+  .obra-cap #obraNum{color:var(--molten)}
+  .cl-full{border-color:var(--molten);box-shadow:0 0 5px rgba(232,163,61,.5)}
+  .cl-min{border-color:var(--molten);border-style:dashed}
+  .cl-today{border-color:var(--ember)}
+
+  /* ===== os 5 de ferro ===== */
+  .item{
+    display:flex;align-items:center;gap:13px;padding:12px 10px;border-radius:10px;cursor:pointer;user-select:none;
+    background:var(--panel2);border:1px solid var(--line);margin-bottom:7px;position:relative;overflow:hidden;
+  }
+  .item::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--line2)}
+  .item:active{background:var(--line)}
+  .riv{
+    width:26px;height:26px;border-radius:50%;border:2px solid var(--line2);flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;background:var(--bg);
+  }
+  .item.on .riv{background:var(--molten);border-color:var(--molten);box-shadow:0 0 14px rgba(232,163,61,.55)}
+  .dot{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--c);margin-right:6px;vertical-align:1px;opacity:.85}
+  .riv svg{width:12px;height:12px;stroke:var(--bg);stroke-width:3.6;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .item.on .riv svg{opacity:1}
+  .it-body{flex:1;min-width:0}
+  .it-label{font-size:13.5px;font-weight:500;letter-spacing:-.01em}
+  .it-min{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--dim);margin-top:2px;letter-spacing:.02em}
+  .item.on .it-label{color:var(--dim);text-decoration:line-through}
+  body.vela .it-label{font-size:10.5px;color:var(--muted);font-weight:300}
+  body.vela .it-min{font-family:'Space Grotesk';font-size:13.5px;color:var(--text);font-weight:500;letter-spacing:0}
+  body.vela .item.on .it-min{color:var(--dim);text-decoration:line-through}
+  body.vela .item.on .it-label{text-decoration:none}
+
+  .minday{
+    margin-top:5px;width:100%;background:none;border:1px dashed var(--line2);color:var(--dim);
+    border-radius:10px;padding:10px;font-size:11px;cursor:pointer;font-family:'Space Grotesk';
+  }
+  body.vela .minday{border-color:var(--amber);border-style:solid;color:var(--amber);font-weight:500;background:rgba(232,179,102,.08)}
+
+  /* ===== corredor de portas ===== */
+  .corredor-head{font-family:'Anton';font-weight:400;font-size:15px;letter-spacing:.18em;text-transform:uppercase;margin:20px 2px 11px;color:var(--text)}
+  .corredor{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+  @media(max-width:420px){.corredor{grid-template-columns:repeat(2,1fr)}}
+  .porta{
+    background:linear-gradient(180deg,var(--panel2),var(--panel));
+    border:1px solid var(--line);border-top:3px solid var(--c);
+    border-radius:11px;padding:15px 6px 11px;text-align:center;text-decoration:none;color:var(--text);
+    position:relative;overflow:hidden;
+  }
+  .porta:active{transform:scale(.95)}
+  .porta svg{width:26px;height:26px;stroke:var(--c);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;margin-bottom:8px}
+  .placa{
+    display:block;font-family:'JetBrains Mono',monospace;font-size:9.5px;font-weight:700;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--muted);
+  }
+  .porta small{display:block;font-size:7.5px;color:var(--dim);letter-spacing:.1em;text-transform:uppercase;margin-top:3px;font-family:'JetBrains Mono',monospace}
+  .porta.acesa{border-color:#4A3A1C;border-top-color:var(--molten)}
+  .porta.acesa::after{ /* luz vazando por baixo da porta */
+    content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(232,163,61,.4) 0%, transparent 75%);
+  }
+  .porta.acesa .placa{color:var(--molten-hi)}
+  .porta.acesa svg{stroke:var(--molten);filter:drop-shadow(0 0 6px rgba(232,163,61,.5))}
+  .porta.gelo{border-color:#24384E;border-top-color:#8FD0FF}
+  .porta.gelo::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(143,208,255,.35) 0%, transparent 75%)}
+  .porta.gelo .placa{color:#CFEBFF}
+  .porta.gelo svg{stroke:#8FD0FF;filter:drop-shadow(0 0 6px rgba(143,208,255,.5))}
+  .porta.grama{border-color:#1E4630;border-top-color:#3DDC7A}
+  .porta.grama::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(61,220,122,.32) 0%, transparent 75%)}
+  .porta.grama .placa{color:#8FF5B5}
+  .porta.grama svg{stroke:#3DDC7A;filter:drop-shadow(0 0 6px rgba(61,220,122,.5))}
+  .porta.fogo{border-color:#4A2A22;border-top-color:#E2543A}
+  .porta.fogo::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(226,84,58,.34) 0%, transparent 75%)}
+  .porta.fogo .placa{color:#FF8A6B}
+  .porta.fogo svg{stroke:#E2543A;filter:drop-shadow(0 0 6px rgba(226,84,58,.5))}
+  .porta.marmore{border-color:#4A3F26;border-top-color:#C9A24B}
+  .porta.marmore::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(201,162,75,.32) 0%, transparent 75%)}
+  .porta.marmore .placa{color:#E8D9AE}
+  .porta.marmore svg{stroke:#C9A24B;filter:drop-shadow(0 0 6px rgba(201,162,75,.5))}
+  .porta.farol{border-color:#3A3E30;border-top-color:#F5E6B8}
+  .porta.farol::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(245,230,184,.30) 0%, transparent 75%)}
+  .porta.travessia{border-color:#232A55;border-top-color:#7C8FE0}
+  .porta.travessia::after{content:"";position:absolute;left:8%;right:8%;bottom:0;height:24px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(124,143,224,.30) 0%, transparent 72%)}
+  .porta.travessia .placa{color:#F0C56A}
+  .porta.travessia svg{stroke:#F0C56A;filter:drop-shadow(0 0 6px rgba(240,197,106,.45))}
+  .porta.latao{border-color:#4A3A1E;border-top-color:#C9973F}
+  .porta.latao::after{content:"";position:absolute;left:10%;right:10%;bottom:0;height:22px;
+    background:radial-gradient(60% 100% at 50% 100%, rgba(201,151,63,.34) 0%, transparent 75%)}
+  .porta.latao .placa{color:#F0C56A}
+  .porta.latao svg{stroke:#C9973F;filter:drop-shadow(0 0 6px rgba(201,151,63,.5))}
+  .porta.farol .placa{color:#F5E6B8}
+  .porta.farol svg{stroke:#F5E6B8;filter:drop-shadow(0 0 6px rgba(245,230,184,.5))}
+  body.vela .corredor,body.vela .corredor-head{opacity:.35}
+
+
+  /* escala dos ferros por tipo de dia */
+  .fora{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.05em;color:var(--dim);
+    line-height:1.7;margin:8px 2px 0}
+  .fora b{color:var(--muted);font-weight:400}
+  .ajustar{width:100%;margin-top:10px;background:none;border:1px dashed var(--line2);color:var(--muted);
+    border-radius:10px;padding:11px 6px;cursor:pointer;font-family:'JetBrains Mono',monospace;
+    font-size:9px;letter-spacing:.12em;text-transform:uppercase}
+  .escala{display:none;margin-top:9px;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:13px}
+  .escala.on{display:block}
+  .esc-cab{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--dim);line-height:1.7;margin-bottom:11px}
+  .esc-linha{padding:9px 0;border-top:1px solid var(--line)}
+  .esc-linha:first-of-type{border-top:0}
+  .esc-nome{font-size:12.5px;color:var(--text);margin-bottom:7px}
+  .esc-dias{display:flex;gap:6px}
+  .esc-dias button{flex:1;background:var(--panel);border:1px solid var(--line2);color:var(--dim);
+    border-radius:7px;padding:8px 2px;cursor:pointer;font-family:'JetBrains Mono',monospace;
+    font-size:8.5px;letter-spacing:.1em;text-transform:uppercase}
+  .esc-dias button.on{border-color:var(--molten);color:var(--molten)}
+
+  footer{text-align:center;margin-top:26px}
+  footer p{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.24em;text-transform:uppercase;color:var(--dim);margin-bottom:8px}
+  footer a{color:var(--dim);font-size:9px;text-decoration:none;letter-spacing:.2em;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+  footer a:hover{color:var(--muted)}
+
+  .rg-copia{margin-top:12px;border-top:1px solid var(--line);padding-top:9px;display:flex;gap:12px;align-items:center;
+    font-family:'JetBrains Mono',monospace;font-size:8.5px;letter-spacing:.08em;color:var(--dim);text-transform:uppercase}
+  .rg-copia span{flex:1}
+  .rg-copia a{color:var(--muted);cursor:pointer;border-bottom:1px solid var(--line2)}
+  .rg-copia a.zerar{color:#8A4A3A;border-bottom-color:#4A2A22}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--text)}
+  .oreg-head span{font-size:9px;letter-spacing:.08em;color:var(--dim)}
+  .oreg-sub{font-size:10px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:9.5px;color:var(--molten);letter-spacing:.05em;flex-shrink:0;min-width:34px;opacity:.85;padding-top:1px}
+  .rg-m{font-size:11.5px;color:var(--text);line-height:1.45;flex:1}
+  .rg-s{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);flex-shrink:0;padding-top:2px}
+  .rg-vazio{font-size:11px;color:var(--dim);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--panel2);border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--text)}
+  .rg-dia small{font-size:9.5px;color:var(--muted);letter-spacing:.05em}
+  .rg-dia b{font-size:11px;letter-spacing:.06em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--molten)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="fagulhas" id="fagulhas"></div>
+<div class="wrap">
+
+  <div class="janela" id="janela">
+    <div class="stars" id="stars"></div>
+    <div class="orb" id="orb"></div>
+    <div class="dragao" id="dragao"><svg viewBox="0 0 200 90"><path d="M8 52 C30 40 44 44 60 36 C52 30 50 22 54 14 C60 24 70 28 82 28 C96 28 110 34 118 44 C132 36 150 34 168 40 C156 44 148 50 144 58 C150 60 158 60 166 56 C158 66 144 70 132 66 C124 74 110 78 98 74 C104 68 106 62 104 56 C94 62 80 64 68 60 C74 66 74 72 70 78 C60 72 54 64 52 56 C38 60 22 58 8 52 Z M118 44 C122 40 128 38 134 38 L128 46 Z"/></svg></div>
+    <div class="jan-info">
+      <div class="jan-data" id="data">·</div>
+      <div class="jan-saud" id="saud">·</div>
+    </div>
+  </div>
+
+  <div class="monumento">
+    <h1>DIA <b id="diaN">1</b></h1>
+    <div class="mon-meta">
+      <span class="mm1">de 30 · ciclo 01<br>19 jul → 17 ago</span>
+      <span class="fogo"><svg viewBox="0 0 24 24"><path d="M12 2 C13 7 17 8 17 13 a5 5 0 0 1 -10 0 C7 10 10 9 10 5 C11 6.5 11.6 7.5 12 2Z"/></svg><span id="streakN">CORRENTE 0</span></span>
+    </div>
+  </div>
+
+  <div class="bussola" id="bussola"></div>
+  <div class="vela-note">Hoje o dia pediu menos, e tudo bem. A vela está acesa: bate só o essencial e a corrente atravessa a noite inteira. Amanhã a forja volta a rugir.</div>
+
+  <div class="card">
+    <div class="sec"><b>A corrente</b><span id="ccNum">0 ELOS FORJADOS</span></div>
+    <div class="chain" id="chain"></div>
+    <div class="chain-legend">
+      <span><i class="cl-full"></i>forjado</span>
+      <span><i class="cl-min"></i>dia mínimo</span>
+      <span><i class="cl-today"></i>hoje, na brasa</span>
+    </div>
+
+    <div class="obra">
+      <svg viewBox="0 0 320 44" id="espada">
+        <defs>
+          <linearGradient id="lam" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#8D877A"/><stop offset=".5" stop-color="#D9D2C2"/><stop offset="1" stop-color="#8D877A"/>
+          </linearGradient>
+        </defs>
+        <circle id="swPomo"  cx="22" cy="22" r="7"/>
+        <rect   id="swCabo"  x="30" y="17" width="34" height="10" rx="4"/>
+        <rect   id="swGuarda" x="66" y="6" width="8" height="32" rx="3"/>
+        <path   id="swLamina" d="M76 14 L268 14 L306 22 L268 30 L76 30 Z"/>
+        <line   id="swFio" x1="84" y1="22" x2="262" y2="22"/>
+      </svg>
+      <div class="obra-cap"><span id="obraFase">O lingote espera a primeira brasa</span><span id="obraNum">0/30</span></div>
+    </div>
+  </div>
+
+  <div class="card" style="background:transparent;border:none;padding:0">
+    <div class="sec" style="padding:0 2px"><b id="ferroTitle">Os 5 de ferro</b><span id="ferroCount">0/5</span></div>
+    <div id="items"></div>
+    <div class="fora" id="fora"></div>
+    <button class="ajustar" onclick="abrirEscala()">Escala dos ferros · quais valem em cada dia</button>
+    <div class="escala" id="escala"></div>
+    <button class="minday" id="btnMinday"></button>
+  </div>
+
+  <div class="corredor-head">O corredor</div>
+  <div class="corredor" id="corredor"></div>
+
+
+
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa em qualquer sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+    <div class="rg-copia">
+      <span id="cofreInfo">nenhuma cópia guardada</span>
+      <a onclick="exportarCofre()">guardar cópia</a>
+      <a onclick="document.getElementById('cofreFile').click()">restaurar</a>
+      <a class="zerar" onclick="recomecarCiclo()">recomeçar ciclo</a>
+      <input type="file" id="cofreFile" accept=".json" style="display:none">
+    </div>
+  </div>
+
+  <footer>
+    <p>Você só se move no nível da sua ambição</p>
+    <a href="index.html">Sistema completo →</a>
+  </footer>
+</div>
+
+<script>
+/* mesmas chaves do sistema (jvx-): marcar aqui marca lá */
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const START = new Date('2026-07-19T00:00:00');
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+const chk = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+
+/* que ferros valem em cada tipo de dia · editável na própria Forja */
+const ESCALA_PADRAO = {
+  usp:      ['semana','sabado'],
+  academia: ['semana','sabado'],
+  lowex:    ['semana'],
+  leitura:  ['semana','sabado','domingo'],
+  diario:   ['semana','sabado','domingo'],
+};
+let escala = gs('ferro-escala', null);
+if(!escala || typeof escala!=='object'){ escala = JSON.parse(JSON.stringify(ESCALA_PADRAO)); ss('ferro-escala', escala); }
+function tipoDeDia(iso){
+  const dw = new Date(iso+'T12:00:00').getDay();
+  return dw===0 ? 'domingo' : (dw===6 ? 'sabado' : 'semana');
+}
+function valeHoje(id, iso){
+  const dias = escala[id] || ESCALA_PADRAO[id] || ['semana','sabado','domingo'];
+  return dias.indexOf(tipoDeDia(iso)) >= 0;
+}
+function ferrosDoDia(iso){ return FERRO.filter(f=>valeHoje(f.id, iso)); }
+
+const FERRO = [
+  { id:'usp',      label:'Direito · missão do protocolo', min:'MÍN 30 MIN DE LEI SECA',          c:'var(--navy)' },
+  { id:'academia', label:'Treino Freak + cardio',         min:'MÍN 2 EXERCÍCIOS + 10 CARDIO',    c:'var(--red)' },
+  { id:'lowex',    label:'10K · bloco comercial',         min:'MÍN 30 MIN OU 1 LIGAÇÃO',         c:'var(--green)' },
+  { id:'leitura',  label:'Leitura · 20 páginas',          min:'MÍN 5 PÁGINAS',                   c:'var(--amber)' },
+  { id:'diario',   label:'Diário noturno',                min:'MÍN 1 PARÁGRAFO HONESTO',         c:'var(--gray)' },
+];
+
+const IC = {
+  balanca:'<svg viewBox="0 0 100 100"><line x1="50" y1="16" x2="50" y2="78"/><line x1="24" y1="27" x2="76" y2="27"/><path d="M13 51 L24 29 L35 51"/><path d="M13 51 a11 11 0 0 0 22 0"/><path d="M65 51 L76 29 L87 51"/><path d="M65 51 a11 11 0 0 0 22 0"/><line x1="36" y1="82" x2="64" y2="82"/></svg>',
+  diamante:'<svg viewBox="0 0 100 100"><path d="M31 24 L69 24 L86 44 L50 84 L14 44 Z"/><path d="M14 44 L86 44"/><path d="M31 24 L42 44 L50 84"/><path d="M69 24 L58 44 L50 84"/></svg>',
+  halter:'<svg viewBox="0 0 100 100"><line x1="30" y1="50" x2="70" y2="50"/><rect x="18" y="34" width="10" height="32" rx="3"/><rect x="72" y="34" width="10" height="32" rx="3"/><rect x="8" y="41" width="7" height="18" rx="2"/><rect x="85" y="41" width="7" height="18" rx="2"/></svg>',
+  bola:'<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="34"/><path d="M50 36 L63 46 L58 61 L42 61 L37 46 Z"/><line x1="50" y1="36" x2="50" y2="16"/><line x1="63" y1="46" x2="82" y2="41"/><line x1="58" y1="61" x2="70" y2="76"/><line x1="42" y1="61" x2="30" y2="76"/><line x1="37" y1="46" x2="18" y2="41"/></svg>',
+  livro:'<svg viewBox="0 0 100 100"><path d="M50 26 C42 19 28 18 16 22 L16 76 C28 72 42 73 50 80 C58 73 72 72 84 76 L84 22 C72 18 58 19 50 26 Z"/><line x1="50" y1="26" x2="50" y2="80"/></svg>',
+  coluna:'<svg viewBox="0 0 100 100"><line x1="18" y1="24" x2="82" y2="24"/><path d="M22 24 L14 14 L86 14 L78 24"/><line x1="30" y1="32" x2="30" y2="74"/><line x1="50" y1="32" x2="50" y2="74"/><line x1="70" y1="32" x2="70" y2="74"/><line x1="18" y1="82" x2="82" y2="82"/></svg>',
+  pena:'<svg viewBox="0 0 100 100"><path d="M76 18 C56 20 36 34 28 56 L24 80 L48 74 C68 66 80 46 80 26 Z"/><line x1="24" y1="80" x2="58" y2="44"/></svg>',
+  relogio:'<svg viewBox="0 0 100 100"><circle cx="50" cy="52" r="32"/><line x1="50" y1="52" x2="50" y2="32"/><line x1="50" y1="52" x2="64" y2="58"/><line x1="38" y1="14" x2="62" y2="14"/></svg>',
+};
+
+const PORTAS = [
+  { nome:'Direito',   sub:'sala nova',  href:'direito.html',         ic:IC.balanca,  c:'var(--molten)', acesa:true },
+  { nome:'10K',       sub:'sala nova',  href:'lapidacao.html',      ic:IC.diamante, c:'#8FD0FF', gelo:true },
+  { nome:'Freak',     sub:'sala nova',  href:'freak.html',           ic:IC.halter,   c:'#E2543A', fogo:true },
+  { nome:'Campo',     sub:'sala nova',  href:'campo.html',           ic:IC.bola,     c:'#3DDC7A', grama:true },
+  { nome:'Livro',     sub:'sala nova',  href:'livro.html',           ic:IC.livro,    c:'#C9973F', latao:true },
+  { nome:'Filosofia', sub:'sala nova',  href:'filosofia.html',       ic:IC.coluna,   c:'#C9A24B', marmore:true },
+  { nome:'Diário',    sub:'sala nova',  href:'diario.html',          ic:IC.pena,     c:'#F5E6B8', farol:true },
+  { nome:'Rotina',    sub:'sala nova',  href:'rotina.html',          ic:IC.relogio,  c:'#F0C56A', travessia:true },
+];
+
+let daily = gs('daily-'+TODAY, {}) || {};
+
+/* ===== a janela: o céu lá fora ===== */
+let HEAT = 0; /* 0 frio · 1 brasa · 2 quente · 3 fogo vivo · 4 sol de fogo · 5 era do dragão */
+function heatTier(corrente){
+  return corrente>=21?5 : corrente>=14?4 : corrente>=7?3 : corrente>=3?2 : corrente>=1?1 : 0;
+}
+function seedDia(){ /* aleatório estável por dia: "de vez em quando" sem sorteio a cada abrir */
+  let x=0; for(const c of TODAY) x=(x*31+c.charCodeAt(0))>>>0; return x;
+}
+function renderFagulhas(){
+  const box = $('fagulhas'); box.innerHTML='';
+  const qtd = [0,0,4,8,14,20][HEAT]||0;
+  for(let i=0;i<qtd;i++){
+    const sp=document.createElement('span');
+    sp.style.left=(4+Math.random()*92)+'%';
+    sp.style.setProperty('--dx',(Math.random()*70-35)+'px');
+    sp.style.animationDuration=(7+Math.random()*8)+'s';
+    sp.style.animationDelay=(Math.random()*7)+'s';
+    box.appendChild(sp);
+  }
+}
+function renderJanela(){
+  const h = new Date().getHours();
+  const jan = $('janela'), orb = $('orb'), stars = $('stars');
+  let grad, ink, orbC, glow, showStars=false, orbTop='30%', orbLeft='50%';
+  if(document.body.classList.contains('vela')){
+    grad='radial-gradient(80% 110% at 50% 100%, #4A3418 0%, #241A0B 60%, #170F05 100%)';
+    ink='#F2E3C2'; orbC='#F2C56B'; glow='rgba(242,197,107,.55)'; orbTop='55%'; orbLeft='50%';
+  } else if(h<5){
+    grad='linear-gradient(180deg,#0B1220 0%,#17233D 100%)';
+    ink='#E8E4D6'; orbC='#DDD9CB'; glow='rgba(221,217,203,.3)'; showStars=true;
+    orbTop='26%'; orbLeft=(15+h*12)+'%';
+  } else if(h<8){
+    grad='linear-gradient(180deg,#F0CE97 0%,#E09A76 55%,#B7999C 100%)';
+    ink='#33241A'; orbC='#FFDF9E'; glow='rgba(255,214,140,.65)';
+    orbTop='60%'; orbLeft=(18+(h-5)*8)+'%';
+  } else if(h<12){
+    grad='linear-gradient(180deg,#A9CCE0 0%,#DCE8E0 100%)';
+    ink='#1C2B45'; orbC='#FFEDB0'; glow='rgba(255,230,160,.6)';
+    orbTop=(38-(h-8)*5)+'%'; orbLeft=(30+(h-8)*8)+'%';
+  } else if(h<17){
+    grad='linear-gradient(180deg,#B7D5E4 0%,#E6E0CE 100%)';
+    ink='#1F2A3A'; orbC='#FFE9A3'; glow='rgba(255,225,150,.55)';
+    orbTop=(22+(h-12)*4)+'%'; orbLeft=(52+(h-12)*7)+'%';
+  } else if(h<20){
+    grad='linear-gradient(180deg,#E5A163 0%,#C97350 55%,#5C4560 100%)';
+    ink='#FFF3E0'; orbC='#FFCE85'; glow='rgba(255,190,110,.6)';
+    orbTop=(48+(h-17)*8)+'%'; orbLeft=(70+(h-17)*6)+'%';
+  } else {
+    grad='linear-gradient(180deg,#121B2E 0%,#0B111E 100%)';
+    ink='#E8E4D6'; orbC='#DDD9CB'; glow='rgba(221,217,203,.28)'; showStars=true;
+    orbTop='24%'; orbLeft=(20+(h-20)*14)+'%';
+  }
+  /* eventos do céu conforme o calor da forja */
+  const noite = (h<5 || h>=20);
+  const vela = document.body.classList.contains('vela');
+  if(!vela && HEAT>=4){
+    if(noite){
+      /* lua de sangue: sempre na era do dragão, de vez em quando no nível 4 */
+      if(HEAT>=5 || seedDia()%3===0){
+        orbC='#C0392B'; glow='rgba(192,57,43,.55)';
+        grad='linear-gradient(180deg,#1A0E14 0%,#0E0A12 100%)';
+      }
+    } else {
+      /* sol de fogo */
+      orbC = HEAT>=5 ? '#D8452B' : '#F07A3A';
+      glow = HEAT>=5 ? 'rgba(216,69,43,.7)' : 'rgba(240,122,58,.65)';
+    }
+  }
+  jan.style.background = grad;
+  jan.style.color = ink;
+  orb.style.background = orbC;
+  orb.style.boxShadow = '0 0 46px 18px '+glow;
+  orb.style.top = orbTop; orb.style.left = orbLeft;
+  $('dragao').classList.toggle('voa', !vela && HEAT>=5);
+  if(showStars && !stars.childElementCount){
+    for(let i=0;i<36;i++){
+      const s=document.createElement('span');
+      s.style.left=Math.random()*100+'%';
+      s.style.top=Math.random()*75+'%';
+      s.style.animationDelay=(Math.random()*3)+'s';
+      stars.appendChild(s);
+    }
+  }
+  stars.style.display = showStars ? 'block' : 'none';
+
+  $('saud').textContent = document.body.classList.contains('vela')
+    ? 'a vela está acesa, João'
+    : HEAT>=5 ? 'a forja ruge, João · até o céu te respeita'
+    : HEAT>=4 ? 'o sol conhece teu nome, João'
+    : (h<5 ? 'a madrugada é dos obstinados, João'
+    : h<12 ? 'bom dia, João · a forja te espera'
+    : h<18 ? 'boa tarde, João · martelo na mão'
+    : 'boa noite, João · fecha o dia inteiro');
+}
+
+function dayComplete(key){
+  const dd = key===TODAY ? daily : (gs('daily-'+key, {}) || {});
+  const doDia = ferrosDoDia(key);
+  return doDia.length>0 && doDia.every(f=>dd[f.id]);
+}
+function dayISO(n){ const d=new Date(START); d.setDate(d.getDate()+n-1); return localISO(d); }
+
+function correnteViva(){
+  let n=0; const d=new Date();
+  for(let i=0;i<60;i++){
+    const key = localISO(d);
+    if(dayComplete(key)){ n++; }
+    else if(i===0){ /* hoje em aberto não quebra */ }
+    else break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function render(){
+  daily = gs('daily-'+TODAY, {}) || {};
+  const md = gs('minday',{})||{};
+  document.body.classList.toggle('vela', !!md[TODAY]);
+  const corrente = correnteViva();
+  HEAT = heatTier(corrente);
+  document.documentElement.style.setProperty('--heat', HEAT);
+  renderFagulhas();
+  renderJanela();
+
+  const dias=['DOM','SEG','TER','QUA','QUI','SEX','SÁB'];
+  const now=new Date();
+  $('data').textContent = dias[now.getDay()]+' '+String(now.getDate()).padStart(2,'0')+'.'+String(now.getMonth()+1).padStart(2,'0')+'.'+now.getFullYear();
+
+  const dayNum = Math.max(1, Math.floor((new Date(TODAY) - START)/86400000)+1);
+  $('diaN').textContent = String(Math.min(dayNum,30)).padStart(2,'0');
+
+  /* corrente entrelaçada */
+  const chain = $('chain'); chain.innerHTML='';
+  let forjados=0;
+  for(let n=1;n<=30;n++){
+    const iso = dayISO(n);
+    const el = document.createElement('div');
+    let cls='elo'+(n%2===0?' v':'');
+    if(dayComplete(iso)){ cls+=' full'; forjados++; }
+    else if(md[iso] && iso<TODAY){ cls+=' min-d'; }
+    if(iso===TODAY) cls+=' today';
+    el.className=cls;
+    el.title='Dia '+n;
+    chain.appendChild(el);
+  }
+  $('ccNum').textContent = (forjados===0 ? 'NENHUM ELO AINDA' : forjados+(forjados===1?' ELO FORJADO':' ELOS FORJADOS'));
+
+  /* a obra: cada elo forjado avança a espada */
+  const partes = [
+    {el:'swLamina', min:6},
+    {el:'swFio',    min:12},
+    {el:'swGuarda', min:18},
+    {el:'swCabo',   min:24},
+    {el:'swPomo',   min:28},
+  ];
+  partes.forEach(p=> $(p.el).classList.toggle('on', forjados>=p.min));
+  const obra = document.querySelector('.obra');
+  obra.classList.toggle('completa', forjados>=30);
+  $('obraNum').textContent = forjados+'/30';
+  $('obraFase').textContent =
+    forjados>=30 ? 'A ESPADA DO CICLO · forjada inteira' :
+    forjados>=28 ? 'O pomo assenta · faltam os últimos golpes' :
+    forjados>=24 ? 'A empunhadura endurece na tua mão' :
+    forjados>=18 ? 'A guarda cruza o aço' :
+    forjados>=12 ? 'O fio começa a nascer' :
+    forjados>=6  ? 'A lâmina bruta sai da brasa' :
+    forjados>=1  ? 'O lingote esquenta, elo a elo' :
+    'O lingote espera a primeira brasa';
+
+  /* ferro */
+  const isVela = !!md[TODAY];
+  const nDia = ferrosDoDia(TODAY).length;
+  $('ferroTitle').textContent = isVela ? 'Só o essencial' : ('Os '+nDia+' de ferro');
+  const box = $('items'); box.innerHTML='';
+  let done = 0;
+  const doDia = ferrosDoDia(TODAY);
+  const foraDeServico = FERRO.filter(f=>doDia.indexOf(f)<0);
+  doDia.forEach(f=>{
+    const on = !!daily[f.id]; if(on) done++;
+    const div = document.createElement('div');
+    div.className = 'item'+(on?' on':'');
+    div.style.setProperty('--c', f.c);
+    div.innerHTML = `<div class="riv">${chk}</div><div class="it-body"><div class="it-label">${f.label}</div><div class="it-min"><i class="dot"></i>${f.min}</div></div>`;
+    div.onclick = ()=>{
+      daily[f.id] = !daily[f.id]; ss('daily-'+TODAY, daily); render();
+      if(daily[f.id]) logar('Ferro batido: '+f.label);
+    };
+    box.appendChild(div);
+  });
+  $('ferroCount').textContent = done+'/'+doDia.length;
+  $('fora').innerHTML = foraDeServico.length
+    ? 'fora de serviço hoje · <b>'+foraDeServico.map(f=>f.label).join('</b> · <b>')+'</b>'
+    : '';
+
+  $('btnMinday').textContent = isVela
+    ? 'Apagar a vela · voltar ao dia completo'
+    : 'Dia de caos? Acender a vela do dia mínimo';
+
+  $('streakN').textContent = 'CORRENTE '+corrente;
+
+  /* corredor */
+  const cor = $('corredor'); cor.innerHTML='';
+  PORTAS.forEach(p=>{
+    const a = document.createElement('a');
+    a.className = 'porta'+(p.acesa?' acesa':'')+(p.gelo?' gelo':'')+(p.grama?' grama':'')+(p.fogo?' fogo':'')+(p.marmore?' marmore':'')+(p.farol?' farol':'')+(p.latao?' latao':'')+(p.travessia?' travessia':'');
+    a.style.setProperty('--c', p.c);
+    a.href = p.href;
+    a.innerHTML = p.ic + `<span class="placa">${p.nome}</span><small>${p.sub}</small>`;
+    cor.appendChild(a);
+  });
+}
+
+$('btnMinday').onclick = ()=>{
+  const m = gs('minday',{})||{};
+  m[TODAY] = !m[TODAY];
+  ss('minday', m);
+  render();
+};
+
+const b = gs('pomo-bussola', null);
+$('bussola').textContent = (typeof b === 'string' && b.trim())
+  ? b.trim()
+  : 'Não devo resultado a ninguém, devo tentativa completa a mim mesmo: enquanto a chama existir, eu não caio.';
+
+/* ===== o cofre: backup e restauração de todo o jvx- ===== */
+function exportarCofre(){
+  const dados={};
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k && k.startsWith('jvx-')) dados[k]=localStorage.getItem(k);
+  }
+  const pacote={ app:'forja-jvx', exportadoEm:new Date().toISOString(), chaves:Object.keys(dados).length, dados };
+  const blob=new Blob([JSON.stringify(pacote,null,1)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='forja-backup-'+TODAY+'.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  ss('backup-meta',{d:TODAY});
+  renderCofre();
+}
+document.getElementById('cofreFile').addEventListener('change', function(){
+  const f=this.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const pacote=JSON.parse(r.result);
+      if(!pacote || pacote.app!=='forja-jvx' || !pacote.dados) throw new Error('formato');
+      if(!confirm('Restaurar a cópia de '+(pacote.exportadoEm||'').slice(0,10)+'? Os dados do arquivo vão sobrescrever os deste aparelho.')) return;
+      Object.keys(pacote.dados).forEach(k=>{ if(k.startsWith('jvx-')) localStorage.setItem(k, pacote.dados[k]); });
+      alert('Travessia restaurada. A Forja vai recarregar.');
+      location.reload();
+    }catch(e){ alert('Arquivo inválido: use uma cópia gerada pelo próprio Cofre.'); }
+  };
+  r.readAsText(f);
+  this.value='';
+});
+/* ===== escala dos ferros: quais valem em cada tipo de dia ===== */
+const NOME_DIA = { semana:'seg a sex', sabado:'sábado', domingo:'domingo' };
+function abrirEscala(){
+  const el=$('escala');
+  el.classList.toggle('on');
+  if(el.classList.contains('on')) renderEscala();
+}
+function renderEscala(){
+  const el=$('escala');
+  let h='<div class="esc-cab">O sábado e o domingo não pedem os mesmos ferros que a segunda. Marca aqui em que dias cada um conta, e a corrente passa a cobrar só o que vale.</div>';
+  FERRO.forEach(f=>{
+    const dias = escala[f.id] || ESCALA_PADRAO[f.id] || [];
+    h += '<div class="esc-linha"><div class="esc-nome">'+f.label+'</div><div class="esc-dias">'+
+      ['semana','sabado','domingo'].map(d=>
+        '<button class="'+(dias.indexOf(d)>=0?'on':'')+'" onclick="virarDia(\''+f.id+'\',\''+d+'\')">'+NOME_DIA[d]+'</button>'
+      ).join('')+'</div></div>';
+  });
+  el.innerHTML=h;
+}
+function virarDia(id, dia){
+  const dias = escala[id] ? escala[id].slice() : (ESCALA_PADRAO[id]||[]).slice();
+  const p = dias.indexOf(dia);
+  if(p>=0) dias.splice(p,1); else dias.push(dia);
+  escala[id]=dias; ss('ferro-escala', escala);
+  renderEscala(); render();
+  logar('Escala do ferro ajustada · '+(FERRO.find(f=>f.id===id)||{}).label+' · '+(p>=0?'fora':'entra')+' de '+NOME_DIA[dia]);
+}
+
+/* ===== recomeçar o ciclo: zera tudo o que está gravado neste aparelho ===== */
+function recomecarCiclo(){
+  if(!confirm('Recomeçar o ciclo apaga TUDO que está gravado neste aparelho: contratos, ligações, treinos, páginas lidas, reflexões, fichas, lampiões, diários e a corrente inteira.\n\nIsso não tem volta. Quer guardar uma cópia antes?')) {
+    if(!confirm('Seguir sem guardar cópia e apagar tudo mesmo assim?')) return;
+  } else {
+    exportarCofre();
+    if(!confirm('Cópia gerada. Agora sim: apagar tudo e começar o ciclo do zero no dia 19 de julho?')) return;
+  }
+  const chaves=[];
+  for(let i=0;i<localStorage.length;i++){
+    const k=localStorage.key(i);
+    if(k && k.startsWith('jvx-')) chaves.push(k);
+  }
+  chaves.forEach(k=>localStorage.removeItem(k));
+  alert('Ciclo zerado. A travessia recomeça agora.');
+  location.reload();
+}
+
+function renderCofre(){
+  const m=gs('backup-meta',null);
+  document.getElementById('cofreInfo').textContent = m&&m.d ? ('última cópia: '+m.d.split('-').reverse().join('.')) : 'nenhuma cópia guardada';
+}
+renderCofre();
+
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) render(); });
+setInterval(renderJanela, 60000);
+render();
+
+/* ===== O REGISTRO: diario de bordo do sistema =====
+   chave compartilhada jvx-log: { 'AAAA-MM-DD': [{h, s, m}] } */
+const SALA = 'forja';
+const SALA_NOMES = { forja:'Forja', lapidacao:'Lapidação', gramado:'Gramado', quartel:'Quartel', portico:'Pórtico', farol:'Farol', biblioteca:'Biblioteca', relogio:'Rotina', ampulheta:'Rotina', obra:'Rotina', travessia:'Travessia' };
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const ultimo = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(ultimo && ultimo.s===SALA && ultimo.m===msg && ultimo.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const dias = Object.keys(L).sort();
+    while(dias.length>90){ delete L[dias.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(lista){ return lista; }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho assim que você executa.</div>';
+  } else {
+    hoje.slice().reverse().forEach(e=>{
+      const d=document.createElement('div'); d.className='rg-linha';
+      d.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('<span class="rg-s">'+(SALA_NOMES[e.s]||e.s)+'</span>');
+      box.appendChild(d);
+    });
+  }
+  const dias = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  if(!dias.length) return;
+  dias.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML = '<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML = '<span class="rg-h">'+e.h+'</span><span class="rg-m">'+e.m+'</span>'+('<span class="rg-s">'+(SALA_NOMES[e.s]||e.s)+'</span>');
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+renderRegistro();
+
+</script>
+</body>
+</html>
