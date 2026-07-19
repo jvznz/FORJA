@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F5F3EC">
+<title>Sala do Direito · Protocolo 01</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Sora:wght@300;400;600;700&family=Barlow+Condensed:wght@600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F5F3EC; --panel:#FCFBF6; --soft:#EEECE2; --line:#E0DDD1;
+    --ink:#12141A; --muted:#6E7078;
+    --navy:#22406B; --navy-soft:#22406B14;
+    --gold:#B98A2E; --gold-soft:#B98A2E1A;
+    --green:#2E7D5B;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    background:var(--bg);color:var(--ink);font-family:'Sora',sans-serif;
+    max-width:760px;margin:0 auto;padding:22px 16px 70px;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(70% 40% at 50% 0%, var(--navy-soft) 0%, transparent 70%);
+  }
+  .wrap{position:relative;z-index:1}
+
+  /* ===== cabeçalho ===== */
+  .top{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+  .back{color:var(--muted);text-decoration:none;font-family:'Barlow Condensed';font-weight:700;font-size:13px;letter-spacing:.16em;text-transform:uppercase}
+  .back:hover{color:var(--ink)}
+  .dia-chip{font-family:'Barlow Condensed';font-weight:700;font-size:13px;letter-spacing:.1em;color:var(--navy);background:var(--navy-soft);border-radius:999px;padding:6px 14px}
+
+  .hero{margin-bottom:22px}
+  .hero .eyebrow{font-family:'Barlow Condensed';font-weight:700;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:6px}
+  .hero h1{font-family:'Fraunces',serif;font-weight:700;font-size:clamp(30px,7vw,42px);line-height:1.08;letter-spacing:-.01em}
+  .hero h1 em{font-style:italic;color:var(--navy)}
+  .hero p{color:var(--muted);font-size:13px;margin-top:8px;line-height:1.6;max-width:520px}
+
+  .progress{display:flex;align-items:center;gap:12px;margin:16px 0 26px}
+  .pbar{flex:1;height:8px;background:var(--soft);border:1px solid var(--line);border-radius:99px;overflow:hidden}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--navy),var(--gold));border-radius:99px;transition:width .6s ease}
+  .pnum{font-family:'Barlow Condensed';font-weight:800;font-size:17px;color:var(--navy);white-space:nowrap}
+
+  /* ===== missão de hoje ===== */
+  .hoje{
+    background:var(--ink);color:#F3F1E9;border-radius:18px;padding:22px;margin-bottom:16px;
+    position:relative;overflow:hidden;
+  }
+  .hoje::after{content:"§";position:absolute;right:14px;top:-18px;font-family:'Fraunces',serif;font-size:120px;color:rgba(185,138,46,.14);line-height:1}
+  .hoje .h-eyebrow{font-family:'Barlow Condensed';font-weight:700;font-size:11px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+  .hoje .h-fase{display:inline-block;font-family:'Barlow Condensed';font-weight:800;font-size:12px;letter-spacing:.18em;padding:4px 11px;border-radius:999px;margin-bottom:10px}
+  .fase-e{background:#2E4E80;color:#DCE6F5}
+  .fase-f{background:var(--gold);color:#1A1508}
+  .fase-r{background:#3A3D45;color:#D9DBE0}
+  .hoje h2{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(19px,4.6vw,25px);line-height:1.25;margin-bottom:8px;max-width:540px}
+  .hoje .h-como{font-size:12.5px;color:#B9BCC4;line-height:1.65;max-width:560px}
+  .hoje .h-min{font-size:11px;color:var(--gold);margin-top:10px;letter-spacing:.04em}
+  .hoje .h-check{
+    margin-top:16px;font-family:'Barlow Condensed';font-weight:700;font-size:16px;letter-spacing:.14em;
+    text-transform:uppercase;background:#F3F1E9;color:var(--ink);border:none;border-radius:11px;
+    padding:13px 30px;cursor:pointer;transition:.2s;
+  }
+  .hoje .h-check:active{transform:scale(.97)}
+  .hoje .h-check.done{background:var(--green);color:#fff}
+
+  /* ===== cards gerais ===== */
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 1px 3px rgba(18,20,26,.05)}
+  .card h3{font-family:'Fraunces',serif;font-weight:600;font-size:19px;margin-bottom:4px}
+  .card .hint{color:var(--muted);font-size:12px;line-height:1.6;margin-bottom:14px}
+  .eyebrow2{font-family:'Barlow Condensed';font-weight:700;font-size:11px;letter-spacing:.26em;text-transform:uppercase;color:var(--gold);margin-bottom:3px}
+
+  /* método */
+  .metodo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:620px){.metodo{grid-template-columns:1fr}}
+  .met{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .met b{font-family:'Barlow Condensed';font-weight:800;font-size:14px;letter-spacing:.14em;text-transform:uppercase;display:block;margin-bottom:5px}
+  .met.e b{color:var(--navy)} .met.f b{color:var(--gold)}
+  .met p{font-size:11.5px;color:var(--muted);line-height:1.6}
+  .leis{list-style:none;counter-reset:lei}
+  .leis li{counter-increment:lei;display:flex;gap:11px;padding:9px 0;border-bottom:1px solid var(--line);font-size:12.5px;line-height:1.55;align-items:baseline}
+  .leis li:last-child{border:none}
+  .leis li::before{content:counter(lei,upper-roman);font-family:'Fraunces',serif;font-weight:700;color:var(--gold);font-size:14px;min-width:26px}
+
+  /* ===== plano 30 dias ===== */
+  .semana{margin-bottom:6px}
+  .sem-head{
+    font-family:'Barlow Condensed';font-weight:800;font-size:14px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--navy);padding:14px 2px 8px;
+    display:flex;justify-content:space-between;align-items:baseline;
+  }
+  .sem-head span{font-family:'Sora';font-weight:400;font-size:10px;color:var(--muted);letter-spacing:.06em;text-transform:none}
+  .dias{display:flex;flex-direction:column;gap:7px}
+  .d{
+    display:flex;gap:12px;align-items:flex-start;background:var(--panel);border:1px solid var(--line);
+    border-radius:12px;padding:12px 14px;transition:.2s;
+  }
+  .d.hoje-d{border-color:var(--gold);box-shadow:0 3px 14px var(--gold-soft);background:#FFFDF4}
+  .d.past{opacity:.75}
+  .d.done{background:var(--soft)}
+  .d.done .d-titulo{text-decoration:line-through;color:var(--muted)}
+  .d-check{
+    width:25px;height:25px;border-radius:8px;border:2px solid var(--line);background:#fff;
+    cursor:pointer;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:.15s;
+  }
+  .d-check svg{width:13px;height:13px;stroke:#fff;stroke-width:3.4;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:0}
+  .d.done .d-check{background:var(--navy);border-color:var(--navy)}
+  .d.done .d-check svg{opacity:1}
+  .d-body{flex:1;min-width:0}
+  .d-meta{display:flex;gap:8px;align-items:center;margin-bottom:3px;flex-wrap:wrap}
+  .d-num{font-family:'Barlow Condensed';font-weight:800;font-size:12px;color:var(--gold);letter-spacing:.08em}
+  .d-data{font-size:9.5px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+  .d-fase{font-family:'Barlow Condensed';font-weight:700;font-size:9.5px;letter-spacing:.14em;padding:2px 8px;border-radius:99px}
+  .d-titulo{font-size:13px;font-weight:600;line-height:1.4}
+  .d-como{font-size:11px;color:var(--muted);line-height:1.55;margin-top:3px}
+  .hoje-tag{font-family:'Barlow Condensed';font-weight:800;font-size:10px;letter-spacing:.2em;color:var(--gold)}
+
+  /* ===== mapa de erros ===== */
+  .erro-add{display:flex;gap:8px}
+  .erro-add input{
+    flex:1;background:#fff;border:1px solid var(--line);border-radius:10px;padding:11px 13px;
+    font-family:'Sora';font-size:13px;color:var(--ink);
+  }
+  .erro-add input:focus{outline:none;border-color:var(--navy)}
+  .erro-add button{
+    font-family:'Barlow Condensed';font-weight:700;font-size:15px;letter-spacing:.1em;
+    background:var(--navy);color:#fff;border:none;border-radius:10px;padding:0 18px;cursor:pointer;
+  }
+  .erros{list-style:none;margin-top:12px;display:flex;flex-direction:column;gap:7px}
+  .erros li{
+    display:flex;gap:10px;align-items:baseline;background:var(--soft);border-left:3px solid var(--gold);
+    border-radius:0 10px 10px 0;padding:9px 12px;font-size:12.5px;line-height:1.5;
+  }
+  .erros li .e-d{font-size:9.5px;color:var(--muted);white-space:nowrap;letter-spacing:.08em}
+  .erros li .e-t{flex:1}
+  .erros li button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:13px}
+  .erros li button:hover{color:var(--gold)}
+  .erros-empty{font-size:11.5px;color:var(--muted);margin-top:10px;font-style:italic}
+
+  /* fontes */
+  .fontes{display:flex;flex-wrap:wrap;gap:7px}
+  .fonte-chip{font-size:11px;background:var(--soft);border:1px solid var(--line);border-radius:999px;padding:6px 13px;color:var(--ink)}
+  .fonte-chip b{color:var(--navy)}
+
+  footer{text-align:center;margin-top:30px;color:var(--muted);font-size:10px;letter-spacing:.2em;text-transform:uppercase;font-family:'Barlow Condensed';font-weight:600}
+  footer em{display:block;font-family:'Fraunces',serif;font-style:italic;font-size:13px;text-transform:none;letter-spacing:0;color:var(--navy);margin-bottom:6px}
+
+  /* ===== O REGISTRO: o que foi feito, dia a dia ===== */
+  .oreg{margin-top:22px;background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:15px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-family:'Barlow Condensed';font-weight:700;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink)}
+  .oreg-head span{font-size:10px;letter-spacing:.06em;color:var(--muted)}
+  .oreg-sub{font-size:11px;color:var(--muted);margin-bottom:11px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:10px;color:var(--navy);flex-shrink:0;min-width:34px;padding-top:2px;font-weight:600}
+  .rg-m{font-size:12.5px;color:var(--ink);line-height:1.5;flex:1}
+  .rg-vazio{font-size:11.5px;color:var(--muted);padding:6px 0;line-height:1.6}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:#FFFFFF;border:1px solid var(--line);border-radius:8px;
+    padding:9px 11px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--ink)}
+  .rg-dia small{font-size:10px;color:var(--muted)}
+  .rg-dia b{font-size:11px;letter-spacing:.05em;font-weight:600}
+  .rg-dia.aberto{border-color:var(--navy)}
+  .rg-corpo{padding:2px 11px 10px;display:none}
+  .rg-corpo.on{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <a class="back" href="hoje.html">← Hoje</a>
+    <div class="dia-chip" id="diaChip">Dia 1 · Protocolo 01</div>
+  </div>
+
+  <div class="hero">
+    <div class="eyebrow">Sala do Direito · Reaprender do zero</div>
+    <h1>Do zero ao <em>domínio</em>,<br>um tema de cada vez.</h1>
+    <p>Protocolo 01 · 19 jul a 17 ago · LINDB e Constitucional, a fundação de tudo. A régua: um dos melhores alunos da faculdade, com base que aguenta estágio e OAB. Profundidade vence velocidade.</p>
+  </div>
+
+  <div class="progress">
+    <div class="pbar"><div class="pfill" id="pfill" style="width:0%"></div></div>
+    <div class="pnum" id="pnum">0/30</div>
+  </div>
+
+  <div class="hoje" id="hojeCard">
+    <div class="h-eyebrow">Missão de hoje</div>
+    <div class="h-fase fase-e" id="hFase">ENTENDER</div>
+    <h2 id="hTitulo"></h2>
+    <div class="h-como" id="hComo"></div>
+    <div class="h-min" id="hMin"></div>
+    <button class="h-check" id="hCheck">Missão cumprida</button>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow2">O ritmo</div>
+    <h3>Um tema a cada dois dias</h3>
+    <p class="hint">É assim que conhecimento vira domínio, e a ciência do aprendizado sustenta cada etapa: testar a memória fixa mais que reler (prática de recuperação), explicar em voz alta expõe o que você só achava que sabia, e o domingo revisita tudo no espaçamento certo pra memória de longo prazo.</p>
+    <div class="metodo">
+      <div class="met e"><b>Dia 1 · Entender</b><p>Lei seca lida devagar, artigo por artigo, marcando o vade. Lenza por cima pra dar carne. Fecha com síntese à mão: uma página, suas palavras.</p></div>
+      <div class="met f"><b>Dia 2 · Fixar e testar</b><p>Explicar a síntese em voz alta como se ensinasse alguém. Depois 20 questões FGV do tema. Cada erro vira uma linha no Mapa de Erros.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow2">Inegociáveis</div>
+    <h3>As cinco leis do protocolo</h3>
+    <ul class="leis">
+      <li>Lei seca antes de doutrina. A letra da norma é a fundação; o autor é o comentário.</li>
+      <li>Fixar é testar. Vinte questões valem mais que três releituras. Reler dá sensação de saber; errar questão dá o saber.</li>
+      <li>Voz alta, sempre. Se você não consegue explicar pro quarto vazio, você ainda não entendeu.</li>
+      <li>Todo erro vira linha no Mapa. Erro anotado é tijolo; erro esquecido volta na prova.</li>
+      <li>Dia de caos: mínimo de 30 minutos de lei seca do tema do dia. A corrente não quebra.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow2">A trilha</div>
+    <h3>30 dias · LINDB ao art. 17</h3>
+    <p class="hint">Marca o dia só depois de cumprir. O dia de hoje acende em dourado sozinho.</p>
+    <div id="plano"></div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow2">A prova escrita dos tropeços</div>
+    <h3>Mapa de Erros</h3>
+    <p class="hint">Toda questão errada entra aqui: tema + o que você confundiu. É este mapa que os domingos e os simulados revisitam. Ele é o seu professor particular de graça.</p>
+    <div class="erro-add">
+      <input type="text" id="erroInput" maxlength="160" placeholder="Ex: confundi eficácia contida com limitada no art. 5º">
+      <button id="erroBtn">+ Mapa</button>
+    </div>
+    <ul class="erros" id="erroList"></ul>
+    <div class="erros-empty" id="erroEmpty">Nenhum erro mapeado ainda. Eles vão aparecer, e cada um vale ouro.</div>
+  </div>
+
+  <div class="card">
+    <div class="eyebrow2">Arsenal</div>
+    <h3>Fontes fixas</h3>
+    <p class="hint">Sem pular de material em material. Estas são as fontes do protocolo inteiro, todas gratuitas ou já suas.</p>
+    <div class="fontes">
+      <span class="fonte-chip"><b>Lei seca</b> · Planalto / vade mecum</span>
+      <span class="fonte-chip"><b>Doutrina</b> · Pedro Lenza</span>
+      <span class="fonte-chip"><b>Aulas</b> · Me Julga</span>
+      <span class="fonte-chip"><b>Aulas</b> · Trilhante</span>
+      <span class="fonte-chip"><b>Aulas</b> · Aprendendo Direito</span>
+      <span class="fonte-chip"><b>Aulas</b> · Saber Direito · TV Justiça</span>
+      <span class="fonte-chip"><b>Questões</b> · provas FGV/OAB anteriores</span>
+    </div>
+  </div>
+  <div class="oreg">
+    <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+    <div class="oreg-sub">Tudo que você executa nesta sala fica gravado aqui, com a hora. O dia de hoje em cima, os dias anteriores logo abaixo.</div>
+    <div id="rgHoje"></div>
+    <div class="rg-dias" id="rgDias"></div>
+  </div>
+
+
+  <footer>
+    <em>"Quem tem um porquê suporta quase qualquer como."</em>
+    Protocolo 01 · Sala do Direito
+  </footer>
+</div>
+
+<script>
+function localISO(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const TODAY = localISO(new Date());
+const START = new Date('2026-07-19T00:00:00');
+const gs = (k, fb=null) => { try { const v = localStorage.getItem('jvx-'+k); return v ? JSON.parse(v) : fb; } catch { return fb; } };
+const ss = (k, v) => { try { localStorage.setItem('jvx-'+k, JSON.stringify(v)); } catch {} };
+const $ = id => document.getElementById(id);
+const chk = '<svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>';
+
+/* fases: E entender · F fixar+testar · R revisão/simulado */
+const PLANO = [
+ {sem:'Semana 1 · A fundação', range:'19 a 25 jul', dias:[
+  {f:'E', t:'LINDB, arts. 1º a 6º', c:'Lei seca devagar, artigo por artigo. Lenza no capítulo introdutório. Síntese à mão: vigência, obrigatoriedade, integração, interpretação, direito intertemporal.'},
+  {f:'F', t:'LINDB · voz alta + 20 questões FGV', c:'Explica a síntese pro quarto vazio. Depois 20 questões, sem dó. Cada erro vai pro Mapa.'},
+  {f:'R', t:'Revisão de domingo · leve', c:'1 hora de manhã: reler a síntese da LINDB + refazer as questões erradas. Tarde protegida.'},
+  {f:'E', t:'Teoria da Constituição · conceito e classificações', c:'Lenza, capítulo de teoria. Síntese: sentidos de constituição, classificações (outorgada/promulgada, rígida/flexível, analítica/sintética).'},
+  {f:'F', t:'Teoria da Constituição · voz alta + 20 questões', c:'Explicar as classificações de memória. 20 questões FGV. Erros no Mapa.'},
+  {f:'E', t:'Poder constituinte · originário, derivado e limites', c:'Lenza. Síntese: características do originário, espécies de derivado, limites materiais e o art. 60.'},
+  {f:'F', t:'Poder constituinte · voz alta + 20 questões', c:'Fechar a primeira semana com o tripé da teoria dominado. Erros no Mapa.'},
+ ]},
+ {sem:'Semana 2 · Princípios e o coração da FGV', range:'26 jul a 1 ago', dias:[
+  {f:'E', t:'Princípios fundamentais · CF, arts. 1º a 4º', c:'Lei seca decorada: fundamentos (art. 1º), objetivos (art. 3º), princípios das relações internacionais (art. 4º). A FGV cobra a letra.'},
+  {f:'F', t:'Princípios · voz alta + 20 questões', c:'Recitar fundamentos e objetivos de memória antes das questões. Erros no Mapa.'},
+  {f:'R', t:'Revisão de domingo · leve', c:'Reler as sínteses da semana + refazer os erros. 1 hora, de manhã.'},
+  {f:'E', t:'Art. 5º · primeiro terço', c:'A letra da CF marcando o vade, inciso por inciso. Lenza por cima. É o tema nº 1 da FGV: aqui não existe pressa.'},
+  {f:'F', t:'Art. 5º, 1º terço · 20 questões só disso', c:'Questões cirúrgicas do trecho. Anotar no Mapa cada inciso confundido.'},
+  {f:'E', t:'Art. 5º · segundo terço', c:'Mesmo método: vade marcado, síntese à mão dos incisos-chave.'},
+  {f:'F', t:'Art. 5º, 2º terço · 20 questões', c:'Voz alta nos incisos que travaram + 20 questões. Erros no Mapa.'},
+ ]},
+ {sem:'Semana 3 · Fechando o art. 5º e a primeira prova de fogo', range:'2 a 8 ago', dias:[
+  {f:'E', t:'Art. 5º · terço final e parágrafos', c:'Incisos finais + §§ 1º a 4º (aplicabilidade imediata, tratados de direitos humanos). Síntese à mão.'},
+  {f:'F', t:'Art. 5º completo · 20 questões varrendo tudo', c:'A prova real do artigo inteiro. O Mapa vai crescer hoje, e é exatamente o que a gente quer.'},
+  {f:'R', t:'Revisão de domingo · leve', c:'Reler as sínteses do art. 5º + refazer todos os erros do artigo.'},
+  {f:'E', t:'Remédios constitucionais', c:'HC, MS, HD, MI e ação popular. Quadro comparativo à mão: cabimento, legitimidade, gratuidade.'},
+  {f:'F', t:'Remédios · quadro de memória + 20 questões', c:'Refazer o quadro comparativo sem consultar. Depois as questões. Erros no Mapa.'},
+  {f:'R', t:'SIMULADO 1 · 30 questões, cronometrado', c:'LINDB ao art. 5º + remédios. Sem consulta, tempo de prova. Não corrige hoje: só marca.'},
+  {f:'R', t:'Correção comentada por escrito', c:'Cada questão errada: por que errei, qual era a pegadinha, qual a regra certa. Tudo pro Mapa. Sai daqui com o mapa de lacunas do mês.'},
+ ]},
+ {sem:'Semana 4 · Direitos em espécie e consolidação', range:'9 a 15 ago', dias:[
+  {f:'E', t:'Lacuna nº 1 · reestudo dirigido', c:'O pior tema do Simulado 1 volta pro banco: aula da fonte fixa + 15 questões só dele. Fraqueza vira força.'},
+  {f:'E', t:'Direitos sociais e nacionalidade · arts. 6º a 13', c:'Lei seca + Lenza. Síntese: rol dos sociais, brasileiro nato vs naturalizado, hipóteses de perda.'},
+  {f:'R', t:'Revisão de domingo · leve', c:'Sínteses da semana + erros. 1 hora de manhã.'},
+  {f:'F', t:'Sociais e nacionalidade · voz alta + 20 questões', c:'Quadro nato x naturalizado de memória (cargos privativos!). 20 questões. Erros no Mapa.'},
+  {f:'E', t:'Direitos políticos e partidos · arts. 14 a 17', c:'Lei seca: alistamento, elegibilidade, inelegibilidades, perda e suspensão. Síntese à mão.'},
+  {f:'F', t:'Direitos políticos · voz alta + 20 questões', c:'Idades mínimas de elegibilidade de memória. 20 questões. Erros no Mapa.'},
+  {f:'R', t:'Revisão espiral geral', c:'Reler TODAS as sínteses do protocolo + refazer TODOS os erros do Mapa. É a costura do mês inteiro.'},
+ ]},
+ {sem:'Fecho · A prova da mudança', range:'16 e 17 ago', dias:[
+  {f:'R', t:'SIMULADO FINAL · 40 questões, cronometrado', c:'Tudo: LINDB, teoria, poder constituinte, princípios, art. 5º, remédios, sociais, nacionalidade, políticos. Condição de prova.'},
+  {f:'R', t:'Correção final + Protocolo 02', c:'Correção por escrito, mapa final de lacunas, e o desenho do Protocolo 02 (organização do Estado). Fechar o ciclo: refazer a Roda no TIJOLO e olhar o que aconteceu com o zero.'},
+ ]},
+];
+
+const FASE_LABEL = {E:'ENTENDER', F:'FIXAR · TESTAR', R:'REVISÃO'};
+const FASE_CLS = {E:'fase-e', F:'fase-f', R:'fase-r'};
+
+let checks = gs('dir01-checks', {}) || {};
+let erros = gs('dir01-erros', []) || [];
+
+const flat = [];
+PLANO.forEach(s=>s.dias.forEach(d=>flat.push(d)));
+function dateOf(n){ const d=new Date(START); d.setDate(d.getDate()+n-1); return localISO(d); }
+function fmtBR(iso){ const [y,m,dd]=iso.split('-'); const ms=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez']; return dd+' '+ms[+m-1]; }
+const WD = ['dom','seg','ter','qua','qui','sex','sáb'];
+
+function todayN(){
+  const diff = Math.floor((new Date(TODAY) - START)/86400000)+1;
+  return Math.min(30, Math.max(1, diff));
+}
+
+function render(){
+  const done = Object.values(checks).filter(Boolean).length;
+  $('pfill').style.width = (done/30*100)+'%';
+  $('pnum').textContent = done+'/30';
+  const tn = todayN();
+  $('diaChip').textContent = 'Dia '+tn+' · Protocolo 01';
+
+  /* missão de hoje */
+  const m = flat[tn-1];
+  $('hFase').textContent = FASE_LABEL[m.f];
+  $('hFase').className = 'h-fase '+FASE_CLS[m.f];
+  $('hTitulo').textContent = m.t;
+  $('hComo').textContent = m.c;
+  $('hMin').textContent = 'Dia de caos: mínimo 30 minutos de lei seca do tema. A corrente não quebra.';
+  const dDone = !!checks['d'+tn];
+  $('hCheck').textContent = dDone ? '✓ Cumprida · dia '+tn+' assentado' : 'Missão cumprida';
+  $('hCheck').className = 'h-check'+(dDone?' done':'');
+  $('hCheck').onclick = ()=>{
+    checks['d'+tn]=!checks['d'+tn]; ss('dir01-checks',checks); render();
+    if(checks['d'+tn]) logar('Missão cumprida · dia '+tn+' · '+m.t);
+  };
+
+  /* trilha */
+  const box = $('plano'); box.innerHTML='';
+  let n=0;
+  PLANO.forEach(s=>{
+    const sem = document.createElement('div'); sem.className='semana';
+    sem.innerHTML = `<div class="sem-head">${s.sem}<span>${s.range}</span></div>`;
+    const dias = document.createElement('div'); dias.className='dias';
+    s.dias.forEach(d=>{
+      n++;
+      const iso = dateOf(n);
+      const isToday = iso===TODAY;
+      const isPast = iso<TODAY;
+      const isDone = !!checks['d'+n];
+      const el = document.createElement('div');
+      el.className = 'd'+(isDone?' done':'')+(isToday?' hoje-d':(isPast?' past':''));
+      const wd = WD[new Date(iso+'T12:00:00').getDay()];
+      el.innerHTML = `
+        <div class="d-check">${chk}</div>
+        <div class="d-body">
+          <div class="d-meta">
+            <span class="d-num">Dia ${String(n).padStart(2,'0')}</span>
+            <span class="d-data">${wd} · ${fmtBR(iso)}</span>
+            <span class="d-fase ${FASE_CLS[d.f]}">${FASE_LABEL[d.f]}</span>
+            ${isToday?'<span class="hoje-tag">← HOJE</span>':''}
+          </div>
+          <div class="d-titulo">${d.t}</div>
+          <div class="d-como">${d.c}</div>
+        </div>`;
+      const nn = n;
+      const tit = d.t;
+      el.querySelector('.d-check').onclick = ()=>{
+        checks['d'+nn]=!checks['d'+nn]; ss('dir01-checks',checks); render();
+        if(checks['d'+nn]) logar('Dia '+nn+' assentado no protocolo · '+tit);
+      };
+      dias.appendChild(el);
+    });
+    sem.appendChild(dias);
+    box.appendChild(sem);
+  });
+
+  renderErros();
+}
+
+function renderErros(){
+  const ul = $('erroList'); ul.innerHTML='';
+  $('erroEmpty').style.display = erros.length? 'none':'block';
+  [...erros].reverse().forEach((e, ri)=>{
+    const idx = erros.length-1-ri;
+    const li = document.createElement('li');
+    li.innerHTML = `<span class="e-d">${fmtBR(e.d)}</span><span class="e-t"></span><button title="Remover">✕</button>`;
+    li.querySelector('.e-t').textContent = e.t;
+    li.querySelector('button').onclick = ()=>{ erros.splice(idx,1); ss('dir01-erros',erros); renderErros(); };
+    ul.appendChild(li);
+  });
+}
+
+$('erroBtn').onclick = ()=>{
+  const v = $('erroInput').value.trim();
+  if(!v) return;
+  erros.push({d:TODAY, t:v});
+  ss('dir01-erros', erros);
+  logar('Erro lançado no mapa · '+v.slice(0,70));
+  $('erroInput').value='';
+  renderErros();
+};
+$('erroInput').addEventListener('keydown', e=>{ if(e.key==='Enter') $('erroBtn').click(); });
+
+/* ===== O REGISTRO: diario de bordo do sistema ===== */
+const SALA = 'direito';
+function esc(x){ return String(x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function logar(msg){
+  try{
+    const L = gs('log',{})||{};
+    L[TODAY] = L[TODAY]||[];
+    const u = L[TODAY][L[TODAY].length-1];
+    const h = new Date().toTimeString().slice(0,5);
+    if(u && u.s===SALA && u.m===msg && u.h===h) return;
+    L[TODAY].push({h:h, s:SALA, m:msg});
+    const ds = Object.keys(L).sort();
+    while(ds.length>90){ delete L[ds.shift()]; }
+    ss('log', L);
+    renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(l){ return l.filter(e=>e.s===SALA); }
+function rgData(d){ return d.split('-').reverse().join('.'); }
+function renderRegistro(){
+  const L = gs('log',{})||{};
+  $('rgData').textContent = rgData(TODAY);
+  const hoje = rgFiltra(L[TODAY]||[]);
+  const box = $('rgHoje'); box.innerHTML='';
+  if(!hoje.length){
+    box.innerHTML = '<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho quando você cumpre a missão ou lança um erro no mapa.</div>';
+  } else hoje.slice().reverse().forEach(e=>{
+    const d=document.createElement('div'); d.className='rg-linha';
+    d.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+    box.appendChild(d);
+  });
+  const ds = Object.keys(L).filter(d=>d!==TODAY && rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx = $('rgDias'); cx.innerHTML='';
+  ds.forEach(d=>{
+    const its = rgFiltra(L[d]);
+    const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML='<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{
+      const l=document.createElement('div'); l.className='rg-linha';
+      l.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';
+      cp.appendChild(l);
+    });
+    bt.onclick=()=>{ cp.classList.toggle('on'); bt.classList.toggle('aberto'); };
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+
+render();
+renderRegistro();
+</script>
+</body>
+</html>
