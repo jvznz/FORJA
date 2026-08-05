@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>As Duas Portas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --creme:#F1ECE2; --creme2:#E9E3D6; --cartao:#F8F5EE; --cartao2:#FBF9F3;
+    --tinta:#141B2E; --azul:#2D4A8A; --azul-hi:#3E63B8; --azul-cl:#5B7FC4;
+    --areia:#B8AE97; --areia2:#CFC6B2; --linha:#E0D9C9; --texto:#3A3629;
+    --dim:#7C755F; --muted:#5A5647; --verde:#4E8B63;
+    --lav:#E7EAF4; --marinho:#111A30;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{min-height:100%}
+  body{background:var(--creme);color:var(--texto);font-family:'Inter',sans-serif;max-width:600px;margin:0 auto;-webkit-font-smoothing:antialiased;padding-bottom:56px}
+
+  /* ===== A CENA: as duas portas ===== */
+  .palco{position:relative;width:100%;background:var(--creme);padding:16px 0 6px}
+  .cab{display:flex;align-items:baseline;justify-content:space-between;padding:0 20px;margin-bottom:2px}
+  .cab .selo{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--azul);font-weight:600}
+  .cab .dia{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  h1.tit{font-family:'Fraunces',serif;font-weight:400;font-size:34px;text-align:center;color:var(--tinta);margin:2px 0 0;letter-spacing:.005em}
+  h1.tit em{font-style:italic;color:var(--azul);font-weight:500}
+  .subtit{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--dim);margin:6px 0 4px}
+  .cena-portas{width:100%;display:block}
+
+  .legenda{display:flex;gap:10px;padding:2px 20px 0;justify-content:center}
+  .leg-item{font-size:9.5px;color:var(--dim);display:flex;align-items:center;gap:5px}
+  .leg-item i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+  .corpo{padding:18px 16px 0}
+  .intro{background:var(--marinho);color:#EDEAE0;border-radius:16px;padding:17px 18px;margin-bottom:20px}
+  .intro .fr{font-family:'Fraunces',serif;font-size:18px;line-height:1.3;margin-bottom:5px}
+  .intro .fr em{font-style:italic;color:var(--azul-cl)}
+  .intro .sub{font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:#A9B4CE}
+
+  .secao-cab{display:flex;align-items:baseline;gap:9px;margin:4px 2px 12px}
+  .secao-cab .n{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--azul)}
+  .secao-cab h2{font-family:'Fraunces',serif;font-weight:500;font-size:20px;color:var(--tinta)}
+  .secao-cab h2 em{font-style:italic;color:var(--azul)}
+  .secao-desc{font-size:12px;color:var(--muted);line-height:1.6;margin:0 2px 12px}
+
+  .acoes{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  @media(max-width:440px){.acoes{grid-template-columns:1fr}}
+  .acao{background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s;position:relative}
+  .acao:hover{border-color:var(--areia)}
+  .acao.on{background:var(--cartao2);border-color:var(--azul)}
+  .acao .a-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+  .acao .a-ic{width:34px;height:34px;border-radius:9px;background:var(--lav);display:flex;align-items:center;justify-content:center}
+  .acao .a-ic svg{width:19px;height:19px}
+  .acao .a-check{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--areia);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .acao.on .a-check{background:var(--azul);border-color:var(--azul)}
+  .acao.on .a-check svg{stroke:#fff}
+  .acao .a-check svg{width:13px;height:13px;stroke:transparent;stroke-width:2.5}
+  .acao h3{font-family:'Fraunces',serif;font-weight:500;font-size:16px;color:var(--tinta);margin-bottom:5px}
+  .acao p{font-size:11.5px;color:var(--muted);line-height:1.55}
+  .acao .a-meta{margin-top:9px;padding-top:9px;border-top:1px solid var(--linha);font-size:10.5px;color:var(--dim)}
+  .acao .a-meta b{color:var(--azul);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:9px}
+
+  .callout{background:var(--marinho);color:#EDEAE0;border-radius:16px;padding:17px 18px;margin-top:16px;display:flex;gap:14px;align-items:flex-start}
+  .callout .c-ic{flex-shrink:0;width:34px;height:34px;border:1.5px solid #3B4A6E;border-radius:50%;display:flex;align-items:center;justify-content:center}
+  .callout .c-ic svg{width:18px;height:18px;stroke:#7C93C4}
+  .callout .c-tit{font-family:'Fraunces',serif;font-size:17px;line-height:1.25;margin-bottom:4px}
+  .callout .c-tit em{font-style:italic;color:var(--azul-cl)}
+  .callout p{font-size:12px;color:#B3BCD2;line-height:1.55}
+
+  /* sono: checklist */
+  .sono{background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:6px 15px}
+  .sono-item{display:flex;gap:11px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--linha);cursor:pointer}
+  .sono-item:first-child{border-top:0}
+  .sono-item .s-box{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--areia);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .sono-item.on .s-box{background:var(--azul);border-color:var(--azul)}
+  .sono-item .s-box svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5;opacity:0;transition:opacity .15s}
+  .sono-item.on .s-box svg{opacity:1}
+  .sono-item span{font-size:12.5px;color:var(--texto);line-height:1.5}
+  .sono-item.on span{color:var(--dim)}
+
+  /* se-então */
+  .seentao{background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:15px}
+  .se-linha{display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap}
+  .se-linha:last-child{margin-bottom:0}
+  .se-linha .se-lbl{font-family:'Fraunces',serif;font-style:italic;font-size:14px;color:var(--azul);flex-shrink:0}
+  .se-linha input{flex:1;min-width:110px;background:transparent;border:none;border-bottom:1px solid var(--areia2);color:var(--texto);font-family:'Inter';font-size:13px;padding:5px 2px}
+  .se-linha input:focus{outline:none;border-color:var(--azul)}
+  .se-ex{font-family:'Fraunces',serif;font-style:italic;font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* tracker */
+  .tracker{background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:15px;overflow-x:auto}
+  .tracker table{width:100%;border-collapse:collapse;min-width:340px}
+  .tracker th{font-size:8.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--azul);font-weight:600;padding:0 4px 10px;text-align:center}
+  .tracker th.wk{text-align:left}
+  .tracker td{padding:10px 4px;text-align:center;border-top:1px solid var(--linha)}
+  .tracker td.wk{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--texto);text-align:left}
+  .tk-box{width:26px;height:26px;border-radius:6px;border:1.5px solid var(--areia);margin:0 auto;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s}
+  .tk-box.on{background:var(--azul);border-color:var(--azul)}
+  .tk-box svg{width:13px;height:13px;stroke:#fff;stroke-width:2.5;opacity:0}
+  .tk-box.on svg{opacity:1}
+  .tk-wk-atual td{background:rgba(45,74,138,.05)}
+
+  .frase-fim{text-align:center;font-family:'Fraunces',serif;font-style:italic;font-size:15px;color:var(--azul);margin:20px 8px 4px;line-height:1.4}
+
+  .nota-med{background:var(--lav);border-radius:12px;padding:14px 16px;margin-top:20px;font-size:11.5px;color:var(--muted);line-height:1.6;text-align:center}
+  .nota-med b{color:var(--tinta);font-weight:600}
+
+  /* O Registro */
+  .oreg{margin-top:20px;background:var(--cartao);border:1px solid var(--linha);border-radius:14px;padding:16px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-family:'Fraunces',serif;font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:var(--azul)}
+  .oreg-head span{font-size:9px;letter-spacing:.06em;color:var(--dim)}
+  .oreg-sub{font-size:10.5px;color:var(--dim);margin-bottom:12px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--linha)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:10px;color:var(--azul);flex-shrink:0;min-width:34px;padding-top:1px;font-weight:600}
+  .rg-m{font-size:12px;color:var(--texto);line-height:1.45;flex:1}
+  .rg-vazio{font-size:11.5px;color:var(--dim);padding:6px 0;line-height:1.6;font-style:italic;font-family:'Fraunces',serif}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--linha);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--cartao2);border:1px solid var(--linha);border-radius:9px;padding:9px 12px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--texto)}
+  .rg-dia small{font-size:9.5px;color:var(--dim)}
+  .rg-dia b{font-size:11px;font-weight:600}
+  .rg-dia.aberto{border-color:var(--azul)}
+  .rg-corpo{padding:2px 12px 10px;display:none}
+  .rg-corpo.on{display:block}
+
+  footer{text-align:center;margin-top:24px;font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--dim)}
+  .voltar{display:inline-block;margin-top:18px;color:var(--dim);text-decoration:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--linha);border-radius:9px;padding:9px 15px}
+</style>
+</head>
+<body>
+
+  <div class="palco">
+    <div class="cab"><span class="selo">Protocolo · TDAH & Scroll</span><span class="dia" id="chipDia"></span></div>
+    <h1 class="tit">As Duas <em>Portas</em></h1>
+    <div class="subtit">não é falta de força de vontade, é o teu ambiente</div>
+    <div id="cenaPortas"></div>
+    <div class="legenda">
+      <span class="leg-item"><i style="background:var(--azul)"></i> porta fechando</span>
+      <span class="leg-item"><i style="background:var(--areia2)"></i> ainda aberta</span>
+    </div>
+  </div>
+
+  <div class="corpo">
+    <div class="intro">
+      <div class="fr">Cada ação que você cumpre <em>fecha um pouco</em> uma das portas.</div>
+      <div class="sub">O feed foi feito pra abrir as duas ao mesmo tempo. Aqui você fecha de volta, uma ação por vez.</div>
+    </div>
+
+    <!-- PORTA 1 -->
+    <div class="secao-cab"><span class="n">Porta 1</span><h2>Fechar o <em>freio</em></h2></div>
+    <div class="secao-desc">O freio fraco é o "chega" que sai devagar. Cada ação abre uma fresta de segundos entre o gatilho e o toque, e é nessa fresta que o freio consegue chegar primeiro.</div>
+    <div class="acoes" id="acoesP1"></div>
+    <div class="callout">
+      <span class="c-ic"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9"/><path d="M12 8v4l3 2" stroke-linecap="round"/></svg></span>
+      <div><div class="c-tit">As quatro compram a mesma coisa: <em>tempo</em>.</div><p>O freio é lento, o impulso é rápido. Você não está lutando contra a vontade, está dando ao freio a fresta que faltava.</p></div>
+    </div>
+
+    <!-- PORTA 2 -->
+    <div class="secao-cab" style="margin-top:24px"><span class="n">Porta 2</span><h2>Alimentar o <em>circuito</em></h2></div>
+    <div class="secao-desc">A Porta 2 não se fecha cortando prazer. Se fecha dando ao circuito uma fonte de dopamina mais lenta e mais estável que o feed.</div>
+    <div class="acoes" id="acoesP2"></div>
+
+    <!-- SONO -->
+    <div class="secao-cab" style="margin-top:24px"><span class="n">A base</span><h2><em>Sono</em></h2></div>
+    <div class="secao-desc">Sem sono, nada acima funciona. Dormir mal escancara as duas portas de uma vez: enfraquece o freio e aumenta a fome de recompensa fácil. Marca o que você cuidou hoje.</div>
+    <div class="sono" id="sonoLista"></div>
+
+    <!-- SE-ENTÃO -->
+    <div class="secao-cab" style="margin-top:24px"><span class="n">Na prática</span><h2><em>Se</em>-então</h2></div>
+    <div class="secao-desc">Pré-carrega a decisão num gatilho. O cérebro para de decidir na hora, o ambiente decide por ele. Escreve os teus:</div>
+    <div class="seentao" id="seentao"></div>
+    <div class="se-ex">Ex: Se eu sentar pra estudar, então o celular vai pra gaveta.</div>
+
+    <!-- TRACKER -->
+    <div class="secao-cab" style="margin-top:24px"><span class="n">Constância</span><h2>Tracker <em>semanal</em></h2></div>
+    <div class="secao-desc">As quatro metas, semana a semana. A da semana atual fica destacada. O que importa é a constância, não a perfeição.</div>
+    <div class="tracker" id="tracker"></div>
+    <div class="frase-fim">o que importa é a constância, não a perfeição</div>
+
+    <div class="nota-med">Este material foi feito por Leo Xavier e é <b>educativo</b>. Ele não substitui avaliação, diagnóstico ou tratamento profissional, e funciona muito melhor junto de um acompanhamento. Se você tem TDAH ou suspeita que tem, mantém o time de profissionais por perto.</div>
+
+    <div class="oreg">
+      <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+      <div class="oreg-sub">O que você fecha aqui fica gravado, com a hora. Hoje em cima, os dias anteriores logo abaixo.</div>
+      <div id="rgHoje"></div>
+      <div class="rg-dias" id="rgDias"></div>
+    </div>
+
+    <div style="text-align:center"><a href="hoje.html" class="voltar">← voltar à Forja</a></div>
+    <footer>o ambiente vence a vontade</footer>
+  </div>
+
+<script>
+const gs=(k,fb=null)=>{try{const v=localStorage.getItem('jvx-'+k);return v!==null?JSON.parse(v):fb;}catch{return fb;}};
+const ss=(k,v)=>{try{localStorage.setItem('jvx-'+k,JSON.stringify(v));}catch{}};
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function localISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+const TODAY=localISO(new Date());
+function agora(){return new Date().toTimeString().slice(0,5);}
+function weekKey(){const d=new Date();const dia=(d.getDay()+6)%7;d.setDate(d.getDate()-dia);return localISO(d);}
+
+const CHK=' <svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ícones */
+const IC={
+  clip:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9z"/><path d="M9 11h6M9 15h4" stroke-linecap="round"/></svg>',
+  fone:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><rect x="7" y="3" width="10" height="18" rx="2"/><circle cx="12" cy="17" r="1"/><rect x="9" y="6" width="6" height="1.5" rx="0.5" fill="#2D4A8A" stroke="none"/></svg>',
+  ramo:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><path d="M12 21V9M12 12l4-4M12 15l-4-4" stroke-linecap="round"/><circle cx="12" cy="6" r="2.5"/></svg>',
+  gente:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.2"/><path d="M4 20c0-3 2-5 5-5s5 2 5 5M15 20c0-2 1-3.5 3-3.5" stroke-linecap="round"/></svg>',
+  halter:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><path d="M4 9v6M7 7v10M17 7v10M20 9v6M7 12h10" stroke-linecap="round"/></svg>',
+  sol:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M6 6l1.4 1.4M16.6 16.6L18 18M6 18l1.4-1.4M16.6 7.4L18 6" stroke-linecap="round"/></svg>',
+  alvo:'<svg viewBox="0 0 24 24" fill="none" stroke="#2D4A8A" stroke-width="1.6"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1" fill="#2D4A8A"/></svg>',
+};
+
+/* ===== dados do protocolo ===== */
+const PORTA1=[
+  {id:'externalizar',ic:IC.clip,t:'Externalizar',d:'Tira da cabeça, bota no mundo. Timer visível, checklist, lembrete físico no ponto da ação.'},
+  {id:'friccao',ic:IC.fone,t:'Fricção no celular',d:'Grayscale, apps fora da tela inicial, bloqueador, celular em outro cômodo. Cada obstáculo dá tempo pro freio agir.'},
+  {id:'seentao1',ic:IC.ramo,t:'Plano "se-então"',d:'Decida antes, não na hora. "Se eu sentar pra estudar, então o celular vai pra gaveta."'},
+  {id:'companhia',ic:IC.gente,t:'Companhia',d:'Estuda ou trabalha junto de alguém, presencial ou em call. Ataca o mais difícil: começar.'},
+];
+const PORTA2=[
+  {id:'exercicio',ic:IC.halter,t:'Exercício',d:'20 min ou mais, moderado a intenso. Sobe a dopamina no circuito que sai fraco. A aposta não-farmacológica mais forte.',meta:'20 min ou mais, 4 a 5× por semana.'},
+  {id:'manha',ic:IC.sol,t:'Manhã sem scroll',d:'1ª hora do dia sem tela. Não calibra o cérebro no estímulo máximo logo cedo.',meta:'A 1ª hora começa no foco, não no estímulo.'},
+  {id:'atencao',ic:IC.alvo,t:'Treino de atenção',d:'Blocos curtos, uma tarefa só. Começa com 5 a 10 min e sobe aos poucos.',meta:'1 bloco por dia, subindo aos poucos.'},
+];
+const SONO=[
+  'Mesmo horário de dormir e acordar, todo dia, inclusive fim de semana.',
+  'Luz do sol assim que acordar, uns 15 minutos, pra regular o ritmo.',
+  'Última hora sem tela, e nada de scroll na cama.',
+  'Sem cafeína depois do começo da tarde (por volta das 14h).',
+  'Quarto escuro, fresco e silencioso.',
+  'Ritual de desacelerar: banho morno, leitura no papel ou Kindle.',
+  'Cama é só pra dormir, nada de trabalho ou celular ali.',
+  'Cabeça a mil? Anota as pendências num papel antes de deitar.',
+  'Não dormiu em uns 20 min? Levanta, faz algo calmo na luz baixa e volta quando o sono vier.',
+];
+const METAS_TRACKER=['Exercício','Manhã sem scroll','Bloco de foco','Sono'];
+
+/* ===== estado ===== */
+let dia=gs('portas-dia',{});           // {data: {acaoId:true}}
+let sono=gs('portas-sono',{});         // {data: {idx:true}}
+let seentao=gs('portas-se',['','','','']);
+let tracker=gs('portas-tracker',{});   // {semanaKey: [b,b,b,b]}
+let hoje=dia[TODAY]||{};
+let sonoHoje=sono[TODAY]||{};
+
+$('chipDia').textContent=TODAY.split('-').reverse().join('.');
+
+/* ===================== A CENA DAS PORTAS ===================== */
+function progressoPorta(lista){
+  const total=lista.length;
+  const feitas=lista.filter(a=>hoje[a.id]).length;
+  return total?feitas/total:0;
+}
+function renderPortas(){
+  const p1=progressoPorta(PORTA1);
+  const p2=progressoPorta(PORTA2);
+  // ângulo de abertura: 0 fechada, ~52° aberta
+  const ang1=(52*(1-p1)).toFixed(1);
+  const ang2=(52*(1-p2)).toFixed(1);
+  const fill1=p1>=1?'#2D4A8A':'#F8F5EE';
+  const fill2=p2>=1?'#2D4A8A':'#F8F5EE';
+
+  const svg=
+  '<svg class="cena-portas" viewBox="0 0 380 210" xmlns="http://www.w3.org/2000/svg" aria-label="As duas portas, fechando conforme as ações">'+
+    '<defs>'+
+      '<linearGradient id="luzfundo" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#EFE9DD"/><stop offset="1" stop-color="#E6DFD0"/></linearGradient>'+
+    '</defs>'+
+    '<rect x="0" y="0" width="380" height="210" fill="url(#luzfundo)"/>'+
+    '<line x1="40" y1="185" x2="340" y2="185" stroke="#CFC6B2" stroke-width="1.5"/>'+
+    /* batentes (o vão da porta) */
+    '<rect x="86" y="40" width="94" height="145" rx="2" fill="#E0D9C9" stroke="#C6BCA4" stroke-width="1"/>'+
+    '<rect x="200" y="40" width="94" height="145" rx="2" fill="#E0D9C9" stroke="#C6BCA4" stroke-width="1"/>'+
+    /* raios de luz escapando quando aberta */
+    raios(180, p1)+
+    raios(294, p2)+
+    /* PORTA 1: dobradiça à esquerda (x=90) */
+    '<g transform="translate(90,42) skewY('+(-ang1*0.32)+') scale('+(1-ang1/160)+',1)" style="transition:all .5s cubic-bezier(.22,1,.36,1)">'+
+      porta(fill1, p1>=1)+
+    '</g>'+
+    /* PORTA 2: dobradiça à direita (x=290, espelhada) */
+    '<g transform="translate(290,42) scale(-1,1) skewY('+(-ang2*0.32)+') scale('+(1-ang2/160)+',1)" style="transition:all .5s cubic-bezier(.22,1,.36,1)">'+
+      porta(fill2, p2>=1)+
+    '</g>'+
+    /* legendas */
+    '<text x="133" y="30" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-size="12" fill="#2D4A8A">Porta 1</text>'+
+    '<text x="247" y="30" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-size="12" fill="#2D4A8A">Porta 2</text>'+
+    '<text x="133" y="202" text-anchor="middle" font-family="Inter" font-size="8.5" fill="#7C755F" letter-spacing="0.5">o freio · '+Math.round(p1*100)+'%</text>'+
+    '<text x="247" y="202" text-anchor="middle" font-family="Inter" font-size="8.5" fill="#7C755F" letter-spacing="0.5">o circuito · '+Math.round(p2*100)+'%</text>'+
+  '</svg>';
+  $('cenaPortas').innerHTML=svg;
+}
+function porta(fill, fechada){
+  const maca = fechada?'#F1ECE2':'#2D4A8A';
+  return '<rect x="0" y="0" width="90" height="143" rx="2" fill="'+fill+'" stroke="#141B2E" stroke-width="2"/>'+
+    '<rect x="8" y="8" width="74" height="58" rx="2" fill="none" stroke="'+(fechada?'#F1ECE2':'#5B7FC4')+'" stroke-width="1.3" opacity="0.8"/>'+
+    '<rect x="8" y="76" width="74" height="58" rx="2" fill="none" stroke="'+(fechada?'#F1ECE2':'#5B7FC4')+'" stroke-width="1.3" opacity="0.8"/>'+
+    '<circle cx="76" cy="72" r="3.2" fill="'+maca+'"/>';
+}
+function raios(x, p){
+  if(p>=1) return '';
+  const op=(0.5*(1-p)).toFixed(2);
+  return '<g stroke="#5B7FC4" stroke-width="1.4" stroke-linecap="round" opacity="'+op+'">'+
+    '<line x1="'+x+'" y1="70" x2="'+(x+22)+'" y2="62"/>'+
+    '<line x1="'+x+'" y1="105" x2="'+(x+26)+'" y2="105"/>'+
+    '<line x1="'+x+'" y1="140" x2="'+(x+22)+'" y2="148"/></g>';
+}
+
+/* ===================== AÇÕES ===================== */
+function cardAcao(a, porta){
+  return '<div class="acao'+(hoje[a.id]?' on':'')+'" onclick="virarAcao(\''+a.id+'\',\''+porta+'\')">'+
+    '<div class="a-top"><span class="a-ic">'+a.ic+'</span>'+
+      '<span class="a-check"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>'+
+    '<h3>'+a.t+'</h3><p>'+a.d+'</p>'+
+    (a.meta?'<div class="a-meta"><b>Meta</b> · '+a.meta+'</div>':'')+
+  '</div>';
+}
+function renderAcoes(){
+  $('acoesP1').innerHTML=PORTA1.map(a=>cardAcao(a,'freio')).join('');
+  $('acoesP2').innerHTML=PORTA2.map(a=>cardAcao(a,'circuito')).join('');
+}
+function virarAcao(id,porta){
+  hoje[id]=!hoje[id];
+  dia[TODAY]=hoje; ss('portas-dia',dia);
+  const nome=[...PORTA1,...PORTA2].find(a=>a.id===id);
+  if(hoje[id]) logar('Fechou um pouco a '+(porta==='freio'?'Porta 1':'Porta 2')+' · '+nome.t);
+  renderAcoes(); renderPortas();
+  // porta inteira fechada?
+  if(porta==='freio' && progressoPorta(PORTA1)>=1) logar('Porta 1 fechada hoje · o freio ganhou a fresta');
+  if(porta==='circuito' && progressoPorta(PORTA2)>=1) logar('Porta 2 fechada hoje · o circuito alimentado');
+}
+
+/* ===================== SONO ===================== */
+function renderSono(){
+  $('sonoLista').innerHTML=SONO.map((t,i)=>
+    '<div class="sono-item'+(sonoHoje[i]?' on':'')+'" onclick="virarSono('+i+')">'+
+      '<span class="s-box"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>'+
+      '<span>'+t+'</span></div>'
+  ).join('');
+}
+function virarSono(i){
+  sonoHoje[i]=!sonoHoje[i];
+  sono[TODAY]=sonoHoje; ss('portas-sono',sono);
+  const feitos=Object.values(sonoHoje).filter(Boolean).length;
+  if(sonoHoje[i] && feitos===SONO.length) logar('Ritual de sono completo hoje · a base firme');
+  renderSono();
+}
+
+/* ===================== SE-ENTÃO ===================== */
+function renderSe(){
+  $('seentao').innerHTML=seentao.map((v,i)=>{
+    const partes=(v||'').split('|||');
+    return '<div class="se-linha"><span class="se-lbl">Se</span>'+
+      '<input value="'+esc(partes[0]||'')+'" placeholder="eu..." oninput="salvarSe('+i+',0,this.value)">'+
+      '<span class="se-lbl">então</span>'+
+      '<input value="'+esc(partes[1]||'')+'" placeholder="o ambiente..." oninput="salvarSe('+i+',1,this.value)"></div>';
+  }).join('');
+}
+function salvarSe(i,lado,val){
+  const partes=(seentao[i]||'').split('|||');
+  while(partes.length<2)partes.push('');
+  partes[lado]=val;
+  const antes=seentao[i];
+  seentao[i]=partes.join('|||');
+  ss('portas-se',seentao);
+  if(!antes && seentao[i].replace(/\|/g,'').trim()) logar('Novo plano se-então escrito');
+}
+
+/* ===================== TRACKER ===================== */
+function renderTracker(){
+  const wkAtual=weekKey();
+  let semanas=Object.keys(tracker).sort();
+  if(!semanas.includes(wkAtual)){ tracker[wkAtual]=tracker[wkAtual]||[false,false,false,false]; ss('portas-tracker',tracker); semanas=Object.keys(tracker).sort(); }
+  // mostra até 6 semanas recentes
+  semanas=semanas.slice(-6);
+  let h='<table><thead><tr><th class="wk">Semana</th>'+METAS_TRACKER.map(m=>'<th>'+m+'</th>').join('')+'</tr></thead><tbody>';
+  semanas.forEach((wk,ri)=>{
+    const arr=tracker[wk]||[false,false,false,false];
+    const atual=wk===wkAtual;
+    const rot=wk.split('-').reverse().slice(0,2).join('/');
+    h+='<tr class="'+(atual?'tk-wk-atual':'')+'"><td class="wk">'+(atual?'esta semana':rot)+'</td>'+
+      arr.map((b,ci)=>'<td><div class="tk-box'+(b?' on':'')+'" onclick="virarTracker(\''+wk+'\','+ci+')"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg></div></td>').join('')+'</tr>';
+  });
+  h+='</tbody></table>';
+  $('tracker').innerHTML=h;
+}
+function virarTracker(wk,ci){
+  tracker[wk]=tracker[wk]||[false,false,false,false];
+  tracker[wk][ci]=!tracker[wk][ci];
+  ss('portas-tracker',tracker);
+  if(tracker[wk].every(Boolean)) logar('Semana completa no tracker · '+METAS_TRACKER.join(', '));
+  renderTracker();
+}
+
+/* ===================== O REGISTRO ===================== */
+const SALA='portas';
+function logar(msg){
+  try{
+    const L=gs('log',{})||{}; L[TODAY]=L[TODAY]||[];
+    const u=L[TODAY][L[TODAY].length-1], h=agora();
+    if(u && u.s===SALA && u.m===msg && u.h===h) return;
+    L[TODAY].push({h:h,s:SALA,m:msg});
+    const ds=Object.keys(L).sort(); while(ds.length>90){delete L[ds.shift()];}
+    ss('log',L); renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(l){return l.filter(e=>e.s===SALA);}
+function rgData(d){return d.split('-').reverse().join('.');}
+function renderRegistro(){
+  const L=gs('log',{})||{};
+  $('rgData').textContent=rgData(TODAY);
+  const h=rgFiltra(L[TODAY]||[]); const box=$('rgHoje'); box.innerHTML='';
+  if(!h.length){box.innerHTML='<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho quando você fecha uma porta, cuida do sono ou fecha uma semana.</div>';}
+  else h.slice().reverse().forEach(e=>{const d=document.createElement('div');d.className='rg-linha';d.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';box.appendChild(d);});
+  const ds=Object.keys(L).filter(d=>d!==TODAY&&rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx=$('rgDias'); cx.innerHTML='';
+  ds.forEach(d=>{
+    const its=rgFiltra(L[d]); const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML='<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{const l=document.createElement('div');l.className='rg-linha';l.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';cp.appendChild(l);});
+    bt.onclick=()=>{cp.classList.toggle('on');bt.classList.toggle('aberto');};
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+
+/* boot */
+renderPortas(); renderAcoes(); renderSono(); renderSe(); renderTracker(); renderRegistro();
+</script>
+</body>
+</html>
