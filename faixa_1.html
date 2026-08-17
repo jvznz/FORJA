@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A Faixa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Archivo:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --preto:#17130F; --preto2:#1E1915; --carvao:#241E18; --carvao2:#2C241C;
+    --linha:#3A2F24; --linha2:#4A3B2C; --creme:#F1EBDF; --creme2:#D9CFBE;
+    --terra:#C6522E; --terra-hi:#E0764B; --laranja:#E08A3C; --ocre:#C99A54;
+    --texto:#EAE1D2; --dim:#9C8E78; --muted:#B8AA92; --verde:#6FA772;
+    --chao:#5C4A3A;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{min-height:100%}
+  body{background:var(--preto);color:var(--texto);font-family:'Inter',sans-serif;max-width:600px;margin:0 auto;-webkit-font-smoothing:antialiased;padding-bottom:56px}
+
+  .topo{padding:18px 20px 6px}
+  .selo{font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--terra-hi);font-weight:600}
+  .cab{display:flex;align-items:baseline;justify-content:space-between;margin-top:3px}
+  h1.tit{font-family:'Archivo',sans-serif;font-weight:800;font-size:33px;color:var(--creme);letter-spacing:-.01em;line-height:1}
+  .dia{font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim)}
+  .subt{font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--muted);margin-top:7px;line-height:1.5}
+
+  /* ===== A CENA: a faixa ===== */
+  .faixa-wrap{padding:6px 20px 2px}
+  .faixa-svg{width:100%;display:block}
+
+  .corpo{padding:16px 16px 0}
+  .callout{background:#0E0B08;border:1px solid var(--linha);border-radius:16px;padding:17px 18px;margin-bottom:18px}
+  .callout .fr{font-family:'Archivo',sans-serif;font-weight:700;font-size:17px;line-height:1.32;color:var(--creme)}
+  .callout .fr em{font-style:normal;color:var(--terra-hi)}
+  .callout .sub{font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--dim);margin-top:5px}
+
+  .secao-cab{display:flex;align-items:baseline;gap:9px;margin:2px 2px 5px}
+  .secao-cab .n{font-family:'Fraunces',serif;font-style:italic;font-size:13px;color:var(--terra-hi)}
+  .secao-cab h2{font-family:'Archivo',sans-serif;font-weight:700;font-size:20px;color:var(--creme)}
+  .secao-desc{font-size:12px;color:var(--muted);line-height:1.6;margin:0 2px 14px}
+
+  /* assunto atual */
+  .assunto{background:var(--carvao);border:1px solid var(--linha);border-radius:14px;padding:15px;margin-bottom:16px}
+  .assunto label{display:block;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--terra-hi);margin-bottom:8px;font-weight:600}
+  .assunto input{width:100%;background:var(--preto2);border:1px solid var(--linha);border-radius:9px;color:var(--creme);font-family:'Fraunces',serif;font-size:17px;padding:11px 13px}
+  .assunto input:focus{outline:none;border-color:var(--terra)}
+  .assunto .meta-row{display:flex;gap:10px;margin-top:10px}
+  .assunto .campo{flex:1}
+  .assunto .campo input{font-family:'Inter';font-size:13px}
+  .assunto .campo label{font-size:8.5px}
+
+  /* os 7 dias */
+  .dias{display:flex;flex-direction:column;gap:9px}
+  .diac{background:var(--carvao);border:1px solid var(--linha);border-radius:13px;padding:14px;cursor:pointer;transition:border-color .15s,background .15s;position:relative;overflow:hidden}
+  .diac::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--linha2);transition:background .2s}
+  .diac.on{background:var(--carvao2);border-color:var(--terra)}
+  .diac.on::before{background:var(--terra)}
+  .diac.hoje-d{border-color:var(--laranja)}
+  .diac-top{display:flex;align-items:center;gap:11px;margin-bottom:7px}
+  .diac .dnum{font-family:'Archivo',sans-serif;font-weight:800;font-size:15px;color:var(--terra-hi);flex-shrink:0;min-width:44px}
+  .diac .dmec{flex:1;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim)}
+  .diac .dcheck{width:24px;height:24px;border-radius:50%;border:1.5px solid var(--chao);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+  .diac.on .dcheck{background:var(--terra);border-color:var(--terra)}
+  .diac .dcheck svg{width:13px;height:13px;stroke:#fff;stroke-width:2.5;opacity:0;transition:opacity .15s}
+  .diac.on .dcheck svg{opacity:1}
+  .diac .dtxt{font-size:12.5px;color:var(--muted);line-height:1.55;padding-left:55px}
+  .diac.on .dtxt{color:var(--texto)}
+  .diac .dtag-hoje{position:absolute;top:12px;right:46px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--laranja);font-weight:600}
+
+  .regra{background:#0E0B08;border:1px solid var(--linha);border-left:3px solid var(--terra);border-radius:0 12px 12px 0;padding:14px 15px;margin-top:14px}
+  .regra b{color:var(--terra-hi);font-family:'Archivo';font-weight:700;font-size:10px;letter-spacing:.12em;text-transform:uppercase;display:block;margin-bottom:5px}
+  .regra p{font-size:12.5px;color:var(--muted);line-height:1.55}
+
+  /* as 3 técnicas */
+  .tecnicas{display:flex;flex-direction:column;gap:9px}
+  .tec{display:flex;gap:12px;align-items:flex-start;background:var(--carvao);border:1px solid var(--linha);border-radius:12px;padding:13px 14px}
+  .tec .tnum{font-family:'Archivo';font-weight:800;font-size:19px;color:var(--terra);flex-shrink:0;line-height:1}
+  .tec .tcont b{font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--creme);display:block;margin-bottom:2px}
+  .tec .tcont p{font-size:11.5px;color:var(--muted);line-height:1.5}
+
+  /* o plano escrito */
+  .plano{background:var(--carvao);border:1px solid var(--linha);border-radius:14px;padding:16px}
+  .plano-campo{margin-bottom:16px}
+  .plano-campo:last-child{margin-bottom:0}
+  .plano-campo .pq{font-family:'Fraunces',serif;font-weight:600;font-size:14.5px;color:var(--creme);margin-bottom:3px}
+  .plano-campo .pex{font-family:'Fraunces',serif;font-style:italic;font-size:11px;color:var(--dim);margin-bottom:8px;line-height:1.4}
+  .plano-campo textarea{width:100%;background:var(--preto2);border:1px solid var(--linha);border-radius:9px;color:var(--texto);font-family:'Inter';font-size:13.5px;padding:11px 13px;line-height:1.5;resize:vertical;min-height:54px}
+  .plano-campo textarea:focus{outline:none;border-color:var(--terra)}
+  .assinatura{margin-top:16px;padding-top:15px;border-top:1px solid var(--linha)}
+  .assinatura .as-txt{font-family:'Fraunces',serif;font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:12px}
+  .assinatura .as-row{display:flex;gap:10px;align-items:center}
+  .assinatura input{flex:1;background:var(--preto2);border:1px solid var(--linha);border-radius:9px;color:var(--creme);font-family:'Fraunces',serif;font-size:14px;padding:10px 12px}
+  .assinatura input:focus{outline:none;border-color:var(--terra)}
+  .as-btn{background:var(--terra);border:none;color:#fff;font-family:'Archivo';font-weight:700;font-size:11px;letter-spacing:.06em;text-transform:uppercase;border-radius:9px;padding:11px 15px;cursor:pointer;flex-shrink:0}
+  .as-btn:disabled{background:var(--linha2);color:var(--dim);cursor:default}
+  .as-selado{background:rgba(111,167,114,.12);border:1px solid rgba(111,167,114,.4);border-radius:10px;padding:12px 14px;margin-top:12px;font-size:12.5px;color:#9CC79E;line-height:1.5;font-family:'Fraunces',serif}
+
+  .glossario{margin-top:8px}
+  .gl{border-top:1px solid var(--linha);padding:11px 0;cursor:pointer}
+  .gl:first-child{border-top:0}
+  .gl-t{display:flex;justify-content:space-between;align-items:center;font-family:'Fraunces',serif;font-weight:600;font-size:14px;color:var(--creme)}
+  .gl-t span{color:var(--dim);font-size:16px;transition:transform .2s}
+  .gl.on .gl-t span{transform:rotate(45deg)}
+  .gl-d{font-size:12px;color:var(--muted);line-height:1.55;max-height:0;overflow:hidden;transition:max-height .25s,margin .25s}
+  .gl.on .gl-d{max-height:120px;margin-top:7px}
+
+  .nota-fonte{background:var(--carvao);border-radius:12px;padding:13px 15px;margin-top:16px;font-size:10.5px;color:var(--dim);line-height:1.6;font-style:italic;font-family:'Fraunces',serif}
+
+  /* O Registro */
+  .oreg{margin-top:20px;background:var(--carvao);border:1px solid var(--linha);border-radius:14px;padding:16px}
+  .oreg-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px}
+  .oreg-head b{font-family:'Archivo';font-weight:700;font-size:12px;letter-spacing:.13em;text-transform:uppercase;color:var(--terra-hi)}
+  .oreg-head span{font-size:9px;letter-spacing:.06em;color:var(--dim)}
+  .oreg-sub{font-size:10.5px;color:var(--dim);margin-bottom:12px;line-height:1.6}
+  .rg-linha{display:flex;gap:9px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--linha)}
+  .rg-linha:first-of-type{border-top:0}
+  .rg-h{font-size:10px;color:var(--terra-hi);flex-shrink:0;min-width:34px;padding-top:1px;font-weight:600}
+  .rg-m{font-size:12px;color:var(--texto);line-height:1.45;flex:1}
+  .rg-vazio{font-size:11.5px;color:var(--dim);padding:6px 0;line-height:1.6;font-style:italic;font-family:'Fraunces',serif}
+  .rg-dias{margin-top:12px;border-top:1px solid var(--linha);padding-top:10px}
+  .rg-dia{width:100%;text-align:left;background:var(--preto2);border:1px solid var(--linha);border-radius:9px;padding:9px 12px;margin-bottom:6px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;color:var(--texto)}
+  .rg-dia small{font-size:9.5px;color:var(--dim)}
+  .rg-dia b{font-size:11px;font-weight:600}
+  .rg-dia.aberto{border-color:var(--terra)}
+  .rg-corpo{padding:2px 12px 10px;display:none}
+  .rg-corpo.on{display:block}
+
+  footer{text-align:center;margin-top:24px;font-family:'Fraunces',serif;font-style:italic;font-size:12.5px;color:var(--dim)}
+  .voltar{display:inline-block;margin-top:18px;color:var(--dim);text-decoration:none;font-size:11px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--linha);border-radius:9px;padding:9px 15px}
+</style>
+</head>
+<body>
+
+  <div class="topo">
+    <div class="selo">Protocolo · Inteligência</div>
+    <div class="cab"><h1 class="tit">A Faixa</h1><span class="dia" id="chipDia"></span></div>
+    <div class="subt">gene é faixa, não destino. você não escolhe a largura, mas escolhe onde dentro dela vai viver.</div>
+  </div>
+
+  <div class="faixa-wrap"><div id="faixaSvg"></div></div>
+
+  <div class="corpo">
+    <div class="callout">
+      <div class="fr">Cada dia do ciclo empurra o marcador <em>rumo ao teto</em>.</div>
+      <div class="sub">Inteligência que pesa na vida real é a que você constrói. Uma é loteria, a outra é obra.</div>
+    </div>
+
+    <!-- ASSUNTO -->
+    <div class="secao-cab"><span class="n">Escolha um</span><h2>O assunto da vez</h2></div>
+    <div class="secao-desc">Um assunto só, específico. "Inglês" não vale; "vocabulário de reunião em inglês" vale. 20 a 30 minutos por dia, sete dias.</div>
+    <div class="assunto">
+      <label>O que eu vou empilhar nos próximos 7 dias</label>
+      <input type="text" id="assunto" placeholder="Ex: capacidade e competência no Direito Civil" oninput="salvarAssunto()">
+      <div class="meta-row">
+        <div class="campo"><label>Quando e onde</label><input type="text" id="quando" placeholder="7h, mesa da cozinha, 25 min" oninput="salvarAssunto()"></div>
+      </div>
+    </div>
+
+    <!-- OS 7 DIAS -->
+    <div class="secao-cab" style="margin-top:22px"><span class="n">O protocolo</span><h2>Os 7 dias</h2></div>
+    <div class="secao-desc">O ciclo roda uma vez por assunto. Marca o dia quando cumprir. O dia de hoje no ciclo fica destacado.</div>
+    <div class="dias" id="listaDias"></div>
+    <div class="regra"><b>Regra de ouro</b><p>Se em algum dia você sentiu que foi fácil e gostoso, provavelmente releu em vez de recuperar. Volta e faz de olho fechado. O esforço que incomoda é o que fixa.</p></div>
+
+    <!-- AS 3 TÉCNICAS -->
+    <div class="secao-cab" style="margin-top:22px"><span class="n">A alavanca</span><h2>As três técnicas</h2></div>
+    <div class="secao-desc">Todo o ciclo é feito destas três. Reler não está entre elas, e por isso quase todo mundo estuda errado.</div>
+    <div class="tecnicas" id="tecnicas"></div>
+
+    <!-- O PLANO ESCRITO -->
+    <div class="secao-cab" style="margin-top:22px"><span class="n">Sua parte</span><h2>Escreve o teu plano</h2></div>
+    <div class="secao-desc">Aula sem decisão escrita é entretenimento. Preenche isto uma vez, agora. Leva uns cinco minutos, e o compromisso assinado gruda mais.</div>
+    <div class="plano" id="plano"></div>
+
+    <!-- GLOSSÁRIO -->
+    <div class="secao-cab" style="margin-top:22px"><span class="n">Anexo</span><h2>Os termos</h2></div>
+    <div class="secao-desc">Os conceitos da aula, em uma frase cada. Toca pra abrir.</div>
+    <div class="glossario" id="glossario"></div>
+
+    <div class="nota-fonte">Material de estudo de Leo Xavier, baseado em Ritchie &amp; Tucker-Drob (2018), Roediger &amp; Karpicke (2006), Ebbinghaus (1885) e Robert Bjork. É educativo e não substitui acompanhamento. As fontes completas estão no material original.</div>
+
+    <div class="oreg">
+      <div class="oreg-head"><b>O Registro</b><span id="rgData"></span></div>
+      <div class="oreg-sub">Cada dia do ciclo que você fecha fica gravado, com a hora. Hoje em cima, os anteriores logo abaixo.</div>
+      <div id="rgHoje"></div>
+      <div class="rg-dias" id="rgDias"></div>
+    </div>
+
+    <div style="text-align:center"><a href="alwin.html" class="voltar">← voltar ao Alwin</a></div>
+    <footer>a que mais pesa é a que você constrói</footer>
+  </div>
+
+<script>
+const gs=(k,fb=null)=>{try{const v=localStorage.getItem('jvx-'+k);return v!==null?JSON.parse(v):fb;}catch{return fb;}};
+const ss=(k,v)=>{try{localStorage.setItem('jvx-'+k,JSON.stringify(v));}catch{}};
+const $=id=>document.getElementById(id);
+const NS='http://www.w3.org/2000/svg';
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
+function localISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+const TODAY=localISO(new Date());
+function agora(){return new Date().toTimeString().slice(0,5);}
+
+const DIAS=[
+  {n:1,mec:'Primeira recuperação',t:'Estuda o material uma vez, com atenção. Sem grifar. No fim, fecha tudo e escreve de memória o que pegou.'},
+  {n:2,mec:'Recuperação + feedback',t:'Sem abrir o material: escreve tudo que lembra. Depois abre e corrige em outra cor. O que faltou é sua lista de estudo.'},
+  {n:3,mec:'Dificuldade desejável',t:'Explica em voz alta pra alguém, ou pra parede, ela é ótima ouvinte. Onde você travar, é ali que você não sabe.'},
+  {n:4,mec:'Consolidação no sono',t:'Descanso do assunto. Dorme bem e aproveita pra fazer outras coisas.'},
+  {n:5,mec:'Espaçamento',t:'Recuperação de novo, só dos pontos que falharam nos dias 2 e 3. Foca no buraco, não no que já tá firme.'},
+  {n:6,mec:'Transferência',t:'Usa. Resolve um problema real, escreve um texto, aplica no trabalho. Conhecimento que não é usado é esquecido.'},
+  {n:7,mec:'Espaçamento longo',t:'Revisão rápida, 10 minutos, de memória. E marca no calendário pra repetir em 1 semana e em 1 mês.'},
+];
+const TECNICAS=[
+  {n:1,t:'Recuperação ativa',d:'Fecha o material e escreve de memória. A falha faz parte, é sinal de que o método tá funcionando.'},
+  {n:2,t:'Prática espaçada',d:'Espalha no tempo, em dias diferentes. Sem revisão você perde uns 70% em 24 horas.'},
+  {n:3,t:'Dificuldades desejáveis',d:'Explica em voz alta e repara onde trava. O esforço que parece atrapalhar é o que fixa.'},
+];
+const GLOSSARIO=[
+  {t:'Genótipo',d:'A receita escrita nos seus genes. Você recebeu, não escolheu, não muda.'},
+  {t:'Fenótipo',d:'O prato que saiu da cozinha: o traço que de fato apareceu em você. Receita mais ambiente.'},
+  {t:'Herdabilidade',d:'Quanto da diferença entre as pessoas os genes explicam. É medida de população, não diz nada sobre o seu caso.'},
+  {t:'Correlação gene-ambiente',d:'Sua tendência te faz escolher ambientes que a reforçam. É a bola de neve que faz a herdabilidade subir com a idade.'},
+  {t:'Inteligência fluida',d:'A potência bruta: resolver o que você nunca viu. Pico cedo na vida, teto genético mais duro.'},
+  {t:'Inteligência cristalizada',d:'Tudo que você já sabe e domina. Cresce a vida inteira e é o que faz você parecer inteligente no dia a dia.'},
+  {t:'Ilusão de competência',d:'A sensação de saber que vem de reconhecer o material relido. Reconhecer não é lembrar.'},
+  {t:'Dificuldades desejáveis',d:'O esforço que parece atrapalhar e na verdade fixa: tentar lembrar e falhar, espaçar, explicar em voz alta. Termo de Robert Bjork.'},
+];
+
+let ciclo=gs('faixa-ciclo',null);
+if(!ciclo){ ciclo={assunto:'',quando:'',inicio:TODAY,dias:{},plano:['','','',''],assinado:null}; ss('faixa-ciclo',ciclo); }
+ciclo.dias=ciclo.dias||{};
+ciclo.plano=ciclo.plano||['','','',''];
+
+$('chipDia').textContent=TODAY.split('-').reverse().join('.');
+
+function feitos(){ return DIAS.filter(d=>ciclo.dias['d'+d.n]).length; }
+function diaDoCiclo(){
+  const diff=Math.floor((new Date(TODAY+'T12:00:00')-new Date(ciclo.inicio+'T12:00:00'))/86400000)+1;
+  return Math.max(1,Math.min(7,diff));
+}
+
+/* ===================== A CENA: A FAIXA ===================== */
+function renderFaixa(){
+  const prog=feitos()/7;                        // 0..1
+  const px=(28+prog*(352-28)).toFixed(1);       // posição do marcador
+  const svg=
+  '<svg class="faixa-svg" viewBox="0 0 380 150" xmlns="http://www.w3.org/2000/svg" aria-label="A faixa entre o chão e o teto genético">'+
+    '<defs>'+
+      '<linearGradient id="banda" x1="0" y1="0" x2="1" y2="0">'+
+        '<stop offset="0" stop-color="#4A3C30"/><stop offset="0.5" stop-color="#B5673C"/><stop offset="1" stop-color="#E0764B"/>'+
+      '</linearGradient>'+
+      '<linearGradient id="preench" x1="0" y1="0" x2="1" y2="0">'+
+        '<stop offset="0" stop-color="#C6522E"/><stop offset="1" stop-color="#E0764B"/>'+
+      '</linearGradient>'+
+    '</defs>'+
+    '<text x="28" y="30" font-family="Inter" font-size="9" letter-spacing="1" fill="#9C8E78">CHÃO GENÉTICO</text>'+
+    '<text x="352" y="30" text-anchor="end" font-family="Inter" font-size="9" letter-spacing="1" fill="#9C8E78">TETO GENÉTICO</text>'+
+    /* trilho da faixa */
+    '<rect x="28" y="44" width="324" height="46" rx="4" fill="#241E18" stroke="#3A2F24" stroke-width="1"/>'+
+    '<rect x="28" y="44" width="324" height="46" rx="4" fill="url(#banda)" opacity="0.28"/>'+
+    /* preenchimento até a posição atual */
+    '<rect x="28" y="44" width="'+(px-28)+'" height="46" rx="4" fill="url(#preench)" opacity="0.9" style="transition:width .5s cubic-bezier(.22,1,.36,1)"/>'+
+    /* marcador "você, hoje" */
+    '<g style="transition:transform .5s cubic-bezier(.22,1,.36,1)" transform="translate('+px+',0)">'+
+      '<line x1="0" y1="38" x2="0" y2="96" stroke="#F1EBDF" stroke-width="2"/>'+
+      '<circle cx="0" cy="67" r="5" fill="#F1EBDF"/>'+
+      '<circle cx="0" cy="67" r="9" fill="#F1EBDF" opacity="0.25"/>'+
+      '<text x="0" y="112" text-anchor="middle" font-family="Fraunces,serif" font-style="italic" font-size="11" fill="#EAE1D2">você, hoje</text>'+
+    '</g>'+
+    /* rótulo de progresso */
+    '<text x="190" y="134" text-anchor="middle" font-family="Inter" font-size="10" fill="#9C8E78">'+feitos()+' de 7 dias do ciclo · assunto '+(ciclo.assunto?'"'+esc(ciclo.assunto.slice(0,26))+'"':'ainda sem nome')+'</text>'+
+  '</svg>';
+  $('faixaSvg').innerHTML=svg;
+}
+
+/* ===================== ASSUNTO ===================== */
+function salvarAssunto(){
+  const a=$('assunto').value, q=$('quando').value;
+  const novoAssunto = a && a!==ciclo.assunto;
+  ciclo.assunto=a; ciclo.quando=q; ss('faixa-ciclo',ciclo);
+  renderFaixa();
+}
+
+/* ===================== OS 7 DIAS ===================== */
+function renderDias(){
+  const dc=diaDoCiclo();
+  $('listaDias').innerHTML=DIAS.map(d=>{
+    const on=!!ciclo.dias['d'+d.n];
+    const eHoje=d.n===dc;
+    return '<div class="diac'+(on?' on':'')+(eHoje?' hoje-d':'')+'" onclick="virarDia('+d.n+')">'+
+      (eHoje?'<span class="dtag-hoje">hoje no ciclo</span>':'')+
+      '<div class="diac-top"><span class="dnum">Dia '+d.n+'</span><span class="dmec">'+d.mec+'</span>'+
+        '<span class="dcheck"><svg viewBox="0 0 24 24" fill="none"><path d="M4 12l5 5L20 6" stroke-linecap="round" stroke-linejoin="round"/></svg></span></div>'+
+      '<div class="dtxt">'+d.t+'</div></div>';
+  }).join('');
+}
+function virarDia(n){
+  ciclo.dias['d'+n]=!ciclo.dias['d'+n];
+  ss('faixa-ciclo',ciclo);
+  const d=DIAS.find(x=>x.n===n);
+  if(ciclo.dias['d'+n]) logar('Dia '+n+' do ciclo cumprido · '+d.mec+(ciclo.assunto?' · '+ciclo.assunto.slice(0,30):''));
+  if(feitos()===7) logar('Ciclo de 7 dias completo'+(ciclo.assunto?' · '+ciclo.assunto.slice(0,34):'')+' · o marcador chegou ao teto');
+  renderDias(); renderFaixa();
+}
+
+/* ===================== TÉCNICAS ===================== */
+function renderTecnicas(){
+  $('tecnicas').innerHTML=TECNICAS.map(t=>
+    '<div class="tec"><span class="tnum">'+t.n+'</span><div class="tcont"><b>'+t.t+'</b><p>'+t.d+'</p></div></div>'
+  ).join('');
+}
+
+/* ===================== O PLANO ===================== */
+const PLANO_Q=[
+  {q:'1. O assunto que eu vou empilhar nos próximos 30 dias',ex:'Um só. Específico. "Inglês" não vale; "vocabulário de reunião em inglês" vale.'},
+  {q:'2. Quando e onde, em dia e hora',ex:'"Todo dia às 7h, na mesa da cozinha, 25 minutos." Sem horário, não existe.'},
+  {q:'3. O que me prende no chão hoje, e o que eu vou tirar',ex:'Sono ruim? Scroll infinito? Sem proteína no café? Escolhe um e corta.'},
+  {q:'4. Como eu vou saber que funcionou, em 30 dias',ex:'Uma coisa concreta que você vai conseguir fazer e hoje não consegue.'},
+];
+function renderPlano(){
+  let h=PLANO_Q.map((p,i)=>
+    '<div class="plano-campo"><div class="pq">'+p.q+'</div><div class="pex">'+p.ex+'</div>'+
+    '<textarea id="plano-'+i+'" oninput="salvarPlano('+i+')" placeholder="...">'+esc(ciclo.plano[i]||'')+'</textarea></div>'
+  ).join('');
+  const preenchido=ciclo.plano.filter(x=>(x||'').trim()).length;
+  if(ciclo.assinado){
+    h+='<div class="assinatura"><div class="as-selado"><b>Plano assinado por '+esc(ciclo.assinado.nome)+' em '+ciclo.assinado.data.split('-').reverse().join('/')+'.</b><br>O compromisso está de pé. Agora é rodar o ciclo.</div></div>';
+  } else {
+    h+='<div class="assinatura"><div class="as-txt">Assina embaixo. Parece bobo, mas compromisso escrito e assinado gruda mais.</div>'+
+      '<div class="as-row"><input type="text" id="assNome" placeholder="teu nome"><button class="as-btn" id="assBtn" onclick="assinar()"'+(preenchido<4?' disabled':'')+'>'+(preenchido<4?'preenche os 4':'assinar')+'</button></div></div>';
+  }
+  $('plano').innerHTML=h;
+}
+function salvarPlano(i){
+  ciclo.plano[i]=$('plano-'+i).value; ss('faixa-ciclo',ciclo);
+  const btn=$('assBtn');
+  if(btn){ const p=ciclo.plano.filter(x=>(x||'').trim()).length; btn.disabled=p<4; btn.textContent=p<4?'preenche os 4':'assinar'; }
+}
+function assinar(){
+  const nome=$('assNome').value.trim();
+  if(!nome){ $('assNome').focus(); return; }
+  if(ciclo.plano.filter(x=>(x||'').trim()).length<4) return;
+  ciclo.assinado={nome:nome,data:TODAY}; ss('faixa-ciclo',ciclo);
+  logar('Plano de inteligência assinado · '+nome);
+  renderPlano();
+}
+
+/* ===================== GLOSSÁRIO ===================== */
+function renderGloss(){
+  $('glossario').innerHTML=GLOSSARIO.map((g,i)=>
+    '<div class="gl" onclick="this.classList.toggle(\'on\')"><div class="gl-t">'+g.t+'<span>+</span></div><div class="gl-d">'+g.d+'</div></div>'
+  ).join('');
+}
+
+/* ===================== O REGISTRO ===================== */
+const SALA='faixa';
+function logar(msg){
+  try{
+    const L=gs('log',{})||{}; L[TODAY]=L[TODAY]||[];
+    const u=L[TODAY][L[TODAY].length-1], h=agora();
+    if(u && u.s===SALA && u.m===msg && u.h===h) return;
+    L[TODAY].push({h:h,s:SALA,m:msg});
+    const ds=Object.keys(L).sort(); while(ds.length>90){delete L[ds.shift()];}
+    ss('log',L); renderRegistro();
+  }catch(e){}
+}
+function rgFiltra(l){return l.filter(e=>e.s===SALA);}
+function rgData(d){return d.split('-').reverse().join('.');}
+function renderRegistro(){
+  const L=gs('log',{})||{};
+  $('rgData').textContent=rgData(TODAY);
+  const h=rgFiltra(L[TODAY]||[]); const box=$('rgHoje'); box.innerHTML='';
+  if(!h.length){box.innerHTML='<div class="rg-vazio">Nada registrado hoje ainda. O registro escreve sozinho quando você fecha um dia do ciclo ou assina o plano.</div>';}
+  else h.slice().reverse().forEach(e=>{const d=document.createElement('div');d.className='rg-linha';d.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';box.appendChild(d);});
+  const ds=Object.keys(L).filter(d=>d!==TODAY&&rgFiltra(L[d]||[]).length).sort().reverse().slice(0,20);
+  const cx=$('rgDias'); cx.innerHTML='';
+  ds.forEach(d=>{
+    const its=rgFiltra(L[d]); const bt=document.createElement('div'); bt.className='rg-dia';
+    bt.innerHTML='<b>'+rgData(d)+'</b><small>'+its.length+' registro'+(its.length>1?'s':'')+'</small>';
+    const cp=document.createElement('div'); cp.className='rg-corpo';
+    its.slice().reverse().forEach(e=>{const l=document.createElement('div');l.className='rg-linha';l.innerHTML='<span class="rg-h">'+e.h+'</span><span class="rg-m">'+esc(e.m)+'</span>';cp.appendChild(l);});
+    bt.onclick=()=>{cp.classList.toggle('on');bt.classList.toggle('aberto');};
+    cx.appendChild(bt); cx.appendChild(cp);
+  });
+}
+
+/* boot */
+$('assunto').value=ciclo.assunto||'';
+$('quando').value=ciclo.quando||'';
+renderFaixa(); renderDias(); renderTecnicas(); renderPlano(); renderGloss(); renderRegistro();
+</script>
+</body>
+</html>
